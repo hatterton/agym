@@ -1,9 +1,8 @@
 import pygame
 import numpy as np
-import param
+import agym.param
 import math
 import time
-import settings
 
 infinity = 10**9
 
@@ -12,8 +11,8 @@ class Model:
         self.fitness = 0
         self.max_reward = -1
         self.body = [None, None]
-        self.n_w = math.ceil(arg.settings.ga_width/param.width_box)
-        self.n_h = math.ceil(arg.settings.ga_height/param.height_box)
+        self.n_w = math.ceil(arg.settings.ga_width/agym.param.width_box)
+        self.n_h = math.ceil(arg.settings.ga_height/agym.param.height_box)
         self.n_square = self.n_w * self.n_h
 
         self.wanna_left = False
@@ -53,14 +52,14 @@ class Model:
             arg.platform.moving_right = False
 
     def make_input_vector(self, arg):
-        sol = np.zeros((param.w_n, param.h_n))
+        sol = np.zeros((agym.param.w_n, agym.param.h_n))
 
         for item in arg.blocks.sprites():
             sol[item.intersected] = 1
 
-        # self.dfs(arg.ball.rect, sol, arg.ball.rect.centerx//param.width_box, arg.ball.rect.centery//param.height_box, -10)
-        # self.dfs(arg.platform.rect, sol, arg.platform.rect.centerx // param.width_box,
-        #          arg.platform.rect.centery // param.height_box, 10)
+        # self.dfs(arg.ball.rect, sol, arg.ball.rect.centerx//agym.param.width_box, arg.ball.rect.centery//agym.param.height_box, -10)
+        # self.dfs(arg.platform.rect, sol, arg.platform.rect.centerx // agym.param.width_box,
+        #          arg.platform.rect.centery // agym.param.height_box, 10)
         sol[arg.platform.make_intersected(arg)] = 10
         sol[arg.ball.make_intersected(arg)] = -10
 
@@ -69,15 +68,15 @@ class Model:
         return sol
 
     def dfs(self, rect, sol, x, y, value):
-        if x < 0 or x >= param.w_n:
+        if x < 0 or x >= agym.param.w_n:
             return
-        if y < 0 or y >= param.h_n:
+        if y < 0 or y >= agym.param.h_n:
             return
         if sol[x, y] != 0:
             return
         v = [[-1, 0], [1, 0], [0, -1], [0, 1]]
-        if (param.left_side[x] < rect.right and param.right_side[x] > rect.left and
-            param.top_side[y] < rect.bottom and param.bottom_side[y] > rect.top):
+        if (agym.param.left_side[x] < rect.right and agym.param.right_side[x] > rect.left and
+            agym.param.top_side[y] < rect.bottom and agym.param.bottom_side[y] > rect.top):
             sol[x, y] = value
             for vec in v:
                 self.dfs(rect, sol, x+vec[0], y+vec[1], value)
@@ -113,8 +112,8 @@ class Model:
         return sol
 
     def init_random(self):
-        self.body[0] = np.random.random([self.n_square+1+2, param.hidden_n]) - 0.5
-        self.body[1] = np.random.random([param.hidden_n+1, 3]) - 0.5
+        self.body[0] = np.random.random([self.n_square+1+2, agym.param.hidden_n]) - 0.5
+        self.body[1] = np.random.random([agym.param.hidden_n+1, 3]) - 0.5
 
     def __str__(self):
         return str(self.body[0]) + '\n' + str(self.body[1])

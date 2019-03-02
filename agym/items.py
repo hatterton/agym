@@ -1,6 +1,6 @@
 import pygame
 import random
-import param
+import agym.param
 import numpy as np
 import copy
 
@@ -47,11 +47,11 @@ class Block(Item):
 
 
     def make_intersected(self, arg):
-        sel1 = param.left_side < self.rect.right
-        sel2 = param.right_side > self.rect.left
+        sel1 = agym.param.left_side < self.rect.right
+        sel2 = agym.param.right_side > self.rect.left
         sel3 = np.logical_and(sel1, sel2)
-        sel4 = param.top_side < self.rect.bottom
-        sel5 = param.bottom_side > self.rect.top
+        sel4 = agym.param.top_side < self.rect.bottom
+        sel5 = agym.param.bottom_side > self.rect.top
         sel6 = np.logical_and(sel4, sel5)
 
         sel7 = np.logical_and(sel3[np.newaxis, :], sel6[:, np.newaxis])
@@ -150,11 +150,11 @@ class Platform(Item):
         return self.freeze_count != 0
 
     def make_intersected(self, arg):
-        sel1 = param.left_side < self.rect.right
-        sel2 = param.right_side > self.rect.left
+        sel1 = agym.param.left_side < self.rect.right
+        sel2 = agym.param.right_side > self.rect.left
         sel3 = np.logical_and(sel1, sel2)
-        sel4 = param.top_side < self.rect.bottom
-        sel5 = param.bottom_side > self.rect.top
+        sel4 = agym.param.top_side < self.rect.bottom
+        sel5 = agym.param.bottom_side > self.rect.top
         sel6 = np.logical_and(sel4, sel5)
 
         sel7 = np.logical_and(sel3[np.newaxis, :], sel6[:, np.newaxis])
@@ -187,11 +187,11 @@ class Ball(Item):
 
 
     def make_intersected(self, arg):
-        sel1 = param.left_side < self.rect.right
-        sel2 = param.right_side > self.rect.left
+        sel1 = agym.param.left_side < self.rect.right
+        sel2 = agym.param.right_side > self.rect.left
         sel3 = np.logical_and(sel1, sel2)
-        sel4 = param.top_side < self.rect.bottom
-        sel5 = param.bottom_side > self.rect.top
+        sel4 = agym.param.top_side < self.rect.bottom
+        sel5 = agym.param.bottom_side > self.rect.top
         sel6 = np.logical_and(sel4, sel5)
 
         sel7 = np.logical_and(sel3[np.newaxis, :], sel6[:, np.newaxis])

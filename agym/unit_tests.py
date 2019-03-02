@@ -1,5 +1,5 @@
-from enums import MenuS, GameS
-from agym.agym.items import Block
+from agym.enums import MenuS, GameS
+from agym.items import Block
 from pygame.sprite import Group
 
 import agym.game_functions as gf

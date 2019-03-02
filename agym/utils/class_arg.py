@@ -1,4 +1,4 @@
-from enums import GameS, MenuS
+from agym.enums import GameS, MenuS
 
 class Arg:
     def __init__(self):

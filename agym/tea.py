@@ -470,7 +470,7 @@ class Tea:
         """
         instance = self._get_object(model, id)
 
-        for fieldname, new_value in editting_fields_dict.agym.agym.items():
+        for fieldname, new_value in editting_fields_dict.agym.items():
             if not hasattr(instance, fieldname):
                 raise ValueError(
                     "Instance of {} hasn't field with name {}".format(

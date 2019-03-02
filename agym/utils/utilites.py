@@ -1,13 +1,13 @@
 # Классы что нужно изменить:
-# agym.agym.items.Platform.update
+# agym.items.Platform.update
 
 import random
 import time
 import pygame
 
-from class_arg import Arg
-from settings import Settings
-from initer import Initer
+from agym.utils.class_arg import Arg
+from agym.settings import Settings
+from agym.utils.initer import Initer
 
 def print_debug(arg):
     subscribers = ["All", "update_state", "bliting", "update_sing_ups", "updating score tables"]

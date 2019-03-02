@@ -1,5 +1,5 @@
 import pygame
-from button import Button
+from agym.gui.button import Button
 
 class Check_box:
     def __init__(self, arg, screen, surface, pos, value_func):
@@ -10,8 +10,8 @@ class Check_box:
         self.value_func = value_func
         self.checked = False
 
-        self.image_nonchecked = pygame.image.load('images/check_box_nonactive.png')
-        self.image_checked = pygame.image.load('images/check_box_active.png')
+        self.image_nonchecked = pygame.image.load('agym/images/check_box_nonactive.png')
+        self.image_checked = pygame.image.load('agym/images/check_box_active.png')
 
     def update(self, arg):
         self.checked = self.value_func(arg)

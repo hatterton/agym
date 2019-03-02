@@ -2,11 +2,11 @@ import pygame
 import random
 import time
 
-import collision_functions as cf
+import agym.utils.collision_functions as cf
 import agym.game_functions as gf
 
 from pygame.compat import xrange_
-from enums import GameS, MenuS
+from agym.enums import GameS, MenuS
 #from pygame._numpysurfarray import type_name *
 
 class Game_area:
@@ -25,7 +25,7 @@ class Game_area:
         self.end_color = [random.randint(0, 255) for i in range(3)]
         self.stars = []
 
-        self.rail = pygame.image.load('images/new/rail 200x10.png')
+        self.rail = pygame.image.load('agym/images/new/rail 200x10.png')
 
     def update_gradient(self, arg):
         self.start_color = [min(255, max(self.start_color[i] + self.start_step[i], 0)) for i in range(3)]

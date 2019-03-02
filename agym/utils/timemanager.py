@@ -1,7 +1,7 @@
 import pygame
 
-from queue import Queue
-from enums import avrM, avr_diffM, arv_dist_pointM
+from agym.utils.queue import Queue
+from agym.enums import avrM, avr_diffM, arv_dist_pointM
 
 class Timemanager:
     def __init__(self, length=100):

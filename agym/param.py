@@ -1,4 +1,4 @@
-from settings import Settings
+from agym.settings import Settings
 import math
 import numpy as np
 

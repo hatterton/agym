@@ -3,8 +3,8 @@ import pygame
 import math
 import time
 
-from agym.agym.items import Block, Ball, Platform
-from enums import MenuS, GameS
+from agym.items import Block, Ball, Platform
+from agym.enums import MenuS, GameS
 
 
 

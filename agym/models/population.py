@@ -1,10 +1,10 @@
-﻿import param
+﻿import agym.param
 import random
 import shelve
 import math
 import numpy as np
-from individual import Individual
-from model import Model
+from agym.models.individual import Individual
+from agym.models.model import Model
 
 infinity = 10**9
 
@@ -19,7 +19,7 @@ class Population:
 
         self.epoch = 1
         self.population = []
-        for i in range(param.max_population):
+        for i in range(agym.param.max_population):
             new_model = Model(arg)
             new_model.init_random()
             self.population.append(new_model)
@@ -39,21 +39,21 @@ class Population:
         cur_tail = 1
         for i in range(len(self.population)):
             mdl = self.population[i]
-            n = max(0, int(math.ceil(cur_tail * param.max_population * param.magic_value)))
+            n = max(0, int(math.ceil(cur_tail * agym.param.max_population * agym.param.magic_value)))
 
             for i in range(n):
                 rnd_id = random.randint(0, len(self.population)-1)
                 self.population.append(mdl.crossover(self.population[rnd_id], arg))
 
-            cur_tail *= (1 - param.magic_value)
+            cur_tail *= (1 - agym.param.magic_value)
 
     def selection(self):
         self.sort_population()
-        self.population = self.population[:param.max_population]
+        self.population = self.population[:agym.param.max_population]
 
     def mutation(self, arg):
         for i in range(len(self.population)):
-            if random.random() < param.mut_chance:                      # Ещё одно значение для настройки
+            if random.random() < agym.param.mut_chance:                      # Ещё одно значение для настройки
                 self.population.append(self.population[i].mutation(arg))
 
     def sort_population(self):
@@ -100,16 +100,16 @@ class Population:
 
             print(differ)
             #print(bot.apm)
-            #self.population[self.cur_bot_id].fitness += min(arg.stats.count - bot.apm*param.apm_scale + differ*param.differ_scale,
+            #self.population[self.cur_bot_id].fitness += min(arg.stats.count - bot.apm*agym.param.apm_scale + differ*agym.param.differ_scale,
             #                                               self.population[self.cur_bot_id].fitness)
-            self.population[self.cur_bot_id].fitness += arg.stats.count - bot.apm*param.apm_scale + differ*param.differ_scale
+            self.population[self.cur_bot_id].fitness += arg.stats.count - bot.apm*agym.param.apm_scale + differ*agym.param.differ_scale
         else:
             # Без отличия от других
             #print(bot.apm)
             print(differ)
-            #self.population[self.cur_bot_id].fitness = min(arg.stats.count - bot.apm*param.apm_scale,
+            #self.population[self.cur_bot_id].fitness = min(arg.stats.count - bot.apm*agym.param.apm_scale,
             #                                               self.population[self.cur_bot_id].fitness)
-            self.population[self.cur_bot_id].fitness += arg.stats.count - bot.apm*param.apm_scale
+            self.population[self.cur_bot_id].fitness += arg.stats.count - bot.apm*agym.param.apm_scale
         bot.apm = 0
 
         self.next_model(arg)

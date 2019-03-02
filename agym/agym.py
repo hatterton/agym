@@ -1,8 +1,8 @@
 import pygame
 import agym.game_functions as gf
-import utilites as ut
+import agym.utils.utilites as ut
 
-def run_game():
+def run_app():
     
     #pygame.mouse.set_visible(False)
     arg = ut.init()
@@ -27,4 +27,4 @@ def run_game():
 
 
 if __name__ == '__main__':
-    run_game()
+    run_app()

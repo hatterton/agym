@@ -1,13 +1,13 @@
 import pygame
 
-from label import Label
-from game_area import Game_area
-from stats import Stats
-from menu import Menu, make_menus
+from agym.gui.label import Label
+from agym.game_area import Game_area
+from agym.stats import Stats
+from agym.gui.menu import Menu, make_menus
 from pygame.sprite import Group, groupcollide, spritecollide
-from agym.agym.items import Block, Ball, Platform
-from timemanager import Timemanager
-from population import Population
+from agym.items import Block, Ball, Platform
+from agym.utils.timemanager import Timemanager
+from agym.models.population import Population
 
 # Нужно будет реорганизвать все эти непонятные функции
 from agym.game_functions import new_game, wasted, next_level
@@ -20,7 +20,7 @@ class Initer:
 
     def __call__(self, arg):
         # Загружаем стену
-        arg.wall = self.make_wall('images/break.bmp', arg)
+        arg.wall = self.make_wall('agym/images/break.bmp', arg)
 
         # Создаём территорию для игры
         arg.game_area = Game_area(arg)
@@ -34,12 +34,12 @@ class Initer:
         arg.population.load_prev_session(arg)
 
         # Создаём объект платформы
-        arg.image_name = 'images/new/platform 120x20.png'
+        arg.image_name = 'agym/images/new/platform 120x20.png'
         arg.platform = Platform(arg)
 
         # Создаём шар для игры
         arg.radius = 10
-        arg.image_name = 'images/new/ball_aparture 20x20.png'
+        arg.image_name = 'agym/images/new/ball_aparture 20x20.png'
         arg.ball = Ball(arg)
         arg.platform.link_with_ball(arg)
 
@@ -47,7 +47,7 @@ class Initer:
         make_menus(arg)
 
         # Создаём блоки для ломания
-        arg.image_name = 'images/new/block_'
+        arg.image_name = 'agym/images/new/block_'
         arg.blocks = Group()
 
         # Создаём Таймменеджер

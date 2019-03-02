@@ -1,10 +1,10 @@
 import pygame
-from enums import GameS, MenuS
+from agym.enums import GameS, MenuS
 from agym.game_functions import new_game, close_game
 
-from button import Button
-from check_box import Check_box_button, Check_box
-from unit_tests import get_tests
+from agym.gui.button import Button
+from agym.gui.check_box import Check_box_button, Check_box
+from agym.unit_tests import get_tests
 
 class Menu:
     def __init__(self, arg, button_type, buttons_name, buttons_width, func_list):
