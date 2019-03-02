@@ -104,8 +104,8 @@ class Game_area:
 
     def update(self, arg):
         # Обновляем динамический фон
-        if arg.stats.visualising_flag:
-            self.update_background(arg)
+        # if arg.stats.visualising_flag:
+        #     self.update_background(arg)
 
         # Обновлем меню либо игровое поле
         if arg.state_flag == GameS:

@@ -9,6 +9,7 @@ from agym.unit_tests import get_tests
 class Menu:
     def __init__(self, arg, button_type, buttons_name, buttons_width, func_list):
         number = len(buttons_name)
+        self.n_buttons = number
         self.screen = arg.game_area.screen
         self.surface = pygame.Surface((arg.menu_width, arg.menu_height))
         self.rect = self.surface.get_rect()

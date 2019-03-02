@@ -9,9 +9,9 @@ from agym.enums import MenuS, GameS
 
 
 def check_keydown_game_events(event, arg):
-    if event.key == pygame.K_RIGHT:
+    if event.key == pygame.K_RIGHT or event.key == 196:
         arg.platform.moving_right = True
-    elif event.key == pygame.K_LEFT:
+    elif event.key == pygame.K_LEFT or event.key == 207:
         arg.platform.moving_left = True
     elif event.key == pygame.K_SPACE:
         if not arg.ball.thrown:
@@ -34,21 +34,23 @@ def check_keydown_game_events(event, arg):
 
 
 def check_keyup_game_events(event, arg):
-    if event.key == pygame.K_RIGHT:
+    if event.key == pygame.K_RIGHT or event.key == 196:
         arg.platform.moving_right = False
-    elif event.key == pygame.K_LEFT:
+    elif event.key == pygame.K_LEFT or event.key == 207:
         arg.platform.moving_left = False
 
 
 def check_keydown_menu_events(event, arg):
     cur_menu = arg.menu[arg.id_menu]
+    print(event.key)
 
     if event.key == pygame.K_ESCAPE:
         cur_menu.func_for_escape(arg)
-    if event.key == pygame.K_UP and cur_menu.n_selected != 0:
-        cur_menu.n_selected -= 1
-    if event.key == pygame.K_DOWN and cur_menu.n_selected != len(cur_menu.buttons) - 1:
-        cur_menu.n_selected += 1
+    if event.key == pygame.K_UP or event.key == 204:
+        cur_menu.n_selected = (cur_menu.n_selected - 1 + 
+                               cur_menu.n_buttons) % cur_menu.n_buttons
+    if event.key == pygame.K_DOWN or event.key == 207:
+        cur_menu.n_selected = (cur_menu.n_selected + 1) % cur_menu.n_buttons
     # Не нашёл в pygame заготовленный код для Enter-а
     if event.key == 13:
         print(cur_menu.buttons[cur_menu.n_selected].text)
@@ -62,6 +64,9 @@ def check_keyup_menu_events(event, arg):
 def check_events(arg):
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
+            close_game(arg)
+
+        if event.type == pygame.KEYDOWN and event.key == 222:
             close_game(arg)
 
         if arg.state_flag == GameS:
@@ -132,19 +137,19 @@ def blit_screen(arg):
 
 
 def update_state(arg):
-    arg.fps_score.update()
+    # arg.fps_score.update()
     arg.game_area.update(arg)
 
     if arg.state_flag == GameS:
-        arg.tm.write_down("1")
+        # arg.tm.write_down("1")
         arg.speed_score.update()
 
         arg.score_table.update()
         arg.best_score_table.update()
         arg.lives_table.update()
-        arg.level_table.update()
-        arg.time_table.update()
-        arg.tm.write_down("2")
+        # arg.level_table.update()
+        # arg.time_table.update()
+        # arg.tm.write_down("2")
     elif arg.state_flag == MenuS:
         pass
 
@@ -190,7 +195,7 @@ def wasted(arg):
     arg.stats.lives -= 1
 
     if arg.stats.training_flag:
-        arg.population.end_game(arg)
+        # arg.population.end_game(arg)
         new_game(arg)
     else:
         new_game(arg)
@@ -199,5 +204,5 @@ def wasted(arg):
 
 def close_game(arg):
     arg.stats.save_cur_session(arg)
-    arg.population.save_cur_session(arg)
+    # arg.population.save_cur_session(arg)
     exit()
