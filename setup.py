@@ -38,7 +38,7 @@ setup(
     version='1.0',
     packages=find_packages(),
     package_dir={
-        './agym': 'agym',
+        './src/agym': 'agym',
     },
     # test_suite="tea.tests.test_runner.get_test_suite",
 
@@ -46,7 +46,7 @@ setup(
     entry_points={
         'console_scripts':
             [
-                'agym = agym.agym:run_app',
+                'run_agym = agym.agym:run_app',
             ],
     },
     install_requires=requirements

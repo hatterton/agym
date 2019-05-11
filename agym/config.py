@@ -1,10 +1,10 @@
-class Settings:
+class Config:
     def __init__(self):
-        self.screen_width = 600
-        self.screen_height = 600
+        self.window_screen_width = 600
+        self.window_screen_height = 600
 
-        self.ga_width = 450
-        self.ga_height = 500
+        self.env_width = 450
+        self.env_height = 500
 
         self.mb_width = 150
         self.mb_height = 60

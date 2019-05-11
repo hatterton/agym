@@ -141,12 +141,13 @@ def update_state(arg):
     arg.game_area.update(arg)
 
     if arg.state_flag == GameS:
+        pass
         # arg.tm.write_down("1")
-        arg.speed_score.update()
+        # arg.speed_score.update()
 
-        arg.score_table.update()
-        arg.best_score_table.update()
-        arg.lives_table.update()
+        # arg.score_table.update()
+        # arg.best_score_table.update()
+        # arg.lives_table.update()
         # arg.level_table.update()
         # arg.time_table.update()
         # arg.tm.write_down("2")
@@ -205,4 +206,5 @@ def wasted(arg):
 def close_game(arg):
     arg.stats.save_cur_session(arg)
     # arg.population.save_cur_session(arg)
+    pygame.quit()
     exit()

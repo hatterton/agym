@@ -1,2 +1,4 @@
 numpy
 pygame
+mypy==0.650
+typing
