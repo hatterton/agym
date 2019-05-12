@@ -5,15 +5,18 @@ import enum
 from agym.config import Config
 from agym.games import (
     IGameEnviroment,
-    BreakOutEnv,
+    BreakoutEnv,
+    ManualBreakoutModel,
 )
 from agym.models import (
     IModel,
-    ManualControlModel,
 )
 from agym.model_wrappers import (
     IModelWrapper,
     EmptyWrapper,
+)
+from agym.utils import (
+    FPSLimiter,
 )
 # from agym.gui import (
 #     IMenu,
@@ -45,21 +48,24 @@ class GameMonitor:
         self.inner_screen_rect.centerx = self.screen.get_rect().centerx
         self.inner_screen_rect.bottom = self.screen.get_rect().bottom
 
-        self.env = BreakOutEnv(config.env_width, config.env_height)
+        self.env = BreakoutEnv(config.env_width, config.env_height)
         self.env.reset()
 
         # Setup model
-        model = ManualControlModel()
+        model = ManualBreakoutModel()
         self.model_wrapper = EmptyWrapper(model)
 
         # self.menu = Menu()
         # Setup menu
         self.menu = self.env
 
+        self.fps_limiter = FPSLimiter(config.max_fps)
+
         # self.state_type = MonitorState.MENU
         self.state_type = MonitorState.GAME
         self.visualizing_flag = True
         self.is_active = False
+        self.score: int
         # print(pygame.display.get_wm_info())
 
     def _try_event(self, event) -> bool:
@@ -104,13 +110,18 @@ class GameMonitor:
         if self.state_type == MonitorState.MENU:
             self.menu.update()
         elif self.state_type == MonitorState.GAME:
-            # TODO
             state = self.env.get_visual_state()
             action = self.model_wrapper.get_action(state)
-            next_state, reward, is_done = self.env.step(action, dt)
+            reward, is_done = self.env.step(action, dt)
+            next_state = self.env.get_visual_state()
             self.model_wrapper.post_action(next_state, reward, is_done)
+            # if reward != 0:
+            #     print("Reward =", reward)
+            self.score += reward
 
             if is_done:
+                print("Session reward =", self.score)
+                self.score = 0
                 self.env.reset()
 
     def _blit(self) -> None:
@@ -133,35 +144,20 @@ class GameMonitor:
         self.is_active = False
 
     def run(self) -> None:
+        self.score = 0
         self.is_active = True
 
+        self.fps_limiter.reset()
         while self.is_active:
             self._check_events()
-            self._update_state(1.0)
+
+            dt = self.fps_limiter.cicle() / 60
+            self._update_state(dt)
+
             self._blit()
 
 
 def run_app():
     app = GameMonitor()
     app.run()
-    
-    #pygame.mouse.set_visible(False)
-    # arg = ut.init()
-    
-    # arg.tm.sing_up("before all", "after all", "check + update + blit")
-    # arg.timemanager.sing_up("be print", "af ", "")
 
-    # while True:
-    #     # arg.tm.write_down("be all")
-    #     gf.check_events(arg)
-    #     # arg.tm.write_down("af ch_ev")
-    #     gf.update_state(arg)
-    #     # arg.tm.write_down("af up_state")
-    #     gf.blit_screen(arg)
-    #     # arg.tm.write_down("af bliting")
-
-        # arg.tm.update_sing_ups()
-        
-        # ut.reduce_fps(arg)
-        # arg.tm.write_down("af up_sing_ups")
-        # ut.print_debug(arg)

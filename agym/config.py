@@ -20,12 +20,10 @@ class Config:
         self.ga_bg_color = (130, 160, 230)
 
         self.max_lives = 1
-        self.default_reward = 25
+        self.default_reward = 10
         self.catch_reward = 250
 
-        self.v_platform = 7
-        self.ball_velocity = 10
 
-        self.fps = 15
+        self.max_fps = 100
 
         self.length_of_log = 100
