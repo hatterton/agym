@@ -10,10 +10,12 @@ from agym.games import (
 )
 from agym.models import (
     IModel,
+    ConvQValuesModel,
 )
 from agym.model_wrappers import (
     IModelWrapper,
     EmptyWrapper,
+    SarsaWrapper,
 )
 from agym.utils import (
     FPSLimiter,
@@ -52,11 +54,21 @@ class GameMonitor:
         self.env.reset()
 
         # Setup model
-        model = ManualBreakoutModel()
-        self.model_wrapper = EmptyWrapper(model)
+        # model = ManualBreakoutModel()
+        # self.model_wrapper = EmptyWrapper(model)
+        n_actions = self.env.n_actions
+        model = ConvQValuesModel(
+            n_actions=n_actions,
+            filters_list=[4, 8, 16],
+            hidden_units_list=[8],
+        )
+        self.model_wrapper = SarsaWrapper(
+            model=model,
+            n_actions=n_actions,
+        )
 
-        # self.menu = Menu()
         # Setup menu
+        # self.menu = Menu()
         self.menu = self.env
 
         self.fps_limiter = FPSLimiter(config.max_fps)

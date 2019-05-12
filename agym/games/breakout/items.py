@@ -14,7 +14,6 @@ class Item(Sprite):
             "agym/games/breakout/static/images",
             image_name,
         )
-        # print(image_path)
         self.image = pygame.image.load(image_path)
 
         self.rect = Rect(self.image.get_rect())
@@ -28,17 +27,6 @@ class Block(Item):
         super(Block, self).__init__(image_name)
         self.rect.top = top
         self.rect.left = left
-
-    # def make_intersected(self, arg):
-    #     sel1 = agym.param.left_side < self.rect.right
-    #     sel2 = agym.param.right_side > self.rect.left
-    #     sel3 = np.logical_and(sel1, sel2)
-    #     sel4 = agym.param.top_side < self.rect.bottom
-    #     sel5 = agym.param.bottom_side > self.rect.top
-    #     sel6 = np.logical_and(sel4, sel5)
-
-    #     sel7 = np.logical_and(sel3[np.newaxis, :], sel6[:, np.newaxis])
-    #     self.intersected = np.transpose(sel7)
 
 
 class Platform(Item):

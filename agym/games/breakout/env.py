@@ -2,6 +2,7 @@ import math
 import random
 import pygame
 import enum
+import numpy as np
 
 from agym.games import IGameEnviroment
 from agym.games.breakout.items import (
@@ -115,6 +116,7 @@ class BreakoutEnv(IGameEnviroment):
         env_rect = Rect(top=0, bottom=self.env_height,
                         left=0, right=self.env_width)
 
+        # print(action)
         a = BreakoutAction(action)
         self.platform.vec_velocity[0] = 0
         if a == BreakoutAction.LEFT:
@@ -256,8 +258,21 @@ class BreakoutEnv(IGameEnviroment):
 
             self.ball.rect.bottom = self.platform.rect.top - 1
 
-    def get_visual_state(self):
-        return None
+    def get_visual_state(self, n_binarizing_box: int = 10):
+        shape = [4, n_binarizing_box, n_binarizing_box]
+        state = np.random.random(size=np.prod(shape))
+        state = state.astype("float32").reshape(shape)
+        # print(state.dtype)
+        # sel1 = agym.param.left_side < self.rect.right
+        # sel2 = agym.param.right_side > self.rect.left
+        # sel3 = np.logical_and(sel1, sel2)
+        # sel4 = agym.param.top_side < self.rect.bottom
+        # sel5 = agym.param.bottom_side > self.rect.top
+        # sel6 = np.logical_and(sel4, sel5)
+
+        # sel7 = np.logical_and(sel3[np.newaxis, :], sel6[:, np.newaxis])
+        # self.intersected = np.transpose(sel7)
+        return state
 
     def get_flatten_state(self):
         return None
