@@ -1,5 +1,7 @@
+import os
 import pygame
 import enum
+import torch
 
 # from agym.gui import Menu
 from agym.config import Config
@@ -50,22 +52,33 @@ class GameMonitor:
         self.inner_screen_rect.centerx = self.screen.get_rect().centerx
         self.inner_screen_rect.bottom = self.screen.get_rect().bottom
 
-        self.env = BreakoutEnv(config.env_width, config.env_height)
+        self.env = BreakoutEnv(
+            config.env_width,
+            config.env_height,
+            map_shape=[6, 6]
+        )
         self.env.reset()
 
         # Setup model
-        # model = ManualBreakoutModel()
-        # self.model_wrapper = EmptyWrapper(model)
-        n_actions = self.env.n_actions
-        model = ConvQValuesModel(
-            n_actions=n_actions,
-            filters_list=[4, 8, 16],
-            hidden_units_list=[8],
-        )
-        self.model_wrapper = SarsaWrapper(
-            model=model,
-            n_actions=n_actions,
-        )
+        model = ManualBreakoutModel()
+        self.model_wrapper = EmptyWrapper(model)
+        # n_actions = self.env.n_actions
+        # model = ConvQValuesModel(
+        #     n_actions=n_actions,
+        #     filters_list=[6, 16, 32],
+        #     hidden_units_list=[],
+        # )
+
+        # self.model_path = "/home/anton/model.db"
+        # if os.path.exists(self.model_path):
+        #     model.model.load_state_dict(torch.load(self.model_path))
+
+        # self.model_wrapper = SarsaWrapper(
+        #     model=model,
+        #     n_actions=n_actions,
+        #     eps=0.3,
+        # )
+
 
         # Setup menu
         # self.menu = Menu()
@@ -78,7 +91,6 @@ class GameMonitor:
         self.visualizing_flag = True
         self.is_active = False
         self.score: int
-        # print(pygame.display.get_wm_info())
 
     def _try_event(self, event) -> bool:
         if (event.type == pygame.QUIT or
@@ -117,24 +129,26 @@ class GameMonitor:
                 else:
                     pass
 
-
-    def _update_state(self, dt: float) -> None:
+    def _update_state(self) -> None:
         if self.state_type == MonitorState.MENU:
             self.menu.update()
         elif self.state_type == MonitorState.GAME:
             state = self.env.get_visual_state()
+
             action = self.model_wrapper.get_action(state)
+
+            dt = self.fps_limiter.cicle() / 60
+
             reward, is_done = self.env.step(action, dt)
             next_state = self.env.get_visual_state()
             self.model_wrapper.post_action(next_state, reward, is_done)
-            # if reward != 0:
-            #     print("Reward =", reward)
             self.score += reward
 
             if is_done:
                 print("Session reward =", self.score)
                 self.score = 0
                 self.env.reset()
+                self.fps_limiter.reset()
 
     def _blit(self) -> None:
         self.inner_screen.fill((255, 255, 255))
@@ -154,18 +168,18 @@ class GameMonitor:
 
     def deactive(self) -> None:
         self.is_active = False
+        # torch.save(
+        #     self.model_wrapper.model.model.state_dict(), self.model_path)
 
     def run(self) -> None:
         self.score = 0
         self.is_active = True
 
+        self.env.reset()
         self.fps_limiter.reset()
         while self.is_active:
             self._check_events()
-
-            dt = self.fps_limiter.cicle() / 60
-            self._update_state(dt)
-
+            self._update_state()
             self._blit()
 
 

@@ -16,7 +16,7 @@ class ReplayBuffer(object):
     def add(self, obs_t, action, reward, obs_tp1, done):
         data = (obs_t, action, reward, obs_tp1, done)
 
-        if self._next_idx >= len(self._storage):
+        if self._maxsize > len(self._storage):
             self._storage.append(data)
             self._order.append(self._next_idx)
             self._next_idx = (self._next_idx + 1) % self._maxsize
@@ -26,31 +26,41 @@ class ReplayBuffer(object):
             self._storage[new_id] = data
             if len(self._order) > 2 * self._maxsize:
                 self._order = self._order[-self._maxsize:]
-            
 
-    def _encode_sample(self, idxes):
-        obses_t, actions, rewards, obses_tp1, dones = [], [], [], [], []
+    def _extract_batch(self, idxes):
+        states, actions, rewards, next_states, dones = [], [], [], [], []
+
         for i in idxes:
             data = self._storage[i]
-            obs_t, action, reward, obs_tp1, done = data
-            obses_t.append(np.array(obs_t, copy=False))
-            actions.append(np.array(action, copy=False))
+            state, action, reward, next_state, done = data
+
+            states.append(state)
+            actions.append(action)
             rewards.append(reward)
-            obses_tp1.append(np.array(obs_tp1, copy=False))
+            next_states.append(next_state)
             dones.append(done)
-        return np.array(obses_t), np.array(actions), np.array(rewards), np.array(obses_tp1), np.array(dones)
+
+        return (
+            np.stack(states, axis=0), np.array(actions),
+            np.array(rewards), np.stack(next_states, axis=0),
+            np.array(dones)
+        )
 
     def sample(self, batch_size):
         last_size = batch_size // 2
         random_size = batch_size - last_size
-        
+
         storage_size = len(self._storage)
         order_size = len(self._order)
-        
+
         lower_bound = max(0, order_size - last_size)
-        last_idxes = [self._order[i] for i in range(lower_bound, order_size)]
-        random_idxes = [random.randint(0, storage_size-1) for _ in range(random_size)]
-        
+        last_idxes = [self._order[i] 
+                      for i in range(lower_bound, order_size)]
+        random_idxes = [random.randint(0, storage_size-1)
+                        for _ in range(random_size)]
+
         idxes = chain(last_idxes, random_idxes)
-                                      
-        return self._encode_sample(idxes)
+        batch = self._extract_batch(idxes)
+        # print(batch)
+
+        return batch

@@ -10,21 +10,6 @@ class CollisionType(enum.Enum):
     BALL_BLOCK = 2
     PLATFORM_WALL = 3
 
-def keep_nearest_blocks(arg):
-    arg.nearest = list()
-    for block in arg.blocks.sprites():
-        width, height = block.rect.width / 2, block.rect.height / 2
-        max_len_from_center = sum([width ** 2, height ** 2]) ** 0.5
-        ness_dist = max_len_from_center + arg.radius * 2 + arg.ball.alpha_velocity
-
-        dist = sum([
-            (block.rect.centerx - arg.ball.rect.centerx) ** 2,
-            (block.rect.centery - arg.ball.rect.centery) ** 2
-        ]) ** 0.5
-
-        if dist < ness_dist:
-            arg.nearest.append(block)
-
 class Collision:
     def __init__(self, coll_type, point, block=None):
         self.block = block

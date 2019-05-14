@@ -29,11 +29,18 @@ class ConvQValuesModel(IQValuesModel):
         layers: List[nn.Module] = []
 
         prev_filters = filters_list[0]
-        for filters in filters_list[1:]:
-            layers.append(nn.Conv2d(prev_filters, filters, 3))
+        for filters in filters_list[1:-1]:
+            layers.append(nn.Conv2d(prev_filters, filters,
+                                    kernel_size=3, padding=1))
             layers.append(nn.ReLU())
             layers.append(nn.MaxPool2d(2))
             prev_filters = filters
+
+        if len(filters_list) >= 2:
+            filters = filters_list[-1]
+            layers.append(nn.Conv2d(prev_filters, filters,
+                                    kernel_size=3, padding=1))
+            layers.append(nn.ReLU())
 
         layers.append(GlobalMaxPooling([2, 3]))
 
@@ -41,14 +48,13 @@ class ConvQValuesModel(IQValuesModel):
         for units in hidden_units_list:
             layers.append(nn.Linear(prev_units, units))
             layers.append(nn.ReLU())
+            prev_units = units
 
-        layers.append(nn.Linear(units, n_actions))
+        layers.append(nn.Linear(prev_units, n_actions))
 
         self.model = nn.Sequential(*layers)
 
     def get_t_qvalues(self, t_states):
-        # print(t_states.shape)
-        # print(t_states.dtype)
         t_qvalues = self.model(t_states)
 
         return t_qvalues
@@ -61,7 +67,7 @@ class ConvQValuesModel(IQValuesModel):
         return qvalues
 
     def get_action(self, state: np.ndarray) -> int:
-        qvalues = self.get_qvalues(state[None, ...])
+        qvalues = self.get_qvalues(state[None, ...])[0, :]
 
         action = np.argmax(qvalues, axis=-1)
         return action
