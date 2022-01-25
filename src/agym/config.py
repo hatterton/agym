@@ -18,5 +18,7 @@ class Config:
         self.default_reward = 10
         self.catch_reward = 250
 
+        # self.max_fps = 20
         self.max_fps = 100
+        # self.max_fps = 200
 

@@ -1,7 +1,7 @@
 import os
 import pygame
 import enum
-import torch
+# import torch
 
 # from agym.gui import Menu
 from agym.config import Config
@@ -12,19 +12,19 @@ from agym.games import (
 )
 from agym.models import (
     IModel,
-    ConvQValuesModel,
+    # ConvQValuesModel,
 )
 from agym.model_wrappers import (
     IModelWrapper,
     EmptyWrapper,
-    SarsaWrapper,
+    # SarsaWrapper,
 )
 from agym.utils import (
     FPSLimiter,
 )
-# from agym.gui import (
-#     IMenu,
-#     MainMenu,
+# from agym.gui.menu import (
+#     # IMenu,
+#     Menu,
 # )
 
 
@@ -92,17 +92,27 @@ class GameMonitor:
         self.is_active = False
         self.score: int
 
-    def _try_event(self, event) -> bool:
-        if (event.type == pygame.QUIT or
-            event.type == pygame.KEYDOWN and (
-                event.key == pygame.K_q or
-                event.key == pygame.K_ESCAPE
-            )):
-            self.deactive()
-        else:
-            return False
+    def run(self) -> None:
+        self.score = 0
+        self.is_active = True
 
-        return True
+        self.env.reset()
+        self.fps_limiter.reset()
+        while self.is_active:
+            self._check_events()
+            self._update_state()
+            self._blit()
+
+    def set_game(self, env: IGameEnviroment) -> None:
+        self.env = env
+
+    # def set_menu(self, menu: IMenu) -> None:
+    #     self.menu= menu
+
+    def deactive(self) -> None:
+        self.is_active = False
+        # torch.save(
+        #     self.model_wrapper.model.model.state_dict(), self.model_path)
 
     def _check_events(self) -> None:
         for event in pygame.event.get():
@@ -118,16 +128,24 @@ class GameMonitor:
             if self.state_type == MonitorState.MENU:
                 if self.menu.try_event(event):
                     continue
-                else:
-                    pass
 
             elif self.state_type == MonitorState.GAME:
                 if self.model_wrapper.try_event(event):
                     continue
                 elif self.env.try_event(event):
                     continue
-                else:
-                    pass
+
+    def _try_event(self, event) -> bool:
+        if (event.type == pygame.QUIT or
+            event.type == pygame.KEYDOWN and (
+                event.key == pygame.K_q or
+                event.key == pygame.K_ESCAPE
+            )):
+            self.deactive()
+
+            return True
+
+        return False
 
     def _update_state(self) -> None:
         if self.state_type == MonitorState.MENU:
@@ -137,6 +155,7 @@ class GameMonitor:
 
             action = self.model_wrapper.get_action(state)
 
+            # dt = self.fps_limiter.cicle() / 60
             dt = self.fps_limiter.cicle() / 60
 
             reward, is_done = self.env.step(action, dt)
@@ -159,28 +178,6 @@ class GameMonitor:
         self.screen.blit(self.inner_screen, self.inner_screen_rect)
 
         pygame.display.flip()
-
-    def set_game(self, env: IGameEnviroment) -> None:
-        self.env = env
-
-    # def set_menu(self, menu: IMenu) -> None:
-    #     self.menu= menu
-
-    def deactive(self) -> None:
-        self.is_active = False
-        # torch.save(
-        #     self.model_wrapper.model.model.state_dict(), self.model_path)
-
-    def run(self) -> None:
-        self.score = 0
-        self.is_active = True
-
-        self.env.reset()
-        self.fps_limiter.reset()
-        while self.is_active:
-            self._check_events()
-            self._update_state()
-            self._blit()
 
 
 def run_app():

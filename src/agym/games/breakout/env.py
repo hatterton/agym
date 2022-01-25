@@ -48,7 +48,8 @@ class BreakoutEnv(IGameEnviroment):
         self.ball = Ball(
             image_name="ball_aparture 20x20.png",
             radius=10,
-            velocity=20,
+            # velocity=20,
+            velocity=30,
         )
         self.platform = Platform(
             image_name="platform 120x20.png",
