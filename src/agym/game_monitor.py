@@ -27,6 +27,7 @@ class MonitorState(enum.Enum):
     MENU = 1
     GAME = 2
 
+
 class GameMonitor:
     def __init__(self, window_screen_width, window_screen_height, env_width, env_height, model, env, fps_limiter):
         pygame.init()

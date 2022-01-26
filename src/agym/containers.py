@@ -18,12 +18,12 @@ from agym.utils import (
 class Application(containers.DeclarativeContainer):
     config = providers.Configuration()
 
-    fps_limiter = providers.Singleton(
+    fps_limiter = providers.Factory(
         FPSLimiter,
         config.max_fps,
     )
 
-    breakout = providers.Singleton(
+    breakout = providers.Factory(
         BreakoutEnv,
         config.env_width,
         config.env_height,
@@ -34,7 +34,7 @@ class Application(containers.DeclarativeContainer):
         ManualBreakoutModel,
     )
 
-    game_monitor = providers.Singleton(
+    game_monitor = providers.Factory(
         GameMonitor,
         window_screen_height=config.window_screen_height,
         window_screen_width=config.window_screen_width,

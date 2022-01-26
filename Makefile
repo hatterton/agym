@@ -5,7 +5,7 @@ run:
 
 .PHONY: tests
 tests:
-	cd src && poetry run pytest tests
+	cd src && poetry run python -m pytest tests
 
 .PHONY: env
 env:
