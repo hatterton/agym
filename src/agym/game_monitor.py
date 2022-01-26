@@ -4,23 +4,18 @@ import enum
 # import torch
 
 # from agym.gui import Menu
-from agym.config import Config
-from agym.games import (
-    IGameEnviroment,
-    BreakoutEnv,
-    ManualBreakoutModel,
-)
-from agym.models import (
-    IModel,
+# from agym.config import Config
+# from agym.models import (
+#     IModel,
     # ConvQValuesModel,
-)
+# )
 from agym.model_wrappers import (
-    IModelWrapper,
+    # IModelWrapper,
     EmptyWrapper,
     # SarsaWrapper,
 )
-from agym.utils import (
-    FPSLimiter,
+from agym.games import (
+    IGameEnviroment,
 )
 # from agym.gui.menu import (
 #     # IMenu,
@@ -33,34 +28,34 @@ class MonitorState(enum.Enum):
     GAME = 2
 
 class GameMonitor:
-    def __init__(self):
+    def __init__(self, window_screen_width, window_screen_height, env_width, env_height, model, env, fps_limiter):
         pygame.init()
 
-        config = Config()
         self.screen = pygame.display.set_mode(
-            (config.window_screen_width,
-             config.window_screen_height)
+            (window_screen_width,
+             window_screen_height)
         )
         pygame.display.set_caption("Arcanoid")
 
         # Setup env
         self.inner_screen = pygame.Surface(
-            (config.env_width,
-             config.env_height)
+            (env_width,
+             env_height)
         )
         self.inner_screen_rect = self.inner_screen.get_rect()
         self.inner_screen_rect.centerx = self.screen.get_rect().centerx
         self.inner_screen_rect.bottom = self.screen.get_rect().bottom
 
-        self.env = BreakoutEnv(
-            config.env_width,
-            config.env_height,
-            map_shape=[6, 6]
-        )
+        self.env = env
+        # self.env = BreakoutEnv(
+        #     config.env_width,
+        #     config.env_height,
+        #     map_shape=[6, 6]
+        # )
         self.env.reset()
 
         # Setup model
-        model = ManualBreakoutModel()
+        # model = ManualBreakoutModel()
         self.model_wrapper = EmptyWrapper(model)
         # n_actions = self.env.n_actions
         # model = ConvQValuesModel(
@@ -84,7 +79,8 @@ class GameMonitor:
         # self.menu = Menu()
         self.menu = self.env
 
-        self.fps_limiter = FPSLimiter(config.max_fps)
+        # self.fps_limiter = FPSLimiter(config.max_fps)
+        self.fps_limiter = fps_limiter
 
         # self.state_type = MonitorState.MENU
         self.state_type = MonitorState.GAME
@@ -179,8 +175,4 @@ class GameMonitor:
 
         pygame.display.flip()
 
-
-def run_app():
-    app = GameMonitor()
-    app.run()
 

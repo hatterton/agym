@@ -1,5 +1,13 @@
-from agym.agym import run_app
+from agym.containers import (
+    create_app,
+    run_app,
+)
+
+
+def main():
+    app = create_app()
+    run_app(app)
+
 
 if __name__ == "__main__":
-    print("Main")
-    run_app()
+    main()
