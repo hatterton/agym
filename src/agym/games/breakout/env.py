@@ -4,6 +4,7 @@ import pygame
 import enum
 import numpy as np
 
+from pygame.event import Event
 from agym.games import IGameEnviroment
 from agym.games.breakout.items import (
     Ball,
@@ -21,6 +22,7 @@ from typing import (
     Tuple,
     List,
 )
+from agym.interfaces import IEventHandler
 from pygame.sprite import Group
 from collections import namedtuple
 from itertools import product
@@ -32,7 +34,7 @@ class BreakoutAction(enum.Enum):
     THROW = 3
 
 
-class BreakoutEnv(IGameEnviroment):
+class BreakoutEnv(IGameEnviroment, IEventHandler):
     def __init__(self, env_width: int, env_height: int,
                  map_shape: List[int], eps: float = 1e-3):
         self.env_width = env_width
@@ -56,6 +58,12 @@ class BreakoutEnv(IGameEnviroment):
             velocity=15,
         )
         self.blocks = Group()
+
+    def try_consume_event(self, event: Event) -> bool:
+        return False
+
+    def try_delegate_event(self, event: Event) -> bool:
+        return False
 
     def center_platform(self):
         self.platform.rect.centerx = self.env_width // 2

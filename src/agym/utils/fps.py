@@ -16,7 +16,7 @@ class FPSLimiter:
 
     def cicle(self):
         self.clock.tick(self.max_fps)
-        print(self.clock.get_fps())
+        # print(self.clock.get_fps())
         return self.clock.get_time()
 
 

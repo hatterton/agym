@@ -10,6 +10,7 @@ from agym.games import (
     BreakoutEnv,
     ManualBreakoutModel,
 )
+from agym.main_window import MainWindow
 from agym.utils import (
     FPSLimiter,
 )
@@ -25,8 +26,8 @@ class Application(containers.DeclarativeContainer):
 
     breakout = providers.Factory(
         BreakoutEnv,
-        config.env_width,
-        config.env_height,
+        env_width=config.env_width,
+        env_height=config.env_height,
         map_shape=[6, 6],
     )
 
@@ -36,13 +37,18 @@ class Application(containers.DeclarativeContainer):
 
     game_monitor = providers.Factory(
         GameMonitor,
-        window_screen_height=config.window_screen_height,
-        window_screen_width=config.window_screen_width,
-        env_width=config.env_width,
-        env_height=config.env_height,
+        width=config.env_width,
+        height=config.env_height,
         fps_limiter=fps_limiter,
         env=breakout,
         model=model,
+    )
+
+    main_window = providers.Factory(
+        MainWindow,
+        width=config.window_screen_width,
+        height=config.window_screen_height,
+        game_monitor=game_monitor,
     )
 
 
@@ -56,4 +62,4 @@ def create_app() -> Application:
 
 
 def run_app(application: Application) -> None:
-    application.game_monitor().run()
+    application.main_window().run()
