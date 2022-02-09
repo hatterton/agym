@@ -7,8 +7,6 @@ from agym.game_monitor import GameMonitor
 
 class MainWindow(IEventHandler):
     def __init__(self, width: int, height: int, game_monitor: GameMonitor):
-        pygame.init()
-
         pygame.display.set_caption("Arcanoid")
         self.screen = pygame.display.set_mode((width, height))
         self.game_monitor = game_monitor

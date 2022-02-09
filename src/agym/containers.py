@@ -1,3 +1,5 @@
+import pygame
+
 from dependency_injector import (
     containers,
     providers,
@@ -14,14 +16,21 @@ from agym.main_window import MainWindow
 from agym.utils import (
     FPSLimiter,
 )
+from agym.labels import FPSLabel
 
 
 class Application(containers.DeclarativeContainer):
     config = providers.Configuration()
 
-    fps_limiter = providers.Factory(
+    fps_limiter = providers.Singleton(
         FPSLimiter,
         config.max_fps,
+    )
+    fps_label = providers.Factory(
+        FPSLabel,
+        x=10,
+        y=10,
+        fps_limiter=fps_limiter,
     )
 
     breakout = providers.Factory(
@@ -37,9 +46,10 @@ class Application(containers.DeclarativeContainer):
 
     game_monitor = providers.Factory(
         GameMonitor,
-        width=config.env_width,
-        height=config.env_height,
+        width=config.window_screen_width,
+        height=config.window_screen_width,
         fps_limiter=fps_limiter,
+        fps_label=fps_label,
         env=breakout,
         model=model,
     )
@@ -53,6 +63,9 @@ class Application(containers.DeclarativeContainer):
 
 
 def create_app() -> Application:
+    pygame.init()
+    pygame.font.init()
+
     settings = Settings()
 
     app = Application()

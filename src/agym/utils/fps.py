@@ -1,33 +1,48 @@
-import time
-import pygame
 from pygame.time import Clock
+from agym.utils.queue import Queue
+from statistics import mean
+from typing import Optional
+
 
 class FPSLimiter:
-    def __init__(self, max_fps):
+    def __init__(self, max_fps: int, history_size: int = 1000):
         self.max_fps = max_fps
-        self.cicle_time = 1000 // max_fps
+        self.history_size = history_size
+
+        self.clock: Clock
+        self.ticks: Queue[float]
 
         self.reset()
 
-    def reset(self):
-        # self.last_tick = pygame.time.get_ticks()
-
+    def reset(self) -> None:
         self.clock = Clock()
+        self.ticks = Queue()
 
-    def cicle(self):
-        self.clock.tick(self.max_fps)
-        # print(self.clock.get_fps())
-        return self.clock.get_time()
+    def _add_tick(self, tick: float) -> None:
+        self.ticks.push(tick)
+        if len(self.ticks) > self.history_size:
+            self.ticks.pop()
 
+    def get_fps(self, percentile: Optional[float] = None) -> float:
+        if len(self.ticks) == 0:
+            return 0.
 
-        current_tick = pygame.time.get_ticks()
-        dt = current_tick - self.last_tick
+        ticks = list(self.ticks)
 
-        if dt < self.cicle_time:
-            extra_dt = pygame.time.wait(self.cicle_time - dt)
-            dt += extra_dt
+        ptick: float
+        if percentile is None:
+            ptick = mean(ticks)
+        else:
+            assert 0. <= percentile < 1.
+            idx = int(percentile * len(ticks))
+            ptick = sorted(ticks, reverse=True)[idx]
 
-        self.last_tick += dt
+        return 1. / ptick
 
-        return dt
+    def tick(self) -> int:
+        tick = self.clock.tick(self.max_fps)
+
+        self._add_tick(tick / 1000)
+
+        return tick
 

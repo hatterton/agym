@@ -27,12 +27,14 @@ from agym.games import (
 
 
 class GameMonitor(IEventHandler):
-    def __init__(self, width, height, env, model, fps_limiter):
+    def __init__(self, width, height, env, model, fps_limiter, fps_label):
         self.screen = pygame.Surface((width, height))
 
         self.model = model
         self.env = env
         self.fps_limiter = fps_limiter
+
+        self.fps_label = fps_label
 
         self.env.reset()
 
@@ -52,15 +54,16 @@ class GameMonitor(IEventHandler):
 
     def update(self) -> None:
         action = self.model.get_action(None)
-        dt = self.fps_limiter.cicle() / 60
+        dt = self.fps_limiter.tick() / 60
         _, is_done = self.env.step(action, dt)
 
         if is_done:
             self.env.reset()
-            self.fps_limiter.reset()
+
+        self.fps_label.update()
 
     def blit(self) -> None:
         self.screen.fill((0, 0, 0))
         self.env.blit(self.screen)
 
-        # self.screen.blit(self.env.screen, self.env_rect)
+        self.fps_label.blit(self.screen)

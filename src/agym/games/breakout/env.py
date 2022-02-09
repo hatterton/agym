@@ -39,6 +39,9 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
                  map_shape: List[int], eps: float = 1e-3):
         self.env_width = env_width
         self.env_height = env_height
+
+        self.screen = pygame.Surface((env_width, env_height))
+
         self.eps = eps
         self.n_actions = 4
         self.start_lives = 1
@@ -358,10 +361,19 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
         return None
 
     def blit(self, screen) -> None:
-        self.platform.blit(screen)
-        self.ball.blit(screen)
+        screen_rect = screen.get_rect()
+        self_screen_rect = self.screen.get_rect()
+        self_screen_rect.bottom = screen_rect.bottom
+        self_screen_rect.centerx = screen_rect.centerx
+
+        self.screen.fill((30, 20, 10))
+        self.platform.blit(self.screen)
+        self.ball.blit(self.screen)
+
         for block in self.blocks:
-            block.blit(screen)
+            block.blit(self.screen)
+
+        screen.blit(self.screen, self_screen_rect)
 
     def try_event(self, event) -> bool:
         if event.type == pygame.KEYDOWN:
