@@ -1,5 +1,3 @@
-import pygame
-
 from agym.containers import (
     create_app,
     run_app,

@@ -3,7 +3,9 @@ import pygame
 import enum
 
 from pygame.event import Event
+from pygame.mixer import Sound
 # import torch
+from time import sleep
 
 # from agym.gui import Menu
 # from agym.config import Config
@@ -35,8 +37,13 @@ class GameMonitor(IEventHandler):
         self.fps_limiter = fps_limiter
 
         self.fps_label = fps_label
+        self.run_playing_music()
 
         self.env.reset()
+
+    def run_playing_music(self) -> None:
+        bsound = Sound("agym/static/sounds/death_note_shinigami_kai.mp3")
+        bsound.play()
 
     def try_consume_event(self, event: Event) -> bool:
         return False

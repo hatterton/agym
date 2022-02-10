@@ -11,7 +11,7 @@ class Item(Sprite):
     def __init__(self, image_name: str):
         super(Item, self).__init__()
         image_path = os.path.join(
-            "agym/games/breakout/static/images",
+            "agym/static/images/breakout",
             image_name,
         )
         self.image = pygame.image.load(image_path)
