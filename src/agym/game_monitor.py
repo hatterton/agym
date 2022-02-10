@@ -64,6 +64,10 @@ class GameMonitor(IEventHandler):
         dt = self.fps_limiter.tick() / 60
         _, is_done = self.env.step(action, dt)
 
+        events = self.env.pop_events()
+        if events:
+            print(events)
+
         if is_done:
             self.env.reset()
 

@@ -2,13 +2,10 @@ import enum
 import math
 from itertools import product
 
+from .dtos import CollisionType
+
 EPS = 1e-4
 
-class CollisionType(enum.Enum):
-    BALL_WALL = 0
-    BALL_PLATFORM = 1
-    BALL_BLOCK = 2
-    PLATFORM_WALL = 3
 
 class Collision:
     def __init__(self, coll_type, point, block=None):

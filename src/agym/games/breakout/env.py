@@ -4,7 +4,9 @@ import pygame
 import enum
 import numpy as np
 
-from pygame.event import Event
+from pygame.event import Event as PygameEvent
+from .events import Event, CollisionEvent
+from .geom import Point
 from agym.games import IGameEnviroment
 from agym.games.breakout.items import (
     Ball,
@@ -47,14 +49,17 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
         self.start_lives = 1
         self.n_lives: int
 
+        self.timestamp: float
+        self.events: List[Event]
+
         self.map_shape = map_shape
         self.last_state: np.ndarray
 
         self.ball = Ball(
             image_name="ball_aparture 20x20.png",
             radius=10,
-            # velocity=20,
-            velocity=30,
+            velocity=20,
+            # velocity=5,
         )
         self.platform = Platform(
             image_name="platform 120x20.png",
@@ -62,10 +67,15 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
         )
         self.blocks = Group()
 
-    def try_consume_event(self, event: Event) -> bool:
+    def pop_events(self) -> List[Event]:
+        events = self.events
+        self.events = []
+        return events
+
+    def try_consume_event(self, event: PygameEvent) -> bool:
         return False
 
-    def try_delegate_event(self, event: Event) -> bool:
+    def try_delegate_event(self, event: PygameEvent) -> bool:
         return False
 
     def center_platform(self):
@@ -78,6 +88,9 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
         self.make_target_wall()
         self.center_platform()
         self.move_ball_on_platform()
+
+        self.timestamp = 0.
+        self.events = []
 
     def is_done(self):
         return self.n_lives <= 0
@@ -237,10 +250,18 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
     def perform_colls(self, colls) -> int:
         reward = 0
 
-        # if len(colls) != 0:
-        #     print("Length of coll = {}".format(len(colls)))
-
         for coll in colls:
+            self.events.append(
+                CollisionEvent(
+                    timestamp=self.timestamp,
+                    collision_type=coll.type,
+                    point=Point(
+                        x=coll.point[0],
+                        y=coll.point[1],
+                    ),
+                )
+            )
+
             if coll.type == CollisionType.BALL_WALL:
                 self.perform_ball_coll(coll.point)
 
@@ -272,6 +293,8 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
         return reward
 
     def real_update(self, dt: float) -> None:
+        self.timestamp += dt
+
         self.update_platform(dt)
         self.update_ball(dt)
 
@@ -291,14 +314,15 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
                 ball.rect.center[i] += (
                     ball.velocity * ball.vec_velocity[i] * dt)
         else:
-            ball.rect.bottom = self.platform.rect.top
+            # ball.rect.bottom = self.platform.rect.top
+            ball.rect.centery = self.platform.rect.top - ball.radius
             ball.rect.centerx = self.platform.rect.centerx
 
     def move_ball_on_platform(self) -> None:
         ball = self.ball
         ball.thrown = False
-        ball.rect.bottom = self.platform.rect.top
-        ball.rect.centerx = self.platform.rect.centerx
+        # ball.rect.centery = self.platform.rect.top - ball.radius - 1
+        # ball.rect.centerx = self.platform.rect.centerx
 
     def throw_ball(self) -> None:
         ball = self.ball
@@ -308,7 +332,7 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
             ball.vec_velocity = [miss*4, -1]
             ball.vec_velocity = normalize(ball.vec_velocity)
 
-            self.ball.rect.bottom = self.platform.rect.top - 1
+            self.ball.rect.bottom -= 1
 
     def intersect(self, rect_a, rect_b):
         left = max(rect_a.left, rect_b.left)
