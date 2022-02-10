@@ -17,6 +17,7 @@ from agym.utils import (
     FPSLimiter,
 )
 from agym.labels import FPSLabel
+from agym.audio_handler import AudioHandler
 
 
 class Application(containers.DeclarativeContainer):
@@ -44,12 +45,17 @@ class Application(containers.DeclarativeContainer):
         ManualBreakoutModel,
     )
 
+    audio_handler = providers.Singleton(
+        AudioHandler,
+    )
+
     game_monitor = providers.Factory(
         GameMonitor,
         width=config.window_screen_width,
         height=config.window_screen_width,
         fps_limiter=fps_limiter,
         fps_label=fps_label,
+        audio_handler=audio_handler,
         env=breakout,
         model=model,
     )

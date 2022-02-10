@@ -29,7 +29,7 @@ from agym.games import (
 
 
 class GameMonitor(IEventHandler):
-    def __init__(self, width, height, env, model, fps_limiter, fps_label):
+    def __init__(self, width, height, env, model, fps_limiter, fps_label, audio_handler):
         self.screen = pygame.Surface((width, height))
 
         self.model = model
@@ -37,13 +37,14 @@ class GameMonitor(IEventHandler):
         self.fps_limiter = fps_limiter
 
         self.fps_label = fps_label
+        self.audio_handler = audio_handler
         self.run_playing_music()
 
         self.env.reset()
 
     def run_playing_music(self) -> None:
         bsound = Sound("agym/static/sounds/death_note_shinigami_kai.mp3")
-        bsound.play()
+        bsound.play(loops=-1)
 
     def try_consume_event(self, event: Event) -> bool:
         return False
@@ -65,8 +66,7 @@ class GameMonitor(IEventHandler):
         _, is_done = self.env.step(action, dt)
 
         events = self.env.pop_events()
-        if events:
-            print(events)
+        self.audio_handler.handle_events(events)
 
         if is_done:
             self.env.reset()
