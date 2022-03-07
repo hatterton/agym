@@ -44,7 +44,8 @@ class GameMonitor(IEventHandler):
 
     def run_playing_music(self) -> None:
         bsound = Sound("agym/static/sounds/death_note_shinigami_kai.mp3")
-        bsound.play(loops=-1)
+        bsound.set_volume(0.2)
+        # bsound.play(loops=-1)
 
     def try_consume_event(self, event: Event) -> bool:
         return False

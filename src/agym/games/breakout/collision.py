@@ -1,6 +1,7 @@
 import enum
 import math
 from itertools import product
+from typing import List
 
 from .dtos import CollisionType
 
@@ -21,7 +22,8 @@ class Collision:
         result = str(self.type) + "  " + str(self.point)
         return result
 
-def calculate_colls(wall_rect, platform, ball, blocks, dt):
+
+def calculate_colls(wall_rect, platform, ball, blocks, dt) -> List[Collision]:
     ball_radius = ball.radius
     ball_bp, ball_ep = ball.fake_update(dt)
     ball_vec = [ball_ep[i] - ball_bp[i] for i in range(2)]

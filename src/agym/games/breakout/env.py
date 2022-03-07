@@ -28,6 +28,8 @@ from agym.interfaces import IEventHandler
 from pygame.sprite import Group
 from collections import namedtuple
 from itertools import product
+from .level_builder import DefaultLevelBuilder
+
 
 class BreakoutAction(enum.Enum):
     NOTHING = 0
@@ -52,20 +54,16 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
         self.timestamp: float
         self.events: List[Event]
 
-        self.map_shape = map_shape
-        self.last_state: np.ndarray
+        # self.map_shape = map_shape
+        # self.last_state: np.ndarray
 
-        self.ball = Ball(
-            image_name="ball_aparture 20x20.png",
-            radius=10,
-            velocity=20,
-            # velocity=5,
+        self.level_builder = DefaultLevelBuilder(
+            env_width=env_width,
+            env_height=env_height,
         )
-        self.platform = Platform(
-            image_name="platform 120x20.png",
-            velocity=15,
-        )
-        self.blocks = Group()
+        self.ball: Ball
+        self.platform: Platform
+        self.blocks: List[Block]
 
     def pop_events(self) -> List[Event]:
         events = self.events
@@ -78,71 +76,34 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
     def try_delegate_event(self, event: PygameEvent) -> bool:
         return False
 
-    def center_platform(self):
-        self.platform.rect.centerx = self.env_width // 2
-        self.platform.rect.bottom = self.env_height - 10
-
-    def reset(self):
-        self.last_state = self.get_cur_state()
+    def reset(self) -> None:
+        # self.last_state = self.get_cur_state()
         self.n_lives = self.start_lives
-        self.make_target_wall()
-        self.center_platform()
-        self.move_ball_on_platform()
+
+        self.reset_level()
 
         self.timestamp = 0.
         self.events = []
+
+    def reset_level(self) -> None:
+        level = self.level_builder.build()
+
+        self.ball = level.balls[0]
+        self.blocks = level.blocks
+        self.platform = level.platform
 
     def is_done(self):
         return self.n_lives <= 0
 
     def lose(self):
         self.n_lives -= 1
-        self.center_platform()
-        self.move_ball_on_platform()
+        self.reset_level()
 
     def win(self):
-        self.make_target_wall()
-        self.center_platform()
-        self.move_ball_on_platform()
-
-    def make_target_wall(self,
-                         n_rows: int = 5,
-                         block_width: int = 60,
-                         block_height: int = 20,
-                         top_shift: int = 50,
-                         between_shift: int = 5):
-        image_name_template = "block_{} 60x20.png"
-        colors = ["blue", "yellow", "red"]
-
-        n_cols = math.floor(
-            (self.env_width - between_shift) /
-            (block_width + between_shift)
-        )
-        side_shift = (
-            self.env_width -
-            n_cols * block_width -
-            (n_cols - 1) * between_shift
-        ) // 2
-
-        self.blocks.empty()
-        for i in range(n_rows):
-            for j in range(n_cols):
-                image_name = image_name_template.format(
-                    colors[random.randint(0, 2)]
-                )
-                top = (top_shift + i * block_height +
-                       (i - 1) * between_shift)
-                left = (side_shift + j * block_width +
-                        (j - 1) * between_shift)
-                block = Block(
-                    image_name=image_name,
-                    top=top,
-                    left=left
-                )
-                self.blocks.add(block)
+        self.reset_level()
 
     def step(self, action: int, dt: float) -> Tuple[int, bool]:
-        self.last_state = self.get_cur_state()
+        # self.last_state = self.get_cur_state()
         Rect = namedtuple("Rect", "top bottom left right")
         env_rect = Rect(top=0, bottom=self.env_height,
                         left=0, right=self.env_width)
@@ -162,6 +123,7 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
         candidates = self.get_available_blocks(self.eps)
         colls = calculate_colls(env_rect, self.platform,
                                 self.ball, candidates, self.eps)
+        # platform near wall
         if (len(colls) == 1 and
             colls[0].type == CollisionType.PLATFORM_WALL):
             self.perform_colls(colls)
@@ -367,22 +329,22 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
 
         return item_map
 
-    def get_cur_state(self):
-        ball_map = self.build_map([self.ball])
-        platform_map = self.build_map([self.platform])
-        break_map = self.build_map(self.blocks)
+    # def get_cur_state(self):
+    #     ball_map = self.build_map([self.ball])
+    #     platform_map = self.build_map([self.platform])
+    #     break_map = self.build_map(self.blocks)
 
-        state = np.stack([ball_map, platform_map, break_map], axis=0)
+    #     state = np.stack([ball_map, platform_map, break_map], axis=0)
 
-        return state
+    #     return state
 
-    def get_visual_state(self):
-        cur_state = self.get_cur_state()
-        state = np.concatenate([self.last_state, cur_state], axis=0)
-        return state
+    # def get_visual_state(self):
+    #     cur_state = self.get_cur_state()
+    #     state = np.concatenate([self.last_state, cur_state], axis=0)
+    #     return state
 
-    def get_flatten_state(self):
-        return None
+    # def get_flatten_state(self):
+    #     return None
 
     def blit(self, screen) -> None:
         screen_rect = screen.get_rect()
