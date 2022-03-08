@@ -110,7 +110,6 @@ class DefaultLevelBuilder(ILevelBuilder):
             n_cols * block_width -
             (n_cols - 1) * between_shift
         ) // 2
-        n_rows = 1
 
         blocks = []
         for i in range(n_rows):

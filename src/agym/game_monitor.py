@@ -38,14 +38,14 @@ class GameMonitor(IEventHandler):
 
         self.fps_label = fps_label
         self.audio_handler = audio_handler
-        self.run_playing_music()
+        # self.run_playing_music()
 
         self.env.reset()
 
     def run_playing_music(self) -> None:
         bsound = Sound("agym/static/sounds/death_note_shinigami_kai.mp3")
         bsound.set_volume(0.2)
-        # bsound.play(loops=-1)
+        bsound.play(loops=-1)
 
     def try_consume_event(self, event: Event) -> bool:
         return False
@@ -63,7 +63,7 @@ class GameMonitor(IEventHandler):
 
     def update(self) -> None:
         action = self.model.get_action(None)
-        dt = self.fps_limiter.tick() / 60
+        dt = self.fps_limiter.tick() / 50
         _, is_done = self.env.step(action, dt)
 
         events = self.env.pop_events()

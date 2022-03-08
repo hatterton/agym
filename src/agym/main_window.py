@@ -18,8 +18,14 @@ class MainWindow(IEventHandler):
 
         self.active: bool
 
-    def run(self):
+    def activate(self) -> None:
         self.active = True
+
+    def deactivate(self) -> None:
+        self.active = False
+
+    def run(self):
+        self.activate()
         while self.active:
             self.check_events()
             self.update()

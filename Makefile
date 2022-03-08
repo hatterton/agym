@@ -3,9 +3,20 @@
 run:
 	cd src && poetry run python -m agym
 
-.PHONY: tests
-tests:
-	cd src && poetry run python -m pytest tests
+.PHONY: tests-unit
+tests-unit:
+	cd src && poetry run python -m pytest -xs tests/unit
+
+.PHONY: tests-integration
+tests-integration:
+	cd src && poetry run python -m pytest -xs tests/integration
+
+.PHONY: tests-gui
+tests-gui:
+	cd src && poetry run python -m pytest -xs tests/gui
+
+.PHONY: tests-gui
+tests: | tests-unit tests-integration
 
 .PHONY: env
 env:

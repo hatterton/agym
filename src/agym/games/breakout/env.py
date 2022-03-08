@@ -28,7 +28,7 @@ from agym.interfaces import IEventHandler
 from pygame.sprite import Group
 from collections import namedtuple
 from itertools import product
-from .level_builder import DefaultLevelBuilder
+from .level_builder import DefaultLevelBuilder, Level
 
 
 class BreakoutAction(enum.Enum):
@@ -87,7 +87,10 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
 
     def reset_level(self) -> None:
         level = self.level_builder.build()
+        self.load_level(level)
 
+
+    def load_level(self, level: Level) -> None:
         self.ball = level.balls[0]
         self.blocks = level.blocks
         self.platform = level.platform
@@ -131,6 +134,7 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
         candidates = self.get_available_blocks(dt)
         colls = calculate_colls(env_rect, self.platform,
                                 self.ball, candidates, dt)
+
         if len(colls) == 0:
             self.real_update(dt)
         else:

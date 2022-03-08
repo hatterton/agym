@@ -49,7 +49,7 @@ class Application(containers.DeclarativeContainer):
         AudioHandler,
     )
 
-    game_monitor = providers.Factory(
+    game_monitor = providers.Singleton(
         GameMonitor,
         width=config.window_screen_width,
         height=config.window_screen_width,
@@ -60,7 +60,7 @@ class Application(containers.DeclarativeContainer):
         model=model,
     )
 
-    main_window = providers.Factory(
+    main_window = providers.Singleton(
         MainWindow,
         width=config.window_screen_width,
         height=config.window_screen_height,
