@@ -11,6 +11,7 @@ from agym.games.breakout.geom import (
     is_intersected,
     get_intersection_segment_segment,
     get_intersection_line_line,
+    get_intersection_circle_segment,
 )
 
 
@@ -152,6 +153,7 @@ def test_triangle_triangle_intersection():
         ]
     )
     assert not is_intersected(t1, t2)
+    assert not is_intersected(t2, t1)
 
     t2 = Triangle(
         points=[
@@ -161,6 +163,7 @@ def test_triangle_triangle_intersection():
         ]
     )
     assert is_intersected(t1, t2)
+    assert is_intersected(t2, t1)
 
     t2 = Triangle(
         points=[
@@ -170,6 +173,7 @@ def test_triangle_triangle_intersection():
         ]
     )
     assert is_intersected(t1, t2)
+    assert is_intersected(t2, t1)
 
     t2 = Triangle(
         points=[
@@ -179,6 +183,7 @@ def test_triangle_triangle_intersection():
         ]
     )
     assert is_intersected(t1, t2)
+    assert is_intersected(t2, t1)
 
     t2 = Triangle(
         points=[
@@ -188,6 +193,7 @@ def test_triangle_triangle_intersection():
         ]
     )
     assert is_intersected(t1, t2)
+    assert is_intersected(t2, t1)
 
     t2 = Triangle(
         points=[
@@ -197,6 +203,7 @@ def test_triangle_triangle_intersection():
         ]
     )
     assert is_intersected(t1, t2)
+    assert is_intersected(t2, t1)
 
     t2 = Triangle(
         points=[
@@ -206,6 +213,7 @@ def test_triangle_triangle_intersection():
         ]
     )
     assert is_intersected(t1, t2)
+    assert is_intersected(t2, t1)
 
     t2 = Triangle(
         points=[
@@ -215,6 +223,7 @@ def test_triangle_triangle_intersection():
         ]
     )
     assert not is_intersected(t1, t2)
+    assert not is_intersected(t2, t1)
 
     t2 = Triangle(
         points=[
@@ -224,6 +233,7 @@ def test_triangle_triangle_intersection():
         ]
     )
     assert not is_intersected(t1, t2)
+    assert not is_intersected(t2, t1)
 
 
 
@@ -242,6 +252,7 @@ def test_rectangle_rectangle_intersection():
         height=10,
     )
     assert is_intersected(r1, r2)
+    assert is_intersected(r2, r1)
 
     r2 = Rectangle(
         left=-2,
@@ -250,6 +261,7 @@ def test_rectangle_rectangle_intersection():
         height=4,
     )
     assert is_intersected(r1, r2)
+    assert is_intersected(r2, r1)
 
     r2 = Rectangle(
         left=-10,
@@ -258,6 +270,7 @@ def test_rectangle_rectangle_intersection():
         height=20,
     )
     assert is_intersected(r1, r2)
+    assert is_intersected(r2, r1)
 
     r2 = Rectangle(
         left=5,
@@ -266,6 +279,7 @@ def test_rectangle_rectangle_intersection():
         height=10,
     )
     assert not is_intersected(r1, r2)
+    assert not is_intersected(r2, r1)
 
     r2 = Rectangle(
         left=5,
@@ -274,6 +288,7 @@ def test_rectangle_rectangle_intersection():
         height=10,
     )
     assert not is_intersected(r1, r2)
+    assert not is_intersected(r2, r1)
 
     r2 = Rectangle(
         left=10,
@@ -282,7 +297,88 @@ def test_rectangle_rectangle_intersection():
         height=10,
     )
     assert not is_intersected(r1, r2)
+    assert not is_intersected(r2, r1)
 
 
 def test_triangle_circle_intersection():
-    pass
+    t = Triangle(
+        points=[
+            Point(x=10, y=0),
+            Point(x=-10, y=0),
+            Point(x=0, y=10),
+        ]
+    )
+
+    c = Circle(
+        center=Point(x=0, y=1),
+        radius=1,
+    )
+    assert is_intersected(t, c)
+    assert is_intersected(c, t)
+
+    c = Circle(
+        center=Point(x=0, y=-1),
+        radius=2,
+    )
+    assert is_intersected(t, c)
+    assert is_intersected(c, t)
+
+    c = Circle(
+        center=Point(x=0, y=-1),
+        radius=1,
+    )
+    assert not is_intersected(t, c)
+    assert not is_intersected(c, t)
+
+    c = Circle(
+        center=Point(x=20, y=-1),
+        radius=2,
+    )
+    assert not is_intersected(t, c)
+    assert not is_intersected(c, t)
+
+    c = Circle(
+        center=Point(x=11, y=-1),
+        radius=2,
+    )
+    assert is_intersected(t, c)
+    assert is_intersected(c, t)
+
+
+def test_circle_segment_intersection():
+    s = Segment(
+        begin=Point(x=0, y=0),
+        end=Point(x=5, y=5),
+    )
+
+    c = Circle(
+        center=Point(x=0, y=5),
+        radius=1,
+    )
+    ip = get_intersection_circle_segment(c, s)
+    assert ip is None
+
+    c = Circle(
+        center=Point(x=-1, y=-1),
+        radius=1,
+    )
+    ip = get_intersection_circle_segment(c, s)
+    assert ip is None
+
+    c = Circle(
+        center=Point(x=6, y=6),
+        radius=2,
+    )
+    ip = get_intersection_circle_segment(c, s)
+    ep = Point(x=5, y=5)
+    assert ip is not None
+    assert almost_equal_point(ip, ep)
+
+    c = Circle(
+        center=Point(x=0, y=5),
+        radius=5,
+    )
+    ip = get_intersection_circle_segment(c, s)
+    ep = Point(x=2.5, y=2.5)
+    assert ip is not None
+    assert almost_equal_point(ip, ep)

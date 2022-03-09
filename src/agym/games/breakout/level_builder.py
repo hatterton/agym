@@ -93,7 +93,7 @@ class DefaultLevelBuilder(ILevelBuilder):
         )
 
     def _make_target_wall(self,
-                          n_rows: int = 8,
+                          n_rows: int = 4,
                           block_width: int = 60,
                           block_height: int = 20,
                           top_shift: int = 50,

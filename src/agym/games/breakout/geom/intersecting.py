@@ -1,7 +1,7 @@
 from typing import Union, Optional
 from itertools import product
 
-from .point import Point
+from .point import Point, Vec2
 from .triangle import Triangle
 from .rectangle import Rectangle
 from .circle import Circle
@@ -82,8 +82,17 @@ def get_intersection_circle_circle(a: Circle, b: Circle) -> Intersection:
         return None
 
 
-def get_intersection_triangle_circle(a: Triangle, b: Circle) -> Intersection:
-    pass
+def get_intersection_triangle_circle(t: Triangle, c: Circle) -> Intersection:
+    if is_point_in_triangle(c.center, t):
+        return c.center
+
+    for seg in t.segments:
+        intersection = get_intersection_circle_segment(c, seg)
+
+        if intersection is not None:
+            return intersection
+
+    return None
 
 
 def get_intersection_segment_segment(a: Segment, b: Segment) -> Intersection:
@@ -140,3 +149,31 @@ def intersect_rectangles(a: Rectangle, b: Rectangle) -> Rectangle:
         width=right-left,
         height=bottom-top,
     )
+
+
+def get_intersection_circle_segment(c: Circle, s: Segment) -> Intersection:
+    for p in [s.begin, s.end]:
+        diff = c.center - p
+        sd = diff.x ** 2 + diff.y ** 2
+        sr = c.radius ** 2
+
+        if sd < sr:
+            return p
+
+    s_line = s.line
+    den = s_line.a ** 2 + s_line.b ** 2
+    t = - s_line.place(c.center) / den
+    n = s_line.normal
+
+    pr = c.center + n * t
+
+    xs = sorted([s.begin.x, s.end.x])
+    if pr.x < xs[0] or pr.x > xs[1]:
+        return None
+
+    dist = abs(t) * den ** 0.5
+
+    if dist < c.radius:
+        return pr
+    else:
+        return None

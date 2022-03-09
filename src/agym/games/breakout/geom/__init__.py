@@ -15,5 +15,6 @@ from .intersecting import (
     get_intersection_triangle_circle,
     get_intersection_segment_segment,
     get_intersection_line_line,
+    get_intersection_circle_segment,
 )
 
