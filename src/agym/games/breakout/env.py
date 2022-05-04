@@ -29,6 +29,7 @@ from pygame.sprite import Group
 from collections import namedtuple
 from itertools import product
 from .level_builder import DefaultLevelBuilder, Level
+from agym.utils import profile
 
 
 class BreakoutAction(enum.Enum):
@@ -105,6 +106,7 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
     def win(self):
         self.reset_level()
 
+    @profile("env_step", "game_iter")
     def step(self, action: int, dt: float) -> Tuple[int, bool]:
         # self.last_state = self.get_cur_state()
         Rect = namedtuple("Rect", "top bottom left right")

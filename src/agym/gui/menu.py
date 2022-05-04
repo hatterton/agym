@@ -6,6 +6,7 @@ from agym.gui.button import Button
 from agym.gui.check_box import Check_box_button, Check_box
 from agym.unit_tests import get_tests
 
+# outdated
 class Menu:
     def __init__(self, arg, button_type, buttons_name, buttons_width, func_list):
         number = len(buttons_name)

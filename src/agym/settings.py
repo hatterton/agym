@@ -24,5 +24,6 @@ class Settings(BaseSettings):
     default_reward: int = 10
     catch_reward: int = 250
 
-    max_fps: int = 100
+    # max_fps: int = 60
+    max_fps: int = 500
 

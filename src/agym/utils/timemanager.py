@@ -1,62 +1,316 @@
-import pygame
+import time
+import sys
+from abc import abstractmethod, ABC
+from statistics import mean
+from functools import wraps
+from dataclasses import dataclass
+from collections import (
+    defaultdict,
+)
+from typing import (
+    List,
+    Tuple,
+    Optional,
+    Any,
+    TextIO,
+    Generator,
+)
+from contextlib import contextmanager
 
-from agym.utils.queue import Queue
-# from agym.enums import avrM, avr_diffM, arv_dist_pointM
+from .queue import Queue
 
-class Timemanager:
-    def __init__(self, length=100):
-        self.length_of_log = length
-        self.storage = Queue()
 
-        self.sing_ups_size = 0
-        self.sing_ups = list()
+Text = str
+Time = float
 
-    def sing_up(self, name1, name2, description):
-        self.sing_ups_size += 1
-        self.sing_ups.append((name1, name2, 0, 0, 0, description, 0))
+EPS = 1e-4
 
-    def write_down(self, name):
-        if self.storage.size == self.length_of_log:
-            self.storage.pop()
 
-        self.storage.push((name, pygame.time.get_ticks()))
+@dataclass
+class Event:
+    text: Text
+    time: Time
 
-    def get_sibscriber(self, description, relative=False, get_count=False):
-        for item in self.sing_ups:
-            if item[5] == description:
-                if not get_count:
-                    if not relative:
-                        # print(item[4])
-                        return item[4]
-                    else:
-                        return item[4] / self.get_full_time()
-                else:
-                    # print(item[6])
-                    return item[6]
-        
-        raise RuntimeError("Не существует подписки с таким именем: ", description)
 
-    def get_full_time(self):
-        return self.storage.front()[1] - self.storage.tail()[1]
+@dataclass
+class Signup:
+    start_event: str
+    finish_event: str
+    title: str
+    parent_title: Optional[str] = None
 
-    def update_sing_ups(self):
 
-        notes = [item for item in self.storage]
-        # sing_up = [name1, name2, name_iter, first_time, sum_time, description, count]
-        self.sing_ups = [[item[0], item[1], 0, 0, 0, item[5], 0] for item in self.sing_ups]
-        full_time = notes[-1][1] - notes[0][1]
+@dataclass
+class Stat:
+    title: str
+    n_cycles: int
+    total: Time
+    average: Time
+    relative: float
+    parent_title: Optional[str] = None
+    parent_relative: Optional[float] = None
 
-        for note in notes:
-            for sing_up in self.sing_ups:
-                name_id = sing_up[2]
-                note_name, note_time = note
 
-                if note_name == sing_up[name_id]:
-                    if name_id == 0:
-                        sing_up[2] = 1
-                        sing_up[3] = note_time
-                    else:
-                        sing_up[2] = 0
-                        sing_up[6] += 1
-                        sing_up[4] += note_time - sing_up[3]
-            
+class ITimeProfiler(ABC):
+    @abstractmethod
+    def reset(self) -> None:
+        pass
+
+    @abstractmethod
+    def add_signup(self, signup: Signup) -> None:
+        pass
+
+    @abstractmethod
+    def add_event(self, text: str) -> None:
+        pass
+
+    @abstractmethod
+    def get_stats(self) -> List[Stat]:
+        pass
+
+    @abstractmethod
+    def profiling(self, start_event: str, finish_event: str):
+        pass
+
+
+class DummyProfiler(ITimeProfiler):
+    def reset(self) -> None:
+        pass
+
+    def add_signup(self, signup: Signup) -> None:
+        pass
+
+    def add_event(self, text: str) -> None:
+        pass
+
+    def get_stats(self) -> List[Stat]:
+        return []
+
+    @contextmanager
+    def profiling(self, start_event: str, finish_event: str):
+        try:
+            yield
+
+        finally:
+            pass
+
+
+class TimeProfiler(ITimeProfiler):
+    def __init__(self, window_size: int = 10000) -> None:
+        self.window_size = window_size
+        self.defaut_parent: Optional[str] = None
+
+        self.events: Queue[Event]
+        self.signups: List[Signup]
+
+        self.reset()
+
+    def set_default_parent(self, defaut_parent: Optional[str] = None) -> None:
+        for signup in self.signups:
+            if signup.parent_title == self.defaut_parent:
+                signup.parent_title = defaut_parent
+
+        self.defaut_parent = defaut_parent
+
+    @contextmanager
+    def profiling(self, start_event: str, finish_event: str):
+        try:
+            self.add_event(start_event)
+            yield
+            self.add_event(finish_event)
+
+        finally:
+            pass
+
+    @contextmanager
+    def _profiling(self, start_event: str, finish_event: str) -> Generator[None, None, None]:
+        try:
+            self._add_event(start_event)
+            yield
+            self._add_event(finish_event)
+
+        finally:
+           pass
+
+    def reset(self) -> None:
+        self.events = Queue()
+        self.signups = []
+
+        self.add_signup(
+            Signup(
+                start_event="start_add_event",
+                finish_event="finish_add_event",
+                title="adding_event",
+                parent_title=self.defaut_parent,
+            )
+        )
+        self.add_signup(
+            Signup(
+                start_event="start_get_stats",
+                finish_event="finish_get_stats",
+                title="getting_stats",
+                parent_title=self.defaut_parent,
+            )
+        )
+        self.add_signup(
+            Signup(
+                start_event="start_print_stats",
+                finish_event="finish_print_stats",
+                title="printing_stats",
+                parent_title=self.defaut_parent,
+            )
+        )
+
+    def add_signup(self, signup: Signup) -> None:
+        self.signups.append(signup)
+
+    def add_event(self, text: str) -> None:
+        with self._profiling("start_add_event", "finish_add_event"):
+            self._add_event(text)
+
+    def _add_event(self, text: str) -> None:
+        event = Event(text=text, time=self._clock())
+        self.events.push(event)
+
+        if len(self.events) > self.window_size:
+            self.events.pop()
+
+    def get_stats(self) -> List[Stat]:
+        with self._profiling("start_get_stats", "finish_get_stats"):
+            stats = self._get_stats()
+
+        return stats
+
+    def _get_stats(self) -> List[Stat]:
+        start_event2ids = defaultdict(list)
+        finish_event2ids = defaultdict(list)
+        for idx, signup in enumerate(self.signups):
+            start_event2ids[signup.start_event].append(idx)
+            finish_event2ids[signup.finish_event].append(idx)
+
+        accumulated_durations: List[List[float]] = [[] for _ in range(len(self.signups))]
+        is_opened = [False for _ in range(len(self.signups))]
+        opening_times = [0. for _ in range(len(self.signups))]
+
+        for event in self.events:
+            for idx in start_event2ids[event.text]:
+                opening_times[idx] = event.time
+                is_opened[idx] = True
+
+            for idx in finish_event2ids[event.text]:
+                if not is_opened[idx]:
+                    continue
+
+                duration = event.time - opening_times[idx]
+                accumulated_durations[idx].append(duration)
+
+                is_opened[idx] = False
+
+        stats = [
+            Stat(
+                title=signup.title,
+                n_cycles=0,
+                total=EPS,
+                average=EPS,
+                relative=EPS,
+                parent_title=signup.parent_title,
+            )
+            for signup in self.signups
+        ]
+
+        if len(self.events) < 2:
+            return stats
+
+        window_start_time, window_finish_time = self.get_current_timewindow()
+        window_duration = window_finish_time - window_start_time
+
+        for idx, opening_time in enumerate(opening_times):
+            if is_opened[idx]:
+                duration = window_finish_time - opening_times[idx]
+                accumulated_durations[idx].append(duration)
+
+        for idx, durations in enumerate(accumulated_durations):
+            if len(durations) == 0:
+                continue
+
+            total = sum(durations)
+            n_cycles = len(durations)
+            avg = total / n_cycles
+            relative = total / window_duration
+
+            stat = stats[idx]
+            stat.total = total
+            stat.n_cycles = n_cycles
+            stat.average = avg
+            stat.relative = relative
+
+        title2idx = {stat.title: idx for idx, stat in enumerate(stats)}
+        for stat in stats:
+            if stat.parent_title not in title2idx:
+                continue
+
+            parent_stat = stats[title2idx[stat.parent_title]]
+            stat.parent_relative = stat.total / parent_stat.total
+
+        return stats
+
+    def _clock(self) -> Time:
+        return time.time()
+
+    def get_current_timewindow(self) -> Tuple[Time, Time]:
+        return (self.events.back.time, self.events.front.time)
+
+
+global_profiler = TimeProfiler()
+
+
+def profile(title: Optional[str] = None, parent_title: Optional[str] = None,
+            start_suffix: str = "_start", finish_suffix: str = "_finish",
+            signup_suffix: str = "", profiler: TimeProfiler = global_profiler):
+    def decorator(func):
+        if title is None:
+            prefix = func.__name__
+        else:
+            prefix = title
+
+        start_event =  prefix + start_suffix
+        finish_event = prefix + finish_suffix
+        signup_title = prefix + signup_suffix
+
+        signup = Signup(
+            start_event=start_event,
+            finish_event=finish_event,
+            title=signup_title,
+            parent_title=parent_title,
+        )
+        profiler.add_signup(signup)
+
+        @wraps(func)
+        def derivated(*args, **kwargs) -> Any:
+            with profiler.profiling(start_event, finish_event):
+                result  = func(*args, **kwargs)
+
+            return result
+
+        return derivated
+
+    return decorator
+
+
+def print_stats(stats: List[Stat], fp: TextIO = None) -> None:
+    if fp is None:
+        fp = sys.stdout
+
+    print("\nTime profiler stats", file=fp)
+    for stat in stats:
+        msg = "tl:{:20}| n:{:4}| t:{:6.3f}s| a:{:6.3f}s| r:{:5.1%}| pt:{:20}| pr:{:4.1%}".format(
+            stat.title[:20],
+            stat.n_cycles,
+            stat.total,
+            stat.average,
+            stat.relative,
+            stat.parent_title[:20] if stat.parent_title else "",
+            stat.parent_relative if stat.parent_relative else 0.,
+        )
+
+        print(msg, file=fp)

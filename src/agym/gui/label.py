@@ -2,7 +2,7 @@ import pygame
 from typing import Callable
 from abc import abstractmethod, ABC
 
-class AbstractLabel(ABC):
+class BaseLabel(ABC):
     def __init__(self, x: int, y: int):
         self.shift = (x, y)
 

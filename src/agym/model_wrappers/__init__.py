@@ -1,3 +1,4 @@
+# outdated
 from agym.model_wrappers.abstract import (
     IModelWrapper,
 )

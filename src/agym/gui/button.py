@@ -1,6 +1,7 @@
 import pygame
 import pygame.ftfont
 
+# outdated
 class Button:
     def __init__(self, arg, screen, surface, pos, text, func):
         self.screen = screen

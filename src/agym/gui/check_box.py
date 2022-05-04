@@ -1,6 +1,7 @@
 import pygame
 from agym.gui.button import Button
 
+# outdated
 class Check_box:
     def __init__(self, arg, screen, surface, pos, value_func):
         self.screen = screen

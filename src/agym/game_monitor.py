@@ -26,6 +26,13 @@ from agym.games import (
 #     # IMenu,
 #     Menu,
 # )
+from agym.utils import (
+    profile,
+    global_profiler,
+    print_stats,
+    Signup,
+    TimeProfiler,
+)
 
 
 class GameMonitor(IEventHandler):
@@ -39,6 +46,9 @@ class GameMonitor(IEventHandler):
         self.fps_label = fps_label
         self.audio_handler = audio_handler
         # self.run_playing_music()
+
+        global_profiler.set_default_parent("game_iter")
+        self.cnt = 0
 
         self.env.reset()
 
@@ -61,6 +71,7 @@ class GameMonitor(IEventHandler):
 
         return delegated
 
+    @profile("game_iter")
     def update(self) -> None:
         action = self.model.get_action(None)
         dt = self.fps_limiter.tick() / 50
@@ -73,6 +84,14 @@ class GameMonitor(IEventHandler):
             self.env.reset()
 
         self.fps_label.update()
+
+        self.cnt += 1
+        if self.cnt % 100 == 0:
+            stats = global_profiler.get_stats()
+            stats = sorted(stats, key=lambda x: x.title)
+            global_profiler.add_event("start_print_stats")
+            print_stats(stats)
+            global_profiler.add_event("finish_print_stats")
 
     def blit(self) -> None:
         self.screen.fill((0, 0, 0))

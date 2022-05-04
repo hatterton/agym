@@ -7,6 +7,14 @@ from typing import List
 
 from pygame.sprite import Sprite
 from agym.games.breakout.custom_rect import Rect
+from agym.games.breakout.geom import (
+    Shape,
+    Circle,
+    Rectangle,
+    Triangle,
+    Point,
+    Vec2,
+)
 
 ItemId = int
 
@@ -33,6 +41,24 @@ class Block(Item):
         self.rect.top = top
         self.rect.left = left
 
+    def get_ghost_trace(self, dt) -> List[Shape]:
+        return [
+            Triangle(
+                points=[
+                    Point(x=self.rect.left, y=self.rect.top),
+                    Point(x=self.rect.right, y=self.rect.top),
+                    Point(x=self.rect.left, y=self.rect.bottom),
+                ]
+            ),
+            Triangle(
+                points=[
+                    Point(x=self.rect.right, y=self.rect.bottom),
+                    Point(x=self.rect.right, y=self.rect.top),
+                    Point(x=self.rect.left, y=self.rect.bottom),
+                ]
+            ),
+        ]
+
 
 class Platform(Item):
     def __init__(self, image_name: str, velocity: float, item_id: ItemId):
@@ -57,6 +83,24 @@ class Platform(Item):
     def freeze(self):
         self.rest_freeze_time = self.default_freeze_time
 
+    def get_ghost_trace(self, dt) -> List[Shape]:
+        return [
+            Triangle(
+                points=[
+                    Point(x=self.rect.left, y=self.rect.top),
+                    Point(x=self.rect.right, y=self.rect.top),
+                    Point(x=self.rect.left, y=self.rect.bottom),
+                ]
+            ),
+            Triangle(
+                points=[
+                    Point(x=self.rect.right, y=self.rect.bottom),
+                    Point(x=self.rect.right, y=self.rect.top),
+                    Point(x=self.rect.left, y=self.rect.bottom),
+                ]
+            ),
+        ]
+
 
 class Ball(Item):
     def __init__(self, image_name, radius, velocity, item_id: ItemId):
@@ -69,7 +113,6 @@ class Ball(Item):
         self.vec_velocity = [0, 0]
         self.velocity = velocity
 
-
     def fake_update(self, dt):
         fake_rect = self.rect.copy()
 
@@ -79,4 +122,44 @@ class Ball(Item):
 
         return self.rect.center, fake_rect.center
 
+    def get_ghost_trace(self, dt) -> List[Shape]:
+        s = self.velocity * dt
+
+        vel = Vec2(x=self.vec_velocity[0], y=self.vec_velocity[1])
+        normal_vel = Vec2(x=vel.y, y=-vel.x)
+        scaled_normal_vel = normal_vel * s
+
+        start_center = Point(x=self.rect.centerx, y=self.rect.centery)
+        shift = vel * s
+        finish_center = start_center + shift
+
+        start_p1 = start_center + scaled_normal_vel
+        start_p2 = start_center - scaled_normal_vel
+        finish_p1 = finish_center + scaled_normal_vel
+        finish_p2 = finish_center - scaled_normal_vel
+
+        return [
+            Circle(
+                center=start_center,
+                radius=self.radius,
+            ),
+            Circle(
+                center=finish_center,
+                radius=self.radius,
+            ),
+            Triangle(
+                points=[
+                    start_p1,
+                    start_p2,
+                    finish_p1,
+                ]
+            ),
+            Triangle(
+                points=[
+                    finish_p1,
+                    finish_p2,
+                    start_p2,
+                ]
+            ),
+        ]
 

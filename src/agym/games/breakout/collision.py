@@ -116,12 +116,14 @@ def calculate_colls(wall_rect, platform, ball, blocks, dt) -> List[Collision]:
 
     return colls
 
+
 def norm(vec):
     result = 0
 
     result = sum(item ** 2 for item in vec) ** 0.5
 
     return result
+
 
 def normalize(vec):
     mod_vec = norm(vec)
@@ -130,10 +132,12 @@ def normalize(vec):
 
     return result_vec
 
+
 def sum_vec(a, b):
     result = [a[i] + b[i] for i in range(min(len(a), len(b)))]
 
     return result
+
 
 def make_line(p1, p2):
     a = p1[1] - p2[1]
@@ -142,10 +146,12 @@ def make_line(p1, p2):
 
     return [a, b, c]
 
+
 def place_in_line(line, point):
     result = line[0] * point[0] + line[1] * point[1] + line[2]
 
     return result
+
 
 def collide_seg_seg(first, second):
     first_line = make_line(*first)
@@ -160,6 +166,7 @@ def collide_seg_seg(first, second):
         result = True
 
     return result, None
+
 
 def collide_thick_segment_rect(segment, rect, thick):
     vec = [segment[1][i] - segment[0][i] for i in range(2)]
@@ -198,6 +205,7 @@ def collide_thick_segment_rect(segment, rect, thick):
             break
 
     return result, None
+
 
 def collide_circle_rect(circle, rect, radius):
     coll_point = None

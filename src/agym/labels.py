@@ -1,13 +1,13 @@
-from agym.gui.label import AbstractLabel
-from agym.utils import FPSLimiter
+from agym.gui import BaseLabel
+from agym.utils import FPSLimiter, profile
 
-
-class FPSLabel(AbstractLabel):
+class FPSLabel(BaseLabel):
     def __init__(self, x: int, y: int, fps_limiter: FPSLimiter):
         self.fps_limiter = fps_limiter
 
         super().__init__(x=x, y=y)
 
+    @profile("fps_update")
     def update(self) -> None:
         fps_str = "FPS AVG: {:5.2f}".format(self.fps_limiter.get_fps())
         fps0_5_str = "FPS 50%: {:5.2f}".format(self.fps_limiter.get_fps(0.5))
