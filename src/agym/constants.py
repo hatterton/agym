@@ -1,2 +1,5 @@
 
 TIME_RESOLUTION = 1000
+
+# import pygame
+# pygame.TIMER_RESOLUTION = TIME_RESOLUTION

@@ -1,56 +1,42 @@
-from typing import List, TypeVar, Generic, Iterator
+from collections import deque
+from typing import TypeVar, Generic, Iterator
 
 T = TypeVar("T")
 
 
 class Queue(Generic[T]):
     def __init__(self):
-        self.front_stack: List[T] = []
-        self.back_stack: List[T] = []
+        self.queue: deque[T] = deque()
+        self.size = 0
 
     def push(self, value: T) -> None:
-        self.front_stack.append(value)
+        self.size += 1
+        self.queue.append(value)
 
     def pop(self) -> T:
         if self.size == 0:
             raise RuntimeError("Queue is empty and value cannot be poped")
 
-        if len(self.back_stack) == 0:
-            for i in range(len(self.front_stack)):
-                self.back_stack.append(self.front_stack.pop())
-
-        return self.back_stack.pop()
+        self.size -= 1
+        return self.queue.popleft()
 
     @property
     def back(self) -> T:
         if self.size == 0:
             raise RuntimeError("Queue is empty and has no tail")
 
-        if len(self.back_stack) != 0:
-            return self.back_stack[-1]
-        else:
-            return self.front_stack[0]
+        return self.queue[0]
 
     @property
     def front(self) -> T:
         if self.size == 0:
             raise RuntimeError("Queue is empty and has no front")
 
-        if len(self.front_stack) != 0:
-            return self.front_stack[-1]
-        else:
-            return self.back_stack[0]
-
-    @property
-    def size(self) -> int:
-        return len(self)
+        return self.queue[-1]
 
     def __len__(self) -> int:
-        return len(self.front_stack) + len(self.back_stack)
+        return self.size
 
     def __iter__(self) -> Iterator[T]:
-        for item in reversed(self.back_stack):
-            yield item
-
-        for item in self.front_stack:
+        for item in self.queue:
             yield item

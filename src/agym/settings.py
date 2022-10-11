@@ -28,5 +28,5 @@ class Settings(BaseSettings):
     # max_fps: int = 60
     max_fps: int = 200
     # max_fps: int = 1000
-    log_fps: float = 1
+    log_fps: float = 2
 
