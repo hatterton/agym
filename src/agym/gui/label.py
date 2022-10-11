@@ -1,22 +1,17 @@
+from typing import Tuple
 import pygame
-from typing import Callable
-from abc import abstractmethod, ABC
 
-class BaseLabel(ABC):
-    def __init__(self, x: int, y: int):
+Color = Tuple[int, int, int]
+
+class TextLabel:
+    def __init__(self, x: int, y: int, font_size: int = 20, color: Color = (230, 230, 130), text: str = ""):
         self.shift = (x, y)
 
-        self.color = (230, 230, 130)
-        self.font_size = 24
-        self.font = pygame.font.SysFont(None, self.font_size)
+        self.color = color
+        self.font_size = font_size
+        self.font = pygame.font.SysFont("Hack", self.font_size)
 
-        self.text: str
-
-        self.update()
-
-    @abstractmethod
-    def update(self) -> None:
-        pass
+        self.text: str = text
 
     def blit(self, screen) -> None:
         line_height = self.font_size

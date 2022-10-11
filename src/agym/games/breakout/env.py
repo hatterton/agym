@@ -106,7 +106,7 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
     def win(self):
         self.reset_level()
 
-    @profile("env_step", "game_iter")
+    @profile("env_step", "game_update")
     def step(self, action: int, dt: float) -> Tuple[int, bool]:
         # self.last_state = self.get_cur_state()
         Rect = namedtuple("Rect", "top bottom left right")

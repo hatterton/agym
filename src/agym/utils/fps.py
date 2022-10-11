@@ -1,8 +1,12 @@
-from pygame.time import Clock
-from agym.utils.queue import Queue
 from statistics import mean
 from typing import Optional
+
+from pygame.time import Clock
+
+from agym.utils.queue import Queue
+from agym.utils.math import get_n_max
 from agym.utils.timemanager import profile
+from agym.constants import TIME_RESOLUTION
 
 
 class FPSLimiter:
@@ -24,7 +28,7 @@ class FPSLimiter:
         if len(self.ticks) > self.history_size:
             self.ticks.pop()
 
-    @profile("get_fps", "fps_update")
+    @profile("get_fps", "game_update")
     def get_fps(self, percentile: Optional[float] = None) -> float:
         if len(self.ticks) == 0:
             return 0.
@@ -36,16 +40,17 @@ class FPSLimiter:
             ptick = mean(ticks)
         else:
             assert 0. <= percentile < 1.
-            idx = int(percentile * len(ticks))
-            ptick = sorted(ticks, reverse=True)[idx]
 
-        return 1. / ptick
+            idx = max(1, int(percentile * len(ticks)))
+            ptick = mean(get_n_max(ticks, n=idx))
 
-    @profile("fps_tick", "game_iter")
-    def tick(self) -> int:
+        return TIME_RESOLUTION / ptick
+
+    @profile("game_sleep", "game_update")
+    def tick(self) -> float:
         tick = self.clock.tick(self.max_fps)
 
-        self._add_tick(tick / 1000)
+        self._add_tick(tick)
 
         return tick
 

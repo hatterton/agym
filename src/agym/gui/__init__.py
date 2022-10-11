@@ -1,1 +1,1 @@
-from .label import BaseLabel
+from .label import TextLabel

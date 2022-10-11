@@ -1,6 +1,6 @@
 import time
 import sys
-from abc import abstractmethod, ABC
+from copy import copy
 from statistics import mean
 from functools import wraps
 from dataclasses import dataclass
@@ -11,8 +11,6 @@ from typing import (
     List,
     Tuple,
     Optional,
-    Any,
-    TextIO,
     Generator,
 )
 from contextlib import contextmanager
@@ -51,59 +49,19 @@ class Stat:
     parent_relative: Optional[float] = None
 
 
-class ITimeProfiler(ABC):
-    @abstractmethod
-    def reset(self) -> None:
-        pass
-
-    @abstractmethod
-    def add_signup(self, signup: Signup) -> None:
-        pass
-
-    @abstractmethod
-    def add_event(self, text: str) -> None:
-        pass
-
-    @abstractmethod
-    def get_stats(self) -> List[Stat]:
-        pass
-
-    @abstractmethod
-    def profiling(self, start_event: str, finish_event: str):
-        pass
-
-
-class DummyProfiler(ITimeProfiler):
-    def reset(self) -> None:
-        pass
-
-    def add_signup(self, signup: Signup) -> None:
-        pass
-
-    def add_event(self, text: str) -> None:
-        pass
-
-    def get_stats(self) -> List[Stat]:
-        return []
-
-    @contextmanager
-    def profiling(self, start_event: str, finish_event: str):
-        try:
-            yield
-
-        finally:
-            pass
-
-
-class TimeProfiler(ITimeProfiler):
-    def __init__(self, window_size: int = 10000) -> None:
+class TimeProfiler:
+    def __init__(self, window_size: int = 10000, log_self: bool = True) -> None:
         self.window_size = window_size
+        self.log_self: bool = log_self
+
         self.defaut_parent: Optional[str] = None
 
         self.events: Queue[Event]
         self.signups: List[Signup]
 
         self.reset()
+        register_profiler(self)
+
 
     def set_default_parent(self, defaut_parent: Optional[str] = None) -> None:
         for signup in self.signups:
@@ -125,9 +83,11 @@ class TimeProfiler(ITimeProfiler):
     @contextmanager
     def _profiling(self, start_event: str, finish_event: str) -> Generator[None, None, None]:
         try:
-            self._add_event(start_event)
+            if self.log_self:
+                self._add_event(start_event)
             yield
-            self._add_event(finish_event)
+            if self.log_self:
+                self._add_event(finish_event)
 
         finally:
            pass
@@ -136,30 +96,23 @@ class TimeProfiler(ITimeProfiler):
         self.events = Queue()
         self.signups = []
 
-        self.add_signup(
-            Signup(
-                start_event="start_add_event",
-                finish_event="finish_add_event",
-                title="adding_event",
-                parent_title=self.defaut_parent,
+        if self.log_self:
+            self.add_signup(
+                Signup(
+                    start_event="start_add_event",
+                    finish_event="finish_add_event",
+                    title="add_event",
+                    parent_title=self.defaut_parent,
+                )
             )
-        )
-        self.add_signup(
-            Signup(
-                start_event="start_get_stats",
-                finish_event="finish_get_stats",
-                title="getting_stats",
-                parent_title=self.defaut_parent,
+            self.add_signup(
+                Signup(
+                    start_event="start_get_stats",
+                    finish_event="finish_get_stats",
+                    title="get_stats",
+                    parent_title=self.defaut_parent,
+                )
             )
-        )
-        self.add_signup(
-            Signup(
-                start_event="start_print_stats",
-                finish_event="finish_print_stats",
-                title="printing_stats",
-                parent_title=self.defaut_parent,
-            )
-        )
 
     def add_signup(self, signup: Signup) -> None:
         self.signups.append(signup)
@@ -261,12 +214,31 @@ class TimeProfiler(ITimeProfiler):
         return (self.events.back.time, self.events.front.time)
 
 
-global_profiler = TimeProfiler()
+class ProfilingManager:
+    def __init__(self) -> None:
+        self.signups: List[Signup] = []
+        self.registered_profilers: List[TimeProfiler] = []
+
+    def add_signup(self, signup: Signup) -> None:
+        self.signups.append(copy(signup))
+
+    def add_event(self, text: str) -> None:
+        for profiler in self.registered_profilers:
+            profiler.add_event(text)
+
+    def register(self, profiler: TimeProfiler) -> None:
+        for signup in self.signups:
+            profiler.add_signup(signup)
+
+        self.registered_profilers.append(profiler)
+
+
+profiling_manager = ProfilingManager()
 
 
 def profile(title: Optional[str] = None, parent_title: Optional[str] = None,
             start_suffix: str = "_start", finish_suffix: str = "_finish",
-            signup_suffix: str = "", profiler: TimeProfiler = global_profiler):
+            signup_suffix: str = ""):
     def decorator(func):
         if title is None:
             prefix = func.__name__
@@ -283,12 +255,13 @@ def profile(title: Optional[str] = None, parent_title: Optional[str] = None,
             title=signup_title,
             parent_title=parent_title,
         )
-        profiler.add_signup(signup)
+        profiling_manager.add_signup(signup)
 
         @wraps(func)
-        def derivated(*args, **kwargs) -> Any:
-            with profiler.profiling(start_event, finish_event):
-                result  = func(*args, **kwargs)
+        def derivated(*args, **kwargs):
+            profiling_manager.add_event(start_event)
+            result  = func(*args, **kwargs)
+            profiling_manager.add_event(finish_event)
 
             return result
 
@@ -297,13 +270,14 @@ def profile(title: Optional[str] = None, parent_title: Optional[str] = None,
     return decorator
 
 
-def print_stats(stats: List[Stat], fp: TextIO = None) -> None:
-    if fp is None:
-        fp = sys.stdout
+def register_profiler(profiler) -> None:
+    profiling_manager.register(profiler)
 
-    print("\nTime profiler stats", file=fp)
+
+def format_stats(stats: List[Stat]) -> str:
+    lines = []
     for stat in stats:
-        msg = "tl:{:20}| n:{:4}| t:{:6.3f}s| a:{:6.3f}s| r:{:5.1%}| pt:{:20}| pr:{:4.1%}".format(
+        msg = "l:{:20}| n:{:4}| t:{:6.3f}s| a:{:6.3f}s| r:{:5.1%}| pl:{:20}| pr:{:4.1%}".format(
             stat.title[:20],
             stat.n_cycles,
             stat.total,
@@ -312,5 +286,8 @@ def print_stats(stats: List[Stat], fp: TextIO = None) -> None:
             stat.parent_title[:20] if stat.parent_title else "",
             stat.parent_relative if stat.parent_relative else 0.,
         )
+        lines.append(msg)
 
-        print(msg, file=fp)
+    text = "\n".join(lines)
+
+    return text

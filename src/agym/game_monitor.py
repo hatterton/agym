@@ -22,21 +22,20 @@ from agym.model_wrappers import (
 from agym.games import (
     IGameEnviroment,
 )
-# from agym.gui.menu import (
-#     # IMenu,
-#     Menu,
-# )
+from agym.gui import (
+    TextLabel,
+)
 from agym.utils import (
     profile,
-    global_profiler,
-    print_stats,
-    Signup,
+    register_profiler,
+    format_stats,
     TimeProfiler,
 )
+from agym.constants import TIME_RESOLUTION
 
 
 class GameMonitor(IEventHandler):
-    def __init__(self, width, height, env, model, fps_limiter, fps_label, audio_handler):
+    def __init__(self, width: int, height: int, env, model, fps_limiter, fps_label: TextLabel, profile_label: TextLabel, log_updater, audio_handler, time_profiler: TimeProfiler, tps: int):
         self.screen = pygame.Surface((width, height))
 
         self.model = model
@@ -44,11 +43,16 @@ class GameMonitor(IEventHandler):
         self.fps_limiter = fps_limiter
 
         self.fps_label = fps_label
+        self.profile_label = profile_label
+
+        self.log_updater = log_updater
+
         self.audio_handler = audio_handler
         # self.run_playing_music()
 
-        global_profiler.set_default_parent("game_iter")
-        self.cnt = 0
+        self.profiler = time_profiler
+
+        self.tps = tps
 
         self.env.reset()
 
@@ -60,6 +64,7 @@ class GameMonitor(IEventHandler):
     def try_consume_event(self, event: Event) -> bool:
         return False
 
+    @profile("game_event")
     def try_delegate_event(self, event: Event) -> bool:
         delegated = False
 
@@ -71,10 +76,10 @@ class GameMonitor(IEventHandler):
 
         return delegated
 
-    @profile("game_iter")
+    @profile("game_update")
     def update(self) -> None:
         action = self.model.get_action(None)
-        dt = self.fps_limiter.tick() / 50
+        dt = self.fps_limiter.tick() * self.tps / TIME_RESOLUTION
         _, is_done = self.env.step(action, dt)
 
         events = self.env.pop_events()
@@ -83,18 +88,12 @@ class GameMonitor(IEventHandler):
         if is_done:
             self.env.reset()
 
-        self.fps_label.update()
+        self.log_updater.update()
 
-        self.cnt += 1
-        if self.cnt % 100 == 0:
-            stats = global_profiler.get_stats()
-            stats = sorted(stats, key=lambda x: x.title)
-            global_profiler.add_event("start_print_stats")
-            print_stats(stats)
-            global_profiler.add_event("finish_print_stats")
-
+    @profile("game_blit")
     def blit(self) -> None:
         self.screen.fill((0, 0, 0))
         self.env.blit(self.screen)
 
         self.fps_label.blit(self.screen)
+        self.profile_label.blit(self.screen)
