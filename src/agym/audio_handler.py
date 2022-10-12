@@ -3,7 +3,7 @@ from typing import cast, List
 from pygame.mixer import Sound
 
 from agym.games.breakout.events import Event, CollisionEvent
-from agym.games.breakout.dtos import EventType, CollisionType
+from agym.games.breakout.collisions import CollisionBallBlock
 
 
 class AudioHandler:
@@ -12,8 +12,6 @@ class AudioHandler:
 
     def handle_events(self, events: List[Event]) -> None:
         for event in events:
-            if event.type == EventType.COLLISION:
-                event = cast(CollisionEvent, event)
-
-                if event.collision_type == CollisionType.BALL_BLOCK:
+            if isinstance(event, CollisionEvent):
+                if isinstance(event.collision, CollisionBallBlock):
                     self.ball_brick_sound.play(maxtime=150, fade_ms=50)

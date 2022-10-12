@@ -1,4 +1,4 @@
-from typing import TypeVar, Generic
+from typing import TypeVar, Generic, List
 from dataclasses import dataclass
 
 T = float
@@ -35,6 +35,24 @@ class Vec2:
 
     def __truediv__(self, other) -> "Vec2":
         return self * (1 / other)
+
+    # TODO for backward compatibility
+    def __getitem__(self, idx: int) -> T:
+        if idx == 0:
+            return self.x
+        elif idx == 1:
+            return self.y
+        else:
+            raise ValueError(f"Out of index: {idx}")
+
+    @classmethod
+    def from_list(cls, arr: List[T]) -> "Point":
+        assert len(arr) == 2
+
+        return cls(
+            x=arr[0],
+            y=arr[1],
+        )
 
 
 Point = Vec2

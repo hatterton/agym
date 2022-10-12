@@ -1,10 +1,20 @@
-import math
 import random
 import pygame
 import enum
 import numpy as np
 
 from pygame.event import Event as PygameEvent
+
+from typing import (
+    Any,
+    Tuple,
+    List,
+    Iterable,
+)
+from agym.interfaces import IEventHandler
+from collections import namedtuple
+
+from .level_builder import DefaultLevelBuilder, Level
 from .events import Event, CollisionEvent
 from .geom import Point
 from agym.games import IGameEnviroment
@@ -13,22 +23,18 @@ from agym.games.breakout.items import (
     Platform,
     Block,
 )
-from agym.games.breakout.collision import (
+from .protocols import ICollisionDetector
+from .collisions.legacy_collision import normalize
+from .collisions import (
+    LegacyCollisionDetector,
     Collision,
-    CollisionType,
-    calculate_colls,
-    normalize,
+    CollisionBallBlock,
+    CollisionBallPlatform,
+    CollisionBallWall,
+    CollisionPlatformWall,
 )
-from typing import (
-    Any,
-    Tuple,
-    List,
-)
-from agym.interfaces import IEventHandler
-from pygame.sprite import Group
-from collections import namedtuple
-from itertools import product
-from .level_builder import DefaultLevelBuilder, Level
+from .state import GameState
+
 from agym.utils import profile
 
 
@@ -60,15 +66,13 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
         self.timestamp: float
         self.events: List[Event]
 
-        # self.map_shape = map_shape
-        # self.last_state: np.ndarray
-
         self.level_builder = DefaultLevelBuilder(
             env_width=env_width,
             env_height=env_height,
             ball_velocity=ball_velocity,
             platform_velocity=platform_velocity,
         )
+        self.collision_detector: ICollisionDetector = LegacyCollisionDetector()
         self.ball: Ball
         self.platform: Platform
         self.blocks: List[Block]
@@ -131,8 +135,7 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
         colls = self._get_step_collisions(self.eps)
 
         # platform near wall
-        if (len(colls) == 1 and
-            colls[0].type == CollisionType.PLATFORM_WALL):
+        if any(colls):
             self.perform_colls(colls)
 
         colls = self._get_step_collisions(dt)
@@ -171,14 +174,61 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
         return reward, is_done
 
     @profile("calc_colls", "env_step")
-    def _get_step_collisions(self, dt: float) -> List[Collision]:
-        return calculate_colls(
-            wall_rect=self.env_rect,
-            platform=self.platform,
-            ball= self.ball,
-            blocks=self.blocks,
+    def _get_step_collisions(self, dt: float) -> Iterable[Collision]:
+        return self.collision_detector.generate_step_collisions(
+            state=self._get_state(),
             dt=dt,
         )
+
+    def _get_state(self) -> GameState:
+        return GameState(
+            platforms=[self.platform],
+            balls=[self.ball],
+            blocks=self.blocks,
+            wall_rect=self.env_rect,
+        )
+
+    @profile("perf_colls", "env_step")
+    def perform_colls(self, colls: Iterable[Collision]) -> int:
+        reward = 0
+
+        for coll in colls:
+            self.events.append(
+                CollisionEvent(
+                    timestamp=self.timestamp,
+                    collision=coll,
+                )
+            )
+
+            if isinstance(coll, CollisionBallWall):
+                self.perform_ball_coll(coll.point)
+
+            elif isinstance(coll, CollisionBallPlatform):
+                new_vel = [coll.point[i] - self.platform.rect.center[i]
+                           for i in range(2)]
+                new_vel[0] /= 2
+                new_vel = normalize(new_vel)
+
+                if (self.ball.rect.centery >
+                    self.platform.rect.centery + 2):
+                    new_vel[1] += 0.2
+                    new_vel = normalize(new_vel)
+
+                self.platform.freeze()
+                self.ball.vec_velocity = new_vel
+                reward += 10
+
+            elif isinstance(coll, CollisionBallBlock):
+                self.perform_ball_coll(coll.point)
+                self.blocks.remove(coll.block)
+                reward += 10
+
+            elif isinstance(coll, CollisionPlatformWall):
+                reward -= 10
+                self.platform.vec_velocity[0] = 0
+
+
+        return reward
 
     def perform_ball_coll(self, point) -> None:
         if point is None:
@@ -200,52 +250,6 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
             new_vel = normalize(new_vel)
 
         self.ball.vec_velocity = new_vel
-
-    @profile("perf_colls", "env_step")
-    def perform_colls(self, colls) -> int:
-        reward = 0
-
-        for coll in colls:
-            self.events.append(
-                CollisionEvent(
-                    timestamp=self.timestamp,
-                    collision_type=coll.type,
-                    point=Point(
-                        x=coll.point[0],
-                        y=coll.point[1],
-                    ),
-                )
-            )
-
-            if coll.type == CollisionType.BALL_WALL:
-                self.perform_ball_coll(coll.point)
-
-            elif coll.type == CollisionType.BALL_PLATFORM:
-                new_vel = [coll.point[i] - self.platform.rect.center[i]
-                           for i in range(2)]
-                new_vel[0] /= 2
-                new_vel = normalize(new_vel)
-
-                if (self.ball.rect.centery >
-                    self.platform.rect.centery + 2):
-                    new_vel[1] += 0.2
-                    new_vel = normalize(new_vel)
-
-                self.platform.freeze()
-                self.ball.vec_velocity = new_vel
-                reward += 10
-
-            elif coll.type == CollisionType.BALL_BLOCK:
-                self.perform_ball_coll(coll.point)
-                self.blocks.remove(coll.block)
-                reward += 10
-
-            elif coll.type == CollisionType.PLATFORM_WALL:
-                reward -= 10
-                self.platform.vec_velocity[0] = 0
-
-
-        return reward
 
     def real_update(self, dt: float) -> None:
         self.timestamp += dt

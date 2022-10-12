@@ -10,7 +10,6 @@ from .level_builder import (
     DefaultLevelBuilder,
 )
 from .events import (
+    Event,
     CollisionEvent,
-    CollisionType,
-    EventType,
 )

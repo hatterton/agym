@@ -6,9 +6,13 @@ from agym.games.breakout import (
     BreakoutEnv,
     Level,
     BreakoutAction,
-    EventType,
-    CollisionType,
     CollisionEvent,
+)
+from agym.games.breakout.collisions import (
+    CollisionBallBlock,
+    CollisionBallPlatform,
+    CollisionBallWall,
+    CollisionPlatformWall,
 )
 
 @pytest.fixture
@@ -49,9 +53,8 @@ def test_ball_block_collision_type(
     events = breakout.pop_events()
     assert len(events) == 1
     event = events[0]
-    assert event.type == EventType.COLLISION
-    event = cast(CollisionEvent, event)
-    assert event.collision_type == CollisionType.BALL_BLOCK
+    assert isinstance(event, CollisionEvent)
+    assert isinstance(event.collision, CollisionBallBlock)
     assert almost_equal_vec(breakout.ball.vec_velocity, [0, -1])
 
 
@@ -70,9 +73,8 @@ def test_ball_corner_block_collision_type(
     events = breakout.pop_events()
     assert len(events) == 1
     event = events[0]
-    assert event.type == EventType.COLLISION
-    event = cast(CollisionEvent, event)
-    assert event.collision_type == CollisionType.BALL_BLOCK
+    assert isinstance(event, CollisionEvent)
+    assert isinstance(event.collision, CollisionBallBlock)
     r2 = 2 ** 0.5
     assert almost_equal_vec(breakout.ball.vec_velocity, [r2 / 2, r2 / 2])
 
@@ -92,9 +94,8 @@ def test_ball_vertical_wall_left_collision_type(
     events = breakout.pop_events()
     assert len(events) == 1
     event = events[0]
-    assert event.type == EventType.COLLISION
-    event = cast(CollisionEvent, event)
-    assert event.collision_type == CollisionType.BALL_WALL
+    assert isinstance(event, CollisionEvent)
+    assert isinstance(event.collision, CollisionBallWall)
     assert breakout.ball.vec_velocity[0] > 0
     assert breakout.ball.vec_velocity[1] < 0
 
@@ -114,9 +115,8 @@ def test_ball_vertical_wall_right_collision_type(
     events = breakout.pop_events()
     assert len(events) == 1
     event = events[0]
-    assert event.type == EventType.COLLISION
-    event = cast(CollisionEvent, event)
-    assert event.collision_type == CollisionType.BALL_WALL
+    assert isinstance(event, CollisionEvent)
+    assert isinstance(event.collision, CollisionBallWall)
     assert breakout.ball.vec_velocity[0] < 0
     assert breakout.ball.vec_velocity[1] < 0
 
@@ -136,8 +136,7 @@ def test_ball_vertical_wall_top_collision_type(
     events = breakout.pop_events()
     assert len(events) == 1
     event = events[0]
-    assert event.type == EventType.COLLISION
-    event = cast(CollisionEvent, event)
-    assert event.collision_type == CollisionType.BALL_WALL
+    assert isinstance(event, CollisionEvent)
+    assert isinstance(event.collision, CollisionBallWall)
     assert breakout.ball.vec_velocity[0] > 0
     assert breakout.ball.vec_velocity[1] > 0

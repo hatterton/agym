@@ -3,26 +3,18 @@ import math
 from itertools import product
 from typing import List
 
-from .dtos import CollisionType
-from .items import Ball, Platform, Block
+from ..geom import Point
+from ..items import Ball, Platform, Block
 from agym.utils import profile
+from .dtos import (
+    Collision,
+    CollisionBallBlock,
+    CollisionBallPlatform,
+    CollisionBallWall,
+    CollisionPlatformWall,
+)
 
 EPS = 1e-4
-
-
-class Collision:
-    def __init__(self, coll_type, point, block=None):
-        self.block = block
-        self.type = coll_type
-        self.point = point
-
-    def __str__(self):
-        result = str(self.type) + "  " + str(self.point)
-        return result
-
-    def __repr__(self):
-        result = str(self.type) + "  " + str(self.point)
-        return result
 
 
 def calculate_colls(wall_rect, platform, ball, blocks, dt) -> List[Collision]:
@@ -31,7 +23,7 @@ def calculate_colls(wall_rect, platform, ball, blocks, dt) -> List[Collision]:
     ball_vec = [ball_ep[i] - ball_bp[i] for i in range(2)]
     b_rect, e_rect = platform.fake_update(dt)
 
-    colls = []
+    colls: List[Collision] = []
     colls += calculate_ball_blocks_colls(ball, blocks, dt)
     colls += calculate_ball_platform_colls(ball, platform, dt)
     colls += calculate_ball_walls_colls(ball, wall_rect, dt)
@@ -40,7 +32,7 @@ def calculate_colls(wall_rect, platform, ball, blocks, dt) -> List[Collision]:
     return colls
 
 
-def calculate_ball_blocks_colls(ball: Ball, blocks: List[Block], dt: float) -> List[Collision]:
+def calculate_ball_blocks_colls(ball: Ball, blocks: List[Block], dt: float) -> List[CollisionBallBlock]:
     ball_radius = ball.radius
     ball_bp, ball_ep = ball.fake_update(dt)
 
@@ -72,9 +64,9 @@ def calculate_ball_blocks_colls(ball: Ball, blocks: List[Block], dt: float) -> L
             )
 
         if is_coll:
-            coll = Collision(
-                coll_type=CollisionType.BALL_BLOCK,
+            coll = CollisionBallBlock(
                 point=point,
+                ball=ball,
                 block=block,
             )
             colls.append(coll)
@@ -82,7 +74,7 @@ def calculate_ball_blocks_colls(ball: Ball, blocks: List[Block], dt: float) -> L
     return colls
 
 
-def calculate_ball_platform_colls(ball: Ball, platform: Platform, dt: float) -> List[Collision]:
+def calculate_ball_platform_colls(ball: Ball, platform: Platform, dt: float) -> List[CollisionBallPlatform]:
     ball_radius = ball.radius
     ball_bp, ball_ep = ball.fake_update(dt)
     b_rect, e_rect = platform.fake_update(dt)
@@ -106,16 +98,17 @@ def calculate_ball_platform_colls(ball: Ball, platform: Platform, dt: float) -> 
                 )
 
         if is_coll:
-            coll = Collision(
-                coll_type=CollisionType.BALL_PLATFORM,
+            coll = CollisionBallPlatform(
                 point=point,
+                ball=ball,
+                platform=platform,
             )
             colls.append(coll)
 
     return colls
 
 
-def calculate_ball_walls_colls(ball: Ball, wall_rect, dt: float) -> List[Collision]:
+def calculate_ball_walls_colls(ball: Ball, wall_rect, dt: float) -> List[CollisionBallWall]:
     ball_radius = ball.radius
     _, ball_ep = ball.fake_update(dt)
 
@@ -135,16 +128,16 @@ def calculate_ball_walls_colls(ball: Ball, wall_rect, dt: float) -> List[Collisi
     #     is_coll, point = True, [ball_ep[0], wall_rect.bottom]
 
     if is_coll:
-        coll = Collision(
-            coll_type=CollisionType.BALL_WALL,
-            point=point,
+        coll = CollisionBallWall(
+            point=Point.from_list(point),
+            ball=ball,
         )
         colls.append(coll)
 
     return colls
 
 
-def calculate_platform_walls_colls(platform: Platform, wall_rect, dt: float) -> List[Collision]:
+def calculate_platform_walls_colls(platform: Platform, wall_rect, dt: float) -> List[CollisionPlatformWall]:
     b_rect, e_rect = platform.fake_update(dt)
 
     colls = []
@@ -159,9 +152,9 @@ def calculate_platform_walls_colls(platform: Platform, wall_rect, dt: float) -> 
         point = [wall_rect.right, platform.rect.centery]
 
     if is_coll:
-        coll = Collision(
-            coll_type=CollisionType.PLATFORM_WALL,
-            point=point,
+        coll = CollisionPlatformWall(
+            point=Point.from_list(point),
+            platform=platform,
         )
         colls.append(coll)
 
@@ -216,7 +209,7 @@ def collide_seg_seg(first, second):
         second_place_in[0] * second_place_in[1] < 0):
         result = True
 
-    return result, None
+    return result, [0, 0]
 
 
 def collide_thick_segment_rect(segment, rect, thick):
@@ -251,11 +244,14 @@ def collide_thick_segment_rect(segment, rect, thick):
 
     result = False
     for rect_seg, seg_seg in product(rect_segs, seg_segs):
-        result, _ = collide_seg_seg(rect_seg, seg_seg)
+        result, coll_point = collide_seg_seg(rect_seg, seg_seg)
         if result:
             break
 
-    return result, None
+    if not result:
+        return False, None
+
+    return True, Point.from_list(coll_point)
 
 
 def collide_circle_rect(circle, rect, radius):
@@ -277,7 +273,10 @@ def collide_circle_rect(circle, rect, radius):
                 if is_point_in_circle((side_1, side_2), circle, radius):
                     coll_point = [side_1, side_2]
 
-    return coll_point is not None, coll_point
+    if coll_point is None:
+        return False, None
+
+    return True, Point.from_list(coll_point)
 
 
 def is_point_in_circle(point, circle, radius) -> bool:
