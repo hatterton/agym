@@ -16,7 +16,6 @@ def breakout():
     breakout = BreakoutEnv(
         env_width=450,
         env_height=500,
-        map_shape=[],
     )
     breakout.reset()
 

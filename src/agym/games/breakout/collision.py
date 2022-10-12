@@ -4,6 +4,7 @@ from itertools import product
 from typing import List
 
 from .dtos import CollisionType
+from .items import Ball, Platform, Block
 from agym.utils import profile
 
 EPS = 1e-4
@@ -32,8 +33,20 @@ def calculate_colls(wall_rect, platform, ball, blocks, dt) -> List[Collision]:
     b_rect, e_rect = platform.fake_update(dt)
 
     colls = []
+    colls += calculate_ball_blocks_colls(ball, blocks, dt)
+    colls += calculate_ball_platform_colls(ball, platform, dt)
+    colls += calculate_ball_walls_colls(ball, wall_rect, dt)
+    colls += calculate_platform_walls_colls(platform, wall_rect, dt)
 
-    # Проверка на коллизии шар/блоки
+    return colls
+
+
+def calculate_ball_blocks_colls(ball: Ball, blocks: List[Block], dt: float) -> List[Collision]:
+    ball_radius = ball.radius
+    ball_bp, ball_ep = ball.fake_update(dt)
+
+    colls = []
+
     for block in blocks:
         is_coll, point = False, None
         is_coll, point = collide_circle_rect(ball_ep, 
@@ -54,7 +67,16 @@ def calculate_colls(wall_rect, platform, ball, blocks, dt) -> List[Collision]:
             )
             colls.append(coll)
 
-    # Проверка на коллизии шар/платформа
+    return colls
+
+
+def calculate_ball_platform_colls(ball: Ball, platform: Platform, dt: float) -> List[Collision]:
+    ball_radius = ball.radius
+    ball_bp, ball_ep = ball.fake_update(dt)
+    b_rect, e_rect = platform.fake_update(dt)
+
+    colls = []
+
     if ball.thrown:
         is_coll, point = False, None
         for circle, rect in product([ball_bp, ball_ep], [b_rect, e_rect]):
@@ -78,7 +100,15 @@ def calculate_colls(wall_rect, platform, ball, blocks, dt) -> List[Collision]:
             )
             colls.append(coll)
 
-    # Проверка на коллизии шар/стены
+    return colls
+
+
+def calculate_ball_walls_colls(ball: Ball, wall_rect, dt: float) -> List[Collision]:
+    ball_radius = ball.radius
+    _, ball_ep = ball.fake_update(dt)
+
+    colls = []
+
     is_coll, point = False, None
     if ball_ep[0] - ball_radius < wall_rect.left:
         is_coll, point = True, [wall_rect.left, ball_ep[1]]
@@ -99,7 +129,14 @@ def calculate_colls(wall_rect, platform, ball, blocks, dt) -> List[Collision]:
         )
         colls.append(coll)
 
-    # Проверка на коллизии платформа/стены 
+    return colls
+
+
+def calculate_platform_walls_colls(platform: Platform, wall_rect, dt: float) -> List[Collision]:
+    b_rect, e_rect = platform.fake_update(dt)
+
+    colls = []
+
     is_coll, point = False, None
     if e_rect.left <= wall_rect.left:
         is_coll = True
