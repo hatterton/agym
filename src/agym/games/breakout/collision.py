@@ -4,6 +4,7 @@ from itertools import product
 from typing import List
 
 from .dtos import CollisionType
+from agym.utils import profile
 
 EPS = 1e-4
 
@@ -23,6 +24,7 @@ class Collision:
         return result
 
 
+@profile("calc_colls", "env_step")
 def calculate_colls(wall_rect, platform, ball, blocks, dt) -> List[Collision]:
     ball_radius = ball.radius
     ball_bp, ball_ep = ball.fake_update(dt)
@@ -153,6 +155,7 @@ def place_in_line(line, point):
     return result
 
 
+@profile("coll_ss", "coll_tsr")
 def collide_seg_seg(first, second):
     first_line = make_line(*first)
     second_line = make_line(*second)
@@ -168,6 +171,7 @@ def collide_seg_seg(first, second):
     return result, None
 
 
+@profile("coll_tsr", "calc_colls")
 def collide_thick_segment_rect(segment, rect, thick):
     vec = [segment[1][i] - segment[0][i] for i in range(2)]
     if norm(vec) < EPS:
@@ -207,6 +211,7 @@ def collide_thick_segment_rect(segment, rect, thick):
     return result, None
 
 
+@profile("coll_cr", "calc_colls")
 def collide_circle_rect(circle, rect, radius):
     coll_point = None
 
@@ -221,13 +226,16 @@ def collide_circle_rect(circle, rect, radius):
         elif math.fabs(circle[0] - rect.right) < radius:
             coll_point = [rect.right, circle[1]]
     else:
-        temp_func = lambda circle, point: True if (
-            ((circle[0] - point[0])**2 + (circle[1] - point[1])**2) ** 0.5 < radius 
-        ) else False
 
         for side_1 in [rect.left, rect.right]:
             for side_2 in [rect.top, rect.bottom]:
-                if temp_func(circle, (side_1, side_2)):
+                if is_point_in_circle((side_1, side_2), circle, radius):
                     coll_point = [side_1, side_2]
 
     return coll_point is not None, coll_point
+
+
+def is_point_in_circle(point, circle, radius) -> bool:
+    dist2 = (circle[0] - point[0])**2 + (circle[1] - point[1])**2
+
+    return dist2 < radius**2

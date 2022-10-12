@@ -93,7 +93,8 @@ class Application(DeclarativeContainer):
         BreakoutEnv,
         env_width=config.env_width,
         env_height=config.env_height,
-        map_shape=[6, 6],
+        ball_velocity=config.ball_velocity,
+        platform_velocity=config.platform_velocity,
     )
 
     model = Singleton(

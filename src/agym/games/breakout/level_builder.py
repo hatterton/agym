@@ -67,20 +67,22 @@ class ILevelBuilder(ABC):
 
 
 class DefaultLevelBuilder(ILevelBuilder):
-    def __init__(self, env_width: int, env_height: int) -> None:
+    def __init__(self, env_width: int, env_height: int, ball_velocity: float = 20, platform_velocity: float = 15) -> None:
         self.item_manager = ItemManager()
 
         self.env_width = env_width
         self.env_height = env_height
+        self.ball_velocity = ball_velocity
+        self.platform_velocity = platform_velocity
 
     def build(self) -> Level:
         ball = self.item_manager.create_ball(
             radius=10,
-            velocity=20,
+            velocity=self.ball_velocity,
         )
 
         platform = self.item_manager.create_platform(
-            velocity=15,
+            velocity=self.platform_velocity,
         )
         self._center_platform(platform)
 

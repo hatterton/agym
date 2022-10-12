@@ -41,7 +41,8 @@ class BreakoutAction(enum.Enum):
 
 class BreakoutEnv(IGameEnviroment, IEventHandler):
     def __init__(self, env_width: int, env_height: int,
-                 map_shape: List[int], eps: float = 1e-3):
+                 ball_velocity: float = 20, platform_velocity: float = 15,
+                 eps: float = 1e-3):
         self.env_width = env_width
         self.env_height = env_height
 
@@ -61,6 +62,8 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
         self.level_builder = DefaultLevelBuilder(
             env_width=env_width,
             env_height=env_height,
+            ball_velocity=ball_velocity,
+            platform_velocity=platform_velocity,
         )
         self.ball: Ball
         self.platform: Platform
@@ -174,13 +177,14 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
 
         return reward, is_done
 
+    @profile("get_cands", "env_step")
     def get_available_blocks(self, dt: float) -> List[Block]:
         available_blocks = []
 
         for block in self.blocks:
             w, h = block.rect.w, block.rect.h
             diag = (w ** 2 + h ** 2) ** 0.5
-            min_dist = (diag + self.ball.radius +
+            min_dist = (diag / 2 + self.ball.radius +
                         self.ball.velocity * dt)
 
             dist = (
@@ -215,6 +219,7 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
 
         self.ball.vec_velocity = new_vel
 
+    @profile("perf_colls", "env_step")
     def perform_colls(self, colls) -> int:
         reward = 0
 
