@@ -46,6 +46,10 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
         self.env_width = env_width
         self.env_height = env_height
 
+        Rect = namedtuple("Rect", "top bottom left right")
+        self.env_rect = Rect(top=0, bottom=self.env_height,
+                             left=0, right=self.env_width)
+
         self.screen = pygame.Surface((env_width, env_height))
 
         self.eps = eps
@@ -111,10 +115,6 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
 
     @profile("env_step", "game_update")
     def step(self, action: int, dt: float) -> Tuple[int, bool]:
-        # self.last_state = self.get_cur_state()
-        Rect = namedtuple("Rect", "top bottom left right")
-        env_rect = Rect(top=0, bottom=self.env_height,
-                        left=0, right=self.env_width)
 
         a = BreakoutAction(action)
         self.platform.vec_velocity[0] = 0
@@ -128,17 +128,14 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
             pass
 
         reward = 0
-        candidates = self.get_available_blocks(self.eps)
-        colls = calculate_colls(env_rect, self.platform,
-                                self.ball, candidates, self.eps)
+        colls = self._get_step_collisions(self.eps)
+
         # platform near wall
         if (len(colls) == 1 and
             colls[0].type == CollisionType.PLATFORM_WALL):
             self.perform_colls(colls)
 
-        candidates = self.get_available_blocks(dt)
-        colls = calculate_colls(env_rect, self.platform,
-                                self.ball, candidates, dt)
+        colls = self._get_step_collisions(dt)
 
         if len(colls) == 0:
             self.real_update(dt)
@@ -148,19 +145,15 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
                 while max_dt - min_dt > self.eps:
                     possible_dt = (max_dt + min_dt) / 2
 
-                    candidates = self.get_available_blocks(possible_dt)
-                    colls = calculate_colls(env_rect, self.platform,
-                                            self.ball, candidates,
-                                            possible_dt)
+                    colls = self._get_step_collisions(possible_dt)
+
                     if len(colls) == 0:
                         min_dt = possible_dt
                     else:
                         max_dt = possible_dt
 
                 self.real_update(min_dt)
-                candidates = self.get_available_blocks(self.eps)
-                colls = calculate_colls(env_rect, self.platform,
-                                        self.ball, candidates, self.eps)
+                colls = self._get_step_collisions(self.eps)
                 reward += self.perform_colls(colls)
                 dt -= min_dt
 
@@ -169,7 +162,7 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
             self.win()
             reward += 100
 
-        if self.ball.rect.top > env_rect.bottom + 10:
+        if self.ball.rect.top > self.env_rect.bottom + 10:
             self.lose()
             reward -= 100
 
@@ -177,26 +170,15 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
 
         return reward, is_done
 
-    @profile("get_cands", "env_step")
-    def get_available_blocks(self, dt: float) -> List[Block]:
-        available_blocks = []
-
-        for block in self.blocks:
-            w, h = block.rect.w, block.rect.h
-            diag = (w ** 2 + h ** 2) ** 0.5
-            min_dist = (diag / 2 + self.ball.radius +
-                        self.ball.velocity * dt)
-
-            dist = (
-                (block.rect.centerx - self.ball.rect.centerx) ** 2 +
-                (block.rect.centery - self.ball.rect.centery) ** 2
-            ) ** 0.5
-
-            if dist < min_dist + 10 * self.eps:
-                available_blocks.append(block)
-
-
-        return available_blocks
+    @profile("calc_colls", "env_step")
+    def _get_step_collisions(self, dt: float) -> List[Collision]:
+        return calculate_colls(
+            wall_rect=self.env_rect,
+            platform=self.platform,
+            ball= self.ball,
+            blocks=self.blocks,
+            dt=dt,
+        )
 
     def perform_ball_coll(self, point) -> None:
         if point is None:
@@ -302,60 +284,10 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
         if not self.ball.thrown:
             ball.thrown = True
             miss = random.random() - 0.5
-            ball.vec_velocity = [miss*4, -1]
+            ball.vec_velocity = [miss*1, -1]
             ball.vec_velocity = normalize(ball.vec_velocity)
 
             self.ball.rect.bottom -= 1
-
-    def intersect(self, rect_a, rect_b):
-        left = max(rect_a.left, rect_b.left)
-        right = min(rect_a.right, rect_b.right)
-        top = max(rect_a.top, rect_b.top)
-        bottom = min(rect_a.bottom, rect_b.bottom)
-
-        dx = right - left
-        dy = bottom - top
-
-        result: float
-        if dx < 0 or dy < 0:
-            result = 0
-        else:
-            result = dx * dy
-
-        return result
-
-    def build_map(self, items):
-        item_map = np.zeros(self.map_shape, dtype="float32")
-        n_rows, n_cols = self.map_shape
-
-        box_w = self.env_width / n_cols
-        box_h = self.env_height / n_rows
-
-        for item in items:
-            for i, j in product(range(n_rows), range(n_cols)):
-                box = pygame.Rect(j * box_w, i * box_h, box_w, box_h)
-                item_map[i, j] += self.intersect(box, item.rect)
-
-        item_map /= box_h * box_w
-
-        return item_map
-
-    # def get_cur_state(self):
-    #     ball_map = self.build_map([self.ball])
-    #     platform_map = self.build_map([self.platform])
-    #     break_map = self.build_map(self.blocks)
-
-    #     state = np.stack([ball_map, platform_map, break_map], axis=0)
-
-    #     return state
-
-    # def get_visual_state(self):
-    #     cur_state = self.get_cur_state()
-    #     state = np.concatenate([self.last_state, cur_state], axis=0)
-    #     return state
-
-    # def get_flatten_state(self):
-    #     return None
 
     def blit(self, screen) -> None:
         screen_rect = screen.get_rect()
@@ -374,8 +306,6 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
 
     def try_event(self, event) -> bool:
         if event.type == pygame.KEYDOWN:
-            # if event.key == pygame.K_SPACE:
-            #     self.throw_ball()
             pass
         elif event.type == pygame.KEYUP:
             pass

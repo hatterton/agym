@@ -25,7 +25,6 @@ class Collision:
         return result
 
 
-@profile("calc_colls", "env_step")
 def calculate_colls(wall_rect, platform, ball, blocks, dt) -> List[Collision]:
     ball_radius = ball.radius
     ball_bp, ball_ep = ball.fake_update(dt)
@@ -48,6 +47,19 @@ def calculate_ball_blocks_colls(ball: Ball, blocks: List[Block], dt: float) -> L
     colls = []
 
     for block in blocks:
+        w, h = block.rect.w, block.rect.h
+        diag = (w ** 2 + h ** 2) ** 0.5
+        min_dist = (diag / 2 + ball.radius +
+                    ball.velocity * dt)
+
+        dist = (
+            (block.rect.centerx - ball.rect.centerx) ** 2 +
+            (block.rect.centery - ball.rect.centery) ** 2
+        ) ** 0.5
+
+        if dist > min_dist + EPS:
+            continue
+
         is_coll, point = False, None
         is_coll, point = collide_circle_rect(ball_ep, 
                                              block.rect, ball_radius)
@@ -192,7 +204,6 @@ def place_in_line(line, point):
     return result
 
 
-@profile("coll_ss", "coll_tsr")
 def collide_seg_seg(first, second):
     first_line = make_line(*first)
     second_line = make_line(*second)
@@ -208,7 +219,6 @@ def collide_seg_seg(first, second):
     return result, None
 
 
-@profile("coll_tsr", "calc_colls")
 def collide_thick_segment_rect(segment, rect, thick):
     vec = [segment[1][i] - segment[0][i] for i in range(2)]
     if norm(vec) < EPS:
@@ -248,10 +258,8 @@ def collide_thick_segment_rect(segment, rect, thick):
     return result, None
 
 
-@profile("coll_cr", "calc_colls")
 def collide_circle_rect(circle, rect, radius):
     coll_point = None
-
     if rect.left < circle[0] < rect.right:
         if math.fabs(circle[1] - rect.top) < radius:
             coll_point = [circle[0], rect.top]
