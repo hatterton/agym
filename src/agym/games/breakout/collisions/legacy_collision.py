@@ -1,7 +1,7 @@
 import enum
 import math
 from itertools import product
-from typing import List
+from typing import List, Iterable
 
 from ..geom import Point
 from ..items import Ball, Platform, Block
@@ -17,26 +17,16 @@ from .dtos import (
 EPS = 1e-4
 
 
-def calculate_colls(wall_rect, platform, ball, blocks, dt) -> List[Collision]:
+def calculate_colls(wall_rect, platform, ball, blocks, dt) -> Iterable[Collision]:
+    yield from calculate_platform_walls_colls(platform, wall_rect, dt)
+    yield from calculate_ball_walls_colls(ball, wall_rect, dt)
+    yield from calculate_ball_platform_colls(ball, platform, dt)
+    yield from calculate_ball_blocks_colls(ball, blocks, dt)
+
+
+def calculate_ball_blocks_colls(ball: Ball, blocks: List[Block], dt: float) -> Iterable[CollisionBallBlock]:
     ball_radius = ball.radius
     ball_bp, ball_ep = ball.fake_update(dt)
-    ball_vec = [ball_ep[i] - ball_bp[i] for i in range(2)]
-    b_rect, e_rect = platform.fake_update(dt)
-
-    colls: List[Collision] = []
-    colls += calculate_ball_blocks_colls(ball, blocks, dt)
-    colls += calculate_ball_platform_colls(ball, platform, dt)
-    colls += calculate_ball_walls_colls(ball, wall_rect, dt)
-    colls += calculate_platform_walls_colls(platform, wall_rect, dt)
-
-    return colls
-
-
-def calculate_ball_blocks_colls(ball: Ball, blocks: List[Block], dt: float) -> List[CollisionBallBlock]:
-    ball_radius = ball.radius
-    ball_bp, ball_ep = ball.fake_update(dt)
-
-    colls = []
 
     for block in blocks:
         w, h = block.rect.w, block.rect.h
@@ -64,22 +54,17 @@ def calculate_ball_blocks_colls(ball: Ball, blocks: List[Block], dt: float) -> L
             )
 
         if is_coll:
-            coll = CollisionBallBlock(
+            yield CollisionBallBlock(
                 point=point,
                 ball=ball,
                 block=block,
             )
-            colls.append(coll)
-
-    return colls
 
 
-def calculate_ball_platform_colls(ball: Ball, platform: Platform, dt: float) -> List[CollisionBallPlatform]:
+def calculate_ball_platform_colls(ball: Ball, platform: Platform, dt: float) -> Iterable[CollisionBallPlatform]:
     ball_radius = ball.radius
     ball_bp, ball_ep = ball.fake_update(dt)
     b_rect, e_rect = platform.fake_update(dt)
-
-    colls = []
 
     if ball.thrown:
         is_coll, point = False, None
@@ -98,21 +83,16 @@ def calculate_ball_platform_colls(ball: Ball, platform: Platform, dt: float) -> 
                 )
 
         if is_coll:
-            coll = CollisionBallPlatform(
+            yield CollisionBallPlatform(
                 point=point,
                 ball=ball,
                 platform=platform,
             )
-            colls.append(coll)
-
-    return colls
 
 
-def calculate_ball_walls_colls(ball: Ball, wall_rect, dt: float) -> List[CollisionBallWall]:
+def calculate_ball_walls_colls(ball: Ball, wall_rect, dt: float) -> Iterable[CollisionBallWall]:
     ball_radius = ball.radius
     _, ball_ep = ball.fake_update(dt)
-
-    colls = []
 
     is_coll, point = False, None
     if ball_ep[0] - ball_radius < wall_rect.left:
@@ -128,19 +108,14 @@ def calculate_ball_walls_colls(ball: Ball, wall_rect, dt: float) -> List[Collisi
     #     is_coll, point = True, [ball_ep[0], wall_rect.bottom]
 
     if is_coll:
-        coll = CollisionBallWall(
+        yield CollisionBallWall(
             point=Point.from_list(point),
             ball=ball,
         )
-        colls.append(coll)
-
-    return colls
 
 
-def calculate_platform_walls_colls(platform: Platform, wall_rect, dt: float) -> List[CollisionPlatformWall]:
+def calculate_platform_walls_colls(platform: Platform, wall_rect, dt: float) -> Iterable[CollisionPlatformWall]:
     b_rect, e_rect = platform.fake_update(dt)
-
-    colls = []
 
     is_coll, point = False, None
     if e_rect.left <= wall_rect.left:
@@ -152,13 +127,10 @@ def calculate_platform_walls_colls(platform: Platform, wall_rect, dt: float) -> 
         point = [wall_rect.right, platform.rect.centery]
 
     if is_coll:
-        coll = CollisionPlatformWall(
+        yield CollisionPlatformWall(
             point=Point.from_list(point),
             platform=platform,
         )
-        colls.append(coll)
-
-    return colls
 
 
 def norm(vec):

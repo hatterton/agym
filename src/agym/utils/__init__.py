@@ -13,3 +13,4 @@ from .math import (
     get_n_max,
     get_n_min,
 )
+from .cached_collection import CachedCollection

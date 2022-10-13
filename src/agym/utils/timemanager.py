@@ -75,10 +75,9 @@ class TimeProfiler:
         try:
             self.add_event(start_event)
             yield
-            self.add_event(finish_event)
 
         finally:
-            pass
+            self.add_event(finish_event)
 
     @contextmanager
     def _profiling(self, start_event: str, finish_event: str) -> Generator[None, None, None]:
@@ -86,11 +85,10 @@ class TimeProfiler:
             if self.log_self:
                 self._add_event(start_event)
             yield
-            if self.log_self:
-                self._add_event(finish_event)
 
         finally:
-           pass
+            if self.log_self:
+                self._add_event(finish_event)
 
     def reset(self) -> None:
         self.events = Queue()

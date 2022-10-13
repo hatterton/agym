@@ -132,15 +132,14 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
             pass
 
         reward = 0
+
+        # платформа возле стены
         colls = self._get_step_collisions(self.eps)
+        self.perform_colls(colls)
 
-        # platform near wall
-        if any(colls):
-            self.perform_colls(colls)
-
+        # многоступенчатое определение времени столкновения
         colls = self._get_step_collisions(dt)
-
-        if len(colls) == 0:
+        if not self._any_colls(colls):
             self.real_update(dt)
         else:
             while dt > self.eps:
@@ -150,7 +149,7 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
 
                     colls = self._get_step_collisions(possible_dt)
 
-                    if len(colls) == 0:
+                    if not self._any_colls(colls):
                         min_dt = possible_dt
                     else:
                         max_dt = possible_dt
@@ -173,7 +172,6 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
 
         return reward, is_done
 
-    @profile("calc_colls", "env_step")
     def _get_step_collisions(self, dt: float) -> Iterable[Collision]:
         return self.collision_detector.generate_step_collisions(
             state=self._get_state(),
@@ -188,8 +186,19 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
             wall_rect=self.env_rect,
         )
 
-    @profile("perf_colls", "env_step")
+    @profile("any_colls", "env_step")
+    def _any_colls(self, colls: Iterable[Collision]) -> bool:
+        return any(colls)
+
     def perform_colls(self, colls: Iterable[Collision]) -> int:
+        return self._perform_colls(self._get_all_colls(colls))
+
+    @profile("all_colls", "env_step")
+    def _get_all_colls(self, colls: Iterable[Collision]) -> List[Collision]:
+        return list(colls)
+
+    @profile("perf_colls", "env_step")
+    def _perform_colls(self, colls: Iterable[Collision]) -> int:
         reward = 0
 
         for coll in colls:
