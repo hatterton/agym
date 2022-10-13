@@ -13,8 +13,8 @@ class LegacyCollisionDetector:
         return CachedCollection(
             calculate_colls(
                 wall_rect=state.wall_rect,
-                platform=state.platforms[0],
-                ball= state.balls[0],
+                platforms=state.platforms,
+                balls=state.balls,
                 blocks=state.blocks,
                 dt=dt,
             )

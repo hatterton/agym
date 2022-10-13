@@ -17,11 +17,32 @@ from .dtos import (
 EPS = 1e-4
 
 
-def calculate_colls(wall_rect, platform, ball, blocks, dt) -> Iterable[Collision]:
-    yield from calculate_platform_walls_colls(platform, wall_rect, dt)
-    yield from calculate_ball_walls_colls(ball, wall_rect, dt)
-    yield from calculate_ball_platform_colls(ball, platform, dt)
-    yield from calculate_ball_blocks_colls(ball, blocks, dt)
+def calculate_colls(wall_rect, platforms, balls, blocks, dt) -> Iterable[Collision]:
+    yield from calculate_platforms_walls_colls(platforms, wall_rect, dt)
+    yield from calculate_balls_walls_colls(balls, wall_rect, dt)
+    yield from calculate_balls_platforms_colls(balls, platforms, dt)
+    yield from calculate_balls_blocks_colls(balls, blocks, dt)
+
+
+def calculate_balls_blocks_colls(balls: List[Ball], blocks: List[Block], dt: float) -> Iterable[CollisionBallBlock]:
+    for ball in balls:
+        yield from calculate_ball_blocks_colls(ball, blocks, dt)
+
+
+def calculate_balls_platforms_colls(balls: List[Ball], platforms: List[Platform], dt: float) -> Iterable[CollisionBallPlatform]:
+    for ball in balls:
+        for platform in platforms:
+            yield from calculate_ball_platform_colls(ball, platform, dt)
+
+
+def calculate_balls_walls_colls(balls: List[Ball], wall_rect, dt: float) -> Iterable[CollisionBallWall]:
+    for ball in balls:
+        yield from calculate_ball_walls_colls(ball, wall_rect, dt)
+
+
+def calculate_platforms_walls_colls(platforms: List[Platform], wall_rect, dt: float) -> Iterable[CollisionPlatformWall]:
+    for platform in platforms:
+        yield from calculate_platform_walls_colls(platform, wall_rect, dt)
 
 
 def calculate_ball_blocks_colls(ball: Ball, blocks: List[Block], dt: float) -> Iterable[CollisionBallBlock]:

@@ -28,8 +28,9 @@ class Settings(BaseSettings):
     catch_reward: int = 250
 
     tps: int = 20
+    # max_fps: int = 5
     # max_fps: int = 60
-    max_fps: int = 200
+    # max_fps: int = 200
     max_fps: int = 1000
     log_fps: float = 2
 
