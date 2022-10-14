@@ -105,13 +105,13 @@ class Platform(Item):
 
 
 class Ball(Item):
-    def __init__(self, image_name, radius, velocity, item_id: ItemId):
+    def __init__(self, image_name, radius, velocity, thrown: bool, item_id: ItemId):
         super(Ball, self).__init__(image_name, item_id)
 
         self.radius = radius
         self.color_cirle = pygame.Color(0, 0, 0)
 
-        self.thrown = False
+        self.thrown = thrown
         self.vec_velocity = [0, 0]
         self.velocity = velocity
 

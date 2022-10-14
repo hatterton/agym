@@ -3,10 +3,9 @@ from .env import (
     BreakoutAction,
 )
 from .manual_model import ManualBreakoutModel
-from .level_builder import (
+from .levels import (
     ItemManager,
     Level,
-    ILevelBuilder,
     DefaultLevelBuilder,
 )
 from .events import (
