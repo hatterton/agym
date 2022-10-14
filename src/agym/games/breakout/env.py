@@ -229,7 +229,10 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
 
             elif isinstance(coll, CollisionBallBlock):
                 self.perform_ball_coll(coll.point)
-                self.blocks.remove(coll.block)
+
+                coll.block.health -= 1
+                if coll.block.health <= 0:
+                    self.blocks.remove(coll.block)
                 reward += 10
 
             elif isinstance(coll, CollisionPlatformWall):

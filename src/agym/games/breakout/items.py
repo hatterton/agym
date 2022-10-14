@@ -36,10 +36,12 @@ class Item(Sprite):
 
 
 class Block(Item):
-    def __init__(self, image_name: str, top: int, left: int, item_id: ItemId):
+    def __init__(self, image_name: str, top: int, left: int, health: int, item_id: ItemId):
         super(Block, self).__init__(image_name, item_id)
         self.rect.top = top
         self.rect.left = left
+
+        self.health = health
 
     def get_ghost_trace(self, dt) -> List[Shape]:
         return [

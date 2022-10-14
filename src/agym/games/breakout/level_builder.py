@@ -19,7 +19,7 @@ class ItemManager:
     def __init__(self) -> None:
         self.item_counter = 0
 
-    def create_block(self, top: int, left: int) -> Block:
+    def create_block(self, top: int, left: int, health: int = 1) -> Block:
         image_name_template = "block_{} 60x20.png"
         colors = ["blue", "yellow", "red"]
         image_name = image_name_template.format(random.choice(colors))
@@ -28,6 +28,7 @@ class ItemManager:
             image_name=image_name,
             top=top,
             left=left,
+            health=health,
             item_id=self.item_counter,
         )
         self.item_counter += 1
