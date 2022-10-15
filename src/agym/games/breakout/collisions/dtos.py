@@ -32,3 +32,9 @@ class CollisionBallWall(Collision):
 @dataclass
 class CollisionPlatformWall(Collision):
     platform: Platform
+
+
+@dataclass
+class CollisionBallBall(Collision):
+    ball1: Ball
+    ball2: Ball

@@ -25,25 +25,25 @@ class ItemManager:
 
         return block
 
-    def create_platform(self, velocity: float) -> Platform:
+    def create_platform(self, speed: float) -> Platform:
         image_name = "platform 120x20.png"
 
         platform = Platform(
             image_name=image_name,
-            velocity=velocity,
+            speed=speed,
             item_id=self.item_counter,
         )
         self.item_counter += 1
 
         return platform
 
-    def create_ball(self, radius: float, velocity: float, thrown: bool = False, top: Optional[float] = None, left: Optional[float] = None) -> Ball:
+    def create_ball(self, radius: float, speed: float, thrown: bool = False, top: Optional[float] = None, left: Optional[float] = None) -> Ball:
         image_name = "ball_aparture 20x20.png"
 
         ball = Ball(
             image_name=image_name,
             radius=radius,
-            velocity=velocity,
+            speed=speed,
             thrown=thrown,
             item_id=self.item_counter,
         )

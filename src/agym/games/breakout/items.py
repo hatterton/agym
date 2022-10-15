@@ -1,12 +1,8 @@
 import pygame
 import os
-import random
-import copy
-from dataclasses import dataclass
 from typing import List
 
 from pygame.sprite import Sprite
-from agym.games.breakout.custom_rect import Rect
 from agym.games.breakout.geom import (
     Shape,
     Circle,
@@ -29,10 +25,11 @@ class Item(Sprite):
         self.image = pygame.image.load(image_path)
         self.id = item_id
 
-        self.rect = Rect(self.image.get_rect())
+        self.rect = Rectangle.from_rect(self.image.get_rect())
 
     def blit(self, screen) -> None:
-        screen.blit(self.image, self.rect.as_rect())
+        rect = self.image.get_rect().move(self.rect.left, self.rect.top)
+        screen.blit(self.image, rect)
 
 
 class Block(Item):
@@ -63,22 +60,21 @@ class Block(Item):
 
 
 class Platform(Item):
-    def __init__(self, image_name: str, velocity: float, item_id: ItemId):
+    def __init__(self, image_name: str, speed: float, item_id: ItemId):
         super(Platform, self).__init__(image_name, item_id)
 
-        self.velocity = velocity
-        self.vec_velocity = [0, 0]
+        self.speed: float = speed
+        self.velocity: Vec2 = Vec2(x=0, y=0)
 
         self.rest_freeze_time = 0
         self.default_freeze_time = 2
 
     def fake_update(self, dt):
-        fake_rect = self.rect.copy()
+        fake_rect = Rectangle.from_rect(self.rect)
 
         if self.rest_freeze_time <= dt:
             dt -= self.rest_freeze_time
-            fake_rect.center[0] += (self.velocity * dt *
-                                    self.vec_velocity[0])
+            fake_rect.center += self.velocity * self.speed * dt
 
         return [self.rect, fake_rect]
 
@@ -86,6 +82,7 @@ class Platform(Item):
         self.rest_freeze_time = self.default_freeze_time
 
     def get_ghost_trace(self, dt) -> List[Shape]:
+        # TODO it is not valid ghost trace
         return [
             Triangle(
                 points=[
@@ -105,29 +102,26 @@ class Platform(Item):
 
 
 class Ball(Item):
-    def __init__(self, image_name, radius, velocity, thrown: bool, item_id: ItemId):
+    def __init__(self, image_name, radius, speed, thrown: bool, item_id: ItemId):
         super(Ball, self).__init__(image_name, item_id)
 
         self.radius = radius
         self.color_cirle = pygame.Color(0, 0, 0)
 
         self.thrown = thrown
-        self.vec_velocity = [0, 0]
-        self.velocity = velocity
+        self.velocity: Vec2 = Vec2(x=0, y=0)
+        self.speed = speed
 
     def fake_update(self, dt):
-        fake_rect = self.rect.copy()
-
-        for i in range(2):
-            fake_rect.center[i] += (self.velocity *
-                                    self.vec_velocity[i] * dt)
+        fake_rect = Rectangle.from_rect(self.rect)
+        fake_rect.center += self.velocity * self.speed * dt
 
         return self.rect.center, fake_rect.center
 
     def get_ghost_trace(self, dt) -> List[Shape]:
-        s = self.velocity * dt
+        s = self.speed * dt
 
-        vel = Vec2(x=self.vec_velocity[0], y=self.vec_velocity[1])
+        vel = Vec2(x=self.velocity[0], y=self.velocity[1])
         normal_vel = Vec2(x=vel.y, y=-vel.x)
         scaled_normal_vel = normal_vel * s
 

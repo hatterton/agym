@@ -6,6 +6,7 @@ from agym.games.breakout import (
     ItemManager,
     Level,
 )
+from agym.games.breakout.geom import Point, Vec2
 
 
 @pytest.fixture
@@ -22,21 +23,21 @@ PI = math.asin(1) * 2
 def ball_block_collision_level(item_manager: ItemManager) -> LevelTestCase:
     ball = item_manager.create_ball(
         radius=10,
-        velocity=2.,
+        speed=2.,
     )
-    ball.rect.center = [100, 60]
+    ball.rect.center = Point(x=100, y=60)
     ball.thrown = True
-    ball.vec_velocity = [0, 1]
+    ball.velocity = Vec2(x=0, y=1)
 
     block = item_manager.create_block(top=0, left=0)
-    block.rect.center = [100, 140]
+    block.rect.center = Point(x=100, y=140)
     blocks = [
         block,
         item_manager.create_block(top=0, left=0)
     ]
 
-    platform = item_manager.create_platform(velocity=0)
-    platform.rect.center = [100, 480]
+    platform = item_manager.create_platform(speed=0)
+    platform.rect.center = Point(x=100, y=330)
 
     return Level(blocks=blocks, balls=[ball], platform=platform), 60
 
@@ -45,11 +46,11 @@ def ball_block_collision_level(item_manager: ItemManager) -> LevelTestCase:
 def ball_corner_block_collision_level(item_manager: ItemManager) -> LevelTestCase:
     ball = item_manager.create_ball(
         radius=10,
-        velocity=2.,
+        speed=2.,
     )
-    ball.rect.center = [100 + math.sin(PI/8) * 10, 160]
+    ball.rect.center = Point(x=100 + math.sin(PI/8) * 10, y=160)
     ball.thrown = True
-    ball.vec_velocity = [0, -1]
+    ball.velocity = Vec2(x=0, y=-1)
 
     block = item_manager.create_block(top=100, left=0)
     block.rect.right = 100
@@ -58,8 +59,8 @@ def ball_corner_block_collision_level(item_manager: ItemManager) -> LevelTestCas
         item_manager.create_block(top=0, left=0)
     ]
 
-    platform = item_manager.create_platform(velocity=0)
-    platform.rect.center = [100, 480]
+    platform = item_manager.create_platform(speed=0)
+    platform.rect.center = Point(x=100, y=330)
 
     return Level(blocks=blocks, balls=[ball], platform=platform), 60
 
@@ -68,19 +69,19 @@ def ball_corner_block_collision_level(item_manager: ItemManager) -> LevelTestCas
 def ball_vertical_wall_left_collision_level(item_manager: ItemManager) -> LevelTestCase:
     ball = item_manager.create_ball(
         radius=10,
-        velocity=2.,
+        speed=2.,
     )
-    ball.rect.center = [60, 200]
+    ball.rect.center = Point(x=60, y=200)
     ball.thrown = True
     r2 = 2 ** 0.5
-    ball.vec_velocity = [-r2 / 2, -r2 / 2]
+    ball.velocity = Vec2(x=-r2 / 2, y=-r2 / 2)
 
     blocks = [
         item_manager.create_block(top=0, left=0)
     ]
 
-    platform = item_manager.create_platform(velocity=0)
-    platform.rect.center = [100, 480]
+    platform = item_manager.create_platform(speed=0)
+    platform.rect.center = Point(x=100, y=330)
 
     return Level(blocks=blocks, balls=[ball], platform=platform), 60
 
@@ -89,19 +90,19 @@ def ball_vertical_wall_left_collision_level(item_manager: ItemManager) -> LevelT
 def ball_vertical_wall_right_collision_level(item_manager: ItemManager) -> LevelTestCase:
     ball = item_manager.create_ball(
         radius=10,
-        velocity=2.,
+        speed=2.,
     )
-    ball.rect.center = [390, 200]
+    ball.rect.center = Point(x=390, y=200)
     ball.thrown = True
     r2 = 2 ** 0.5
-    ball.vec_velocity = [r2 / 2, -r2 / 2]
+    ball.velocity = Vec2(x=r2 / 2, y=-r2 / 2)
 
     blocks = [
         item_manager.create_block(top=0, left=0)
     ]
 
-    platform = item_manager.create_platform(velocity=0)
-    platform.rect.center = [100, 480]
+    platform = item_manager.create_platform(speed=0)
+    platform.rect.center = Point(x=100, y=330)
 
     return Level(blocks=blocks, balls=[ball], platform=platform), 60
 
@@ -110,19 +111,19 @@ def ball_vertical_wall_right_collision_level(item_manager: ItemManager) -> Level
 def ball_vertical_wall_top_collision_level(item_manager: ItemManager) -> LevelTestCase:
     ball = item_manager.create_ball(
         radius=10,
-        velocity=2.,
+        speed=2.,
     )
-    ball.rect.center = [100, 60]
+    ball.rect.center = Point(x=100, y=60)
     ball.thrown = True
     r2 = 2 ** 0.5
-    ball.vec_velocity = [r2 / 2, -r2 / 2]
+    ball.velocity = Vec2(x=r2 / 2, y=-r2 / 2)
 
     blocks = [
         item_manager.create_block(top=0, left=0)
     ]
 
-    platform = item_manager.create_platform(velocity=0)
-    platform.rect.center = [100, 480]
+    platform = item_manager.create_platform(speed=0)
+    platform.rect.center = Point(x=100, y=330)
 
     return Level(blocks=blocks, balls=[ball], platform=platform), 60
 
@@ -131,19 +132,19 @@ def ball_vertical_wall_top_collision_level(item_manager: ItemManager) -> LevelTe
 def ball_corner_wall_collision_level(item_manager: ItemManager) -> LevelTestCase:
     ball = item_manager.create_ball(
         radius=10,
-        velocity=2.,
+        speed=2.,
     )
-    ball.rect.center = [400, 50]
+    ball.rect.center = Point(x=400, y=50)
     ball.thrown = True
     r2 = 2 ** 0.5
-    ball.vec_velocity = [r2 / 2, -r2 / 2]
+    ball.velocity = Vec2(x=r2 / 2, y=-r2 / 2)
 
     blocks = [
         item_manager.create_block(top=0, left=0)
     ]
 
-    platform = item_manager.create_platform(velocity=0)
-    platform.rect.center = [100, 480]
+    platform = item_manager.create_platform(speed=0)
+    platform.rect.center = Point(x=100, y=330)
 
     return Level(blocks=blocks, balls=[ball], platform=platform), 60
 
@@ -152,11 +153,11 @@ def ball_corner_wall_collision_level(item_manager: ItemManager) -> LevelTestCase
 def ball_between_blocks_collision_level(item_manager: ItemManager) -> LevelTestCase:
     ball = item_manager.create_ball(
         radius=10,
-        velocity=2.,
+        speed=2.,
     )
-    ball.rect.center = [100, 100]
+    ball.rect.center = Point(x=100, y=100)
     ball.thrown = True
-    ball.vec_velocity = [0, 1]
+    ball.velocity = Vec2(x=0, y=1)
 
     block1 = item_manager.create_block(top=150, left=0)
     block1.rect.right = 95
@@ -168,11 +169,79 @@ def ball_between_blocks_collision_level(item_manager: ItemManager) -> LevelTestC
         item_manager.create_block(top=0, left=0)
     ]
 
-    platform = item_manager.create_platform(velocity=0)
-    platform.rect.center = [100, 480]
+    platform = item_manager.create_platform(speed=0)
+    platform.rect.center = Point(x=100, y=330)
 
     return Level(blocks=blocks, balls=[ball], platform=platform), 60
 
+
+@pytest.fixture
+def ball_platform_collision_level(item_manager: ItemManager) -> LevelTestCase:
+    ball = item_manager.create_ball(
+        radius=10,
+        speed=2.,
+    )
+    ball.rect.center = Point(x=300, y=250)
+    ball.thrown = True
+    ball.velocity = Vec2(x=0, y=1)
+
+    platform = item_manager.create_platform(speed=0)
+    platform.rect.center = Point(x=300, y=330)
+
+    blocks = [
+        item_manager.create_block(top=0, left=0)
+    ]
+
+    return Level(blocks=blocks, balls=[ball], platform=platform), 60
+
+
+@pytest.fixture
+def platfrom_left_wall_collision_level(item_manager: ItemManager) -> LevelTestCase:
+    platform = item_manager.create_platform(speed=2)
+    platform.rect.center = Point(x=150, y=330)
+    platform.rect.left = 70
+    platform.velocity = Vec2(x=-1, y=0)
+
+    blocks = [
+        item_manager.create_block(top=0, left=0)
+    ]
+
+    return Level(blocks=blocks, balls=[], platform=platform), 60
+
+
+@pytest.fixture
+def platfrom_right_wall_collision_level(item_manager: ItemManager) -> LevelTestCase:
+    platform = item_manager.create_platform(speed=2)
+    platform.rect.center = Point(x=150, y=330)
+    platform.rect.right = 380
+    platform.velocity = Vec2(x=1, y=0)
+
+    blocks = [
+        item_manager.create_block(top=0, left=0)
+    ]
+
+    return Level(blocks=blocks, balls=[], platform=platform), 60
+
+
+@pytest.fixture
+def ball_platform_side_collision_level(item_manager: ItemManager) -> LevelTestCase:
+    ball = item_manager.create_ball(
+        radius=10,
+        speed=2.,
+    )
+    ball.rect.center = Point(x=20, y=327)
+    ball.thrown = True
+    ball.velocity = Vec2(x=1, y=0)
+
+    platform = item_manager.create_platform(speed=1.)
+    platform.rect.center = Point(x=100, y=330)
+    platform.velocity = Vec2(x=-1, y=0)
+
+    blocks = [
+        item_manager.create_block(top=0, left=0)
+    ]
+
+    return Level(blocks=blocks, balls=[ball], platform=platform), 60
 
 
 @pytest.fixture
@@ -184,8 +253,13 @@ def all_levels(
     ball_vertical_wall_top_collision_level,
     ball_corner_wall_collision_level,
     ball_between_blocks_collision_level,
+    ball_platform_collision_level,
+    platfrom_left_wall_collision_level,
+    platfrom_right_wall_collision_level,
+    ball_platform_side_collision_level,
 ) -> List[LevelTestCase]:
     return [
+        ball_platform_collision_level,
         ball_block_collision_level,
         ball_corner_block_collision_level,
         ball_vertical_wall_left_collision_level,
@@ -193,4 +267,7 @@ def all_levels(
         ball_vertical_wall_top_collision_level,
         ball_corner_wall_collision_level,
         ball_between_blocks_collision_level,
+        platfrom_left_wall_collision_level,
+        platfrom_right_wall_collision_level,
+        ball_platform_side_collision_level,
     ]

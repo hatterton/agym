@@ -53,12 +53,13 @@ def calculate_ball_blocks_colls(ball: Ball, blocks: List[Block], dt: float) -> I
         w, h = block.rect.w, block.rect.h
         diag = (w ** 2 + h ** 2) ** 0.5
         min_dist = (diag / 2 + ball.radius +
-                    ball.velocity * dt)
+                    ball.speed * dt)
 
-        dist = (
-            (block.rect.centerx - ball.rect.centerx) ** 2 +
-            (block.rect.centery - ball.rect.centery) ** 2
-        ) ** 0.5
+        dist = (block.rect.center - ball.rect.center).norm()
+        # dist = (
+        #     (block.rect.centerx - ball.rect.centerx) ** 2 +
+        #     (block.rect.centery - ball.rect.centery) ** 2
+        # ) ** 0.5
 
         if dist > min_dist + EPS:
             continue
@@ -112,18 +113,17 @@ def calculate_ball_platform_colls(ball: Ball, platform: Platform, dt: float) -> 
 
 
 def calculate_ball_walls_colls(ball: Ball, wall_rect, dt: float) -> Iterable[CollisionBallWall]:
-    ball_radius = ball.radius
     _, ball_ep = ball.fake_update(dt)
 
     is_coll, point = False, None
-    if ball_ep[0] - ball_radius < wall_rect.left:
-        is_coll, point = True, [wall_rect.left, ball_ep[1]]
+    if ball_ep.x - ball.radius < wall_rect.left:
+        is_coll, point = True, [wall_rect.left, ball_ep.y]
 
-    if ball_ep[0] + ball_radius > wall_rect.right:
-        is_coll, point = True, [wall_rect.right, ball_ep[1]]
+    if ball_ep.x + ball.radius > wall_rect.right:
+        is_coll, point = True, [wall_rect.right, ball_ep.y]
 
-    if ball_ep[1] - ball_radius < wall_rect.top:
-        is_coll, point = True, [ball_ep[0], wall_rect.top]
+    if ball_ep.y - ball.radius < wall_rect.top:
+        is_coll, point = True, [ball_ep.x, wall_rect.top]
 
     # if ball_ep[1] + ball_radius > wall_rect.bottom:
     #     is_coll, point = True, [ball_ep[0], wall_rect.bottom]
@@ -139,11 +139,11 @@ def calculate_platform_walls_colls(platform: Platform, wall_rect, dt: float) -> 
     b_rect, e_rect = platform.fake_update(dt)
 
     is_coll, point = False, None
-    if e_rect.left <= wall_rect.left:
+    if e_rect.left < wall_rect.left:
         is_coll = True
         point = [wall_rect.left, platform.rect.centery]
 
-    if e_rect.right >= wall_rect.right:
+    if e_rect.right > wall_rect.right:
         is_coll = True
         point = [wall_rect.right, platform.rect.centery]
 
@@ -155,6 +155,7 @@ def calculate_platform_walls_colls(platform: Platform, wall_rect, dt: float) -> 
 
 
 def norm(vec):
+    # return vec.norm()
     result = 0
 
     result = sum(item ** 2 for item in vec) ** 0.5
@@ -163,6 +164,7 @@ def norm(vec):
 
 
 def normalize(vec):
+    # return vec / vec.norm()
     mod_vec = norm(vec)
 
     result_vec = [item / mod_vec for item in vec]
@@ -171,7 +173,8 @@ def normalize(vec):
 
 
 def sum_vec(a, b):
-    result = [a[i] + b[i] for i in range(min(len(a), len(b)))]
+    # return a + b
+    result = [a[i] + b[i] for i in range(2)]
 
     return result
 

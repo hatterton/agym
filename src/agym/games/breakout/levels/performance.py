@@ -6,28 +6,29 @@ from .item_manager import ItemManager
 from .level import Level
 
 from ..items import Ball, Block, Platform
+from ..geom import Vec2
 
 
 class PerformanceLevelBuilder:
-    def __init__(self, env_width: int, env_height: int, ball_velocity: float = 20, platform_velocity: float = 15) -> None:
+    def __init__(self, env_width: int, env_height: int, ball_speed: float = 20, platform_speed: float = 15) -> None:
         self.item_manager = ItemManager()
 
         self.env_width = env_width
         self.env_height = env_height
-        self.ball_velocity = ball_velocity
-        self.platform_velocity = platform_velocity
+        self.ball_speed = ball_speed
+        self.platform_speed = platform_speed
 
     def build(self) -> Level:
         balls = self._make_balls(
             n_balls=5,
             radius=10,
-            ball_velocity=self.ball_velocity,
-            # ball_velocity=0,
+            ball_speed=self.ball_speed,
+            # ball_speed=1,
             shift=100,
         )
 
         platform = self.item_manager.create_platform(
-            velocity=self.platform_velocity,
+            speed=self.platform_speed,
         )
         self._center_platform(platform)
 
@@ -45,7 +46,7 @@ class PerformanceLevelBuilder:
         self,
         n_balls: int,
         radius: int,
-        ball_velocity: int,
+        ball_speed: int,
         shift: int = 100,
     ):
         balls = []
@@ -65,13 +66,14 @@ class PerformanceLevelBuilder:
         for i in range(n_balls):
             ball = self.item_manager.create_ball(
                 radius=radius,
-                velocity=ball_velocity,
+                speed=ball_speed,
                 thrown=True,
             )
             ball.rect.centery = self.env_height / 2
             ball.rect.left = (side_shift + radius * 2) * i + shift
             # print(ball.rect.centerx)
-            ball.vec_velocity = random.choice(velocities).copy()
+            velocity = random.choice(velocities).copy()
+            ball.velocity = Vec2.from_list(velocity)
 
             balls.append(ball)
 
@@ -83,7 +85,7 @@ class PerformanceLevelBuilder:
         block_width: int = 60,
         block_height: int = 20,
         top_shift: int = 50,
-        horisontal_shift: int = 10,
+        horisontal_shift: int = 5,
         vertical_shift: int = 40,
         health: int = 100,
     ) -> List[Block]:

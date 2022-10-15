@@ -9,22 +9,22 @@ from .item_manager import ItemManager
 
 
 class DefaultLevelBuilder:
-    def __init__(self, env_width: int, env_height: int, ball_velocity: float = 20, platform_velocity: float = 15) -> None:
+    def __init__(self, env_width: int, env_height: int, ball_speed: float = 20, platform_speed: float = 15) -> None:
         self.item_manager = ItemManager()
 
         self.env_width = env_width
         self.env_height = env_height
-        self.ball_velocity = ball_velocity
-        self.platform_velocity = platform_velocity
+        self.ball_speed = ball_speed
+        self.platform_speed = platform_speed
 
     def build(self) -> Level:
         ball = self.item_manager.create_ball(
             radius=10,
-            velocity=self.ball_velocity,
+            speed=self.ball_speed,
         )
 
         platform = self.item_manager.create_platform(
-            velocity=self.platform_velocity,
+            speed=self.platform_speed,
         )
         self._center_platform(platform)
 

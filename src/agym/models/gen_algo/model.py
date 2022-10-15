@@ -23,7 +23,7 @@ class Model:
         arg.ball.throw()
 
         input_data = self.make_input_vector(arg)
-        input_data = np.concatenate((np.array([1.0, 20*arg.ball.velocity[0], 20*arg.ball.velocity[1]],float).flatten(),
+        input_data = np.concatenate((np.array([1.0, 20*arg.ball.speed[0], 20*arg.ball.speed[1]],float).flatten(),
                                      input_data.flatten()))
         input_data = np.dot(input_data, self.body[0])
         input_data = np.tanh(input_data)
