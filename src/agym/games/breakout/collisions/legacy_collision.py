@@ -1,6 +1,6 @@
 import enum
 import math
-from itertools import product
+from itertools import product, combinations
 from typing import List, Iterable
 
 from ..geom import Point
@@ -12,12 +12,14 @@ from .dtos import (
     CollisionBallPlatform,
     CollisionBallWall,
     CollisionPlatformWall,
+    CollisionBallBall,
 )
 
 EPS = 1e-4
 
 
 def calculate_colls(wall_rect, platforms, balls, blocks, dt) -> Iterable[Collision]:
+    yield from calculate_balls_balls_colls(balls, dt)
     yield from calculate_platforms_walls_colls(platforms, wall_rect, dt)
     yield from calculate_balls_walls_colls(balls, wall_rect, dt)
     yield from calculate_balls_platforms_colls(balls, platforms, dt)
@@ -43,6 +45,11 @@ def calculate_balls_walls_colls(balls: List[Ball], wall_rect, dt: float) -> Iter
 def calculate_platforms_walls_colls(platforms: List[Platform], wall_rect, dt: float) -> Iterable[CollisionPlatformWall]:
     for platform in platforms:
         yield from calculate_platform_walls_colls(platform, wall_rect, dt)
+
+
+def calculate_balls_balls_colls(balls: List[Ball], dt: float) -> Iterable[CollisionPlatformWall]:
+    for ball1, ball2 in combinations(balls, 2):
+        yield from calculate_ball_ball_colls(ball1, ball2, dt)
 
 
 def calculate_ball_blocks_colls(ball: Ball, blocks: List[Block], dt: float) -> Iterable[CollisionBallBlock]:
@@ -151,6 +158,31 @@ def calculate_platform_walls_colls(platform: Platform, wall_rect, dt: float) -> 
         yield CollisionPlatformWall(
             point=Point.from_list(point),
             platform=platform,
+        )
+
+def calculate_ball_ball_colls(ball1: Ball, ball2: Ball, dt: float) -> Iterable[CollisionPlatformWall]:
+    radius = ball1.radius
+    b1, e1 = ball1.fake_update(dt)
+    b2, e2 = ball2.fake_update(dt)
+
+    is_coll, point = False, None
+    if not is_coll:
+        is_coll, point = collide_circle_circle(b1, b2, radius)
+
+    if not is_coll:
+        is_coll, point = collide_circle_circle(b1, e2, radius)
+
+    if not is_coll:
+        is_coll, point = collide_circle_circle(e1, b2, radius)
+
+    if not is_coll:
+        is_coll, point = collide_circle_circle(e1, e2, radius)
+
+    if is_coll:
+        yield CollisionBallBall(
+            ball1=ball1,
+            ball2=ball2,
+            point=point,
         )
 
 
@@ -279,3 +311,12 @@ def is_point_in_circle(point, circle, radius) -> bool:
     dist2 = (circle[0] - point[0])**2 + (circle[1] - point[1])**2
 
     return dist2 < radius**2
+
+
+def collide_circle_circle(p1, p2, radius):
+    shift = p2 - p1
+    if shift.norm2() + EPS < 4 * radius ** 2:
+        return True, p1 + shift / 2
+
+
+    return False, None

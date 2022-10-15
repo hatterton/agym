@@ -254,8 +254,8 @@ def all_levels(
     ball_corner_wall_collision_level,
     ball_between_blocks_collision_level,
     ball_platform_collision_level,
-    platfrom_left_wall_collision_level,
-    platfrom_right_wall_collision_level,
+    # platfrom_left_wall_collision_level,
+    # platfrom_right_wall_collision_level,
     ball_platform_side_collision_level,
 ) -> List[LevelTestCase]:
     return [
@@ -267,7 +267,7 @@ def all_levels(
         ball_vertical_wall_top_collision_level,
         ball_corner_wall_collision_level,
         ball_between_blocks_collision_level,
-        platfrom_left_wall_collision_level,
-        platfrom_right_wall_collision_level,
+        # platfrom_left_wall_collision_level,
+        # platfrom_right_wall_collision_level,
         ball_platform_side_collision_level,
     ]

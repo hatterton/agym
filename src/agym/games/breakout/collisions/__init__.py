@@ -4,6 +4,7 @@ from .dtos import (
     CollisionBallWall,
     CollisionBallPlatform,
     CollisionPlatformWall,
+    CollisionBallBall,
 )
 
 from .legacy import LegacyCollisionDetector

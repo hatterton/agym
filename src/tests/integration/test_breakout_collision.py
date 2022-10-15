@@ -170,7 +170,7 @@ def test_platform_left_wall_collision_type(
     breakout.load_level(level)
 
     breakout.step(
-        action=0,
+        action=BreakoutAction.LEFT.value,
         dt=ticks,
     )
 
@@ -190,7 +190,7 @@ def test_platform_right_wall_collision_type(
     breakout.load_level(level)
 
     breakout.step(
-        action=0,
+        action=BreakoutAction.RIGHT.value,
         dt=ticks,
     )
 

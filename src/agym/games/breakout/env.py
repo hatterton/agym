@@ -31,6 +31,7 @@ from .collisions import (
     CollisionBallPlatform,
     CollisionBallWall,
     CollisionPlatformWall,
+    CollisionBallBall,
 )
 from .state import GameState
 
@@ -92,7 +93,6 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
         return False
 
     def reset(self) -> None:
-        # self.last_state = self.get_cur_state()
         self.n_lives = self.start_lives
 
         self.reset_level()
@@ -124,7 +124,7 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
     def step(self, action: int, dt: float) -> Tuple[int, bool]:
 
         a = BreakoutAction(action)
-        # self.platform.velocity[0] = 0
+        self.platform.velocity[0] = 0
         if a == BreakoutAction.LEFT:
             self.platform.velocity[0] = -1
         elif a == BreakoutAction.RIGHT:
@@ -216,17 +216,11 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
                 self.perform_ball_coll(ball=coll.ball, point=coll.point)
 
             elif isinstance(coll, CollisionBallPlatform):
-                velocity = coll.point - coll.platform.rect.center
-                velocity.x /= 2
-                velocity = velocity / velocity.norm()
-
-                if (coll.ball.rect.centery >
-                    self.platform.rect.centery + 2):
-                    velocity.y += 0.2
-                    velocity = velocity / velocity.norm()
-
-                self.platform.freeze()
-                coll.ball.velocity = velocity
+                self.perform_platform_ball_coll(
+                    platform=coll.platform,
+                    ball=coll.ball,
+                    point=coll.point,
+                )
 
             elif isinstance(coll, CollisionBallBlock):
                 self.perform_ball_coll(ball=coll.ball, point=coll.point)
@@ -238,29 +232,60 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
             elif isinstance(coll, CollisionPlatformWall):
                 self.platform.velocity.x = 0
 
+            elif isinstance(coll, CollisionBallBall):
+                self.perform_ball_ball_coll(
+                    ball1=coll.ball1,
+                    ball2=coll.ball2,
+                    point=coll.point,
+                )
+
 
         return reward
 
     def perform_ball_coll(self, ball: Ball, point: Point) -> None:
-        if point is None:
-            raise ValueError("What the fuck!!!")
+        basis = point - ball.rect.center
+        projection = ball.velocity.scalar(basis)
+        velocity = ball.velocity - basis * 2. * projection / basis.norm2()
 
-        vel = ball.velocity
-        basis = [point[i] - ball.rect.center[i]
-                 for i in range(2)]
+        if abs(velocity.y) < 0.1:
+            sign = np.sign(velocity.y)
+            velocity.y = (sign if sign != 0 else 1) * 0.1
+            velocity /= velocity.norm()
 
-        basis = normalize(basis)
+        ball.velocity = velocity
 
-        projection = sum([vel[i] * basis[i] for i in range(2)])
-        new_vel = [vel[i] - 2.0 * projection * basis[i]
-                   for i in range(2)]
-        new_vel = normalize(new_vel)
-        if abs(new_vel[1]) < 0.1:
-            sign = np.sign(new_vel[1])
-            new_vel[1] =  (sign if sign != 0 else 1) * 0.1
-            new_vel = normalize(new_vel)
+    def perform_platform_ball_coll(self, platform: Platform, ball: Ball, point: Point) -> None:
+        velocity = point - platform.rect.center
+        velocity.x /= 2
+        velocity = velocity / velocity.norm()
 
-        ball.velocity = Vec2.from_list(new_vel)
+        if (ball.rect.centery >
+            self.platform.rect.centery + 2):
+            velocity.y += 0.2
+            velocity = velocity / velocity.norm()
+
+        platform.freeze()
+        ball.velocity = velocity
+
+    def perform_ball_ball_coll(self, ball1: Ball, ball2: Ball, point: Point) -> None:
+        velocity1 = ball1.velocity * ball1.speed
+        velocity2 = ball2.velocity * ball2.speed
+
+        velocity_shift = -velocity2
+
+        velocity = velocity1 + velocity_shift
+        basis = point - ball1.rect.center
+        projection = velocity.scalar(basis)
+        leaked_velocity = basis * projection / basis.norm2()
+
+        velocity1 = velocity - leaked_velocity - velocity_shift
+        velocity2 = leaked_velocity - velocity_shift
+
+        ball1.speed = velocity1.norm()
+        ball1.velocity = velocity1 / velocity1.norm()
+
+        ball2.speed = velocity2.norm()
+        ball2.velocity = velocity2 / velocity2.norm()
 
     def real_update(self, dt: float) -> None:
         self.timestamp += dt
