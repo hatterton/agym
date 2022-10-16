@@ -1,6 +1,4 @@
 import pytest
-from typing import cast
-from time import sleep
 from threading import Thread, Timer
 
 from agym.main_window import (
@@ -9,6 +7,8 @@ from agym.main_window import (
 from agym.games.breakout import (
     BreakoutEnv,
 )
+
+from tests.gui.game_model import DummyModel
 
 
 def run_gui_test(main_window: MainWindow, t: float) -> None:
@@ -22,23 +22,21 @@ def run_gui_test(main_window: MainWindow, t: float) -> None:
     t2.cancel()
 
 
-@pytest.fixture
-def main_window(main_window) -> MainWindow:
-    return main_window()
-
-
 TICKS_PER_SECOND = 20
 
 def test_gui(
     main_window: MainWindow,
     breakout: BreakoutEnv,
+    game_model: DummyModel,
     all_levels,
 ):
     for test_case in all_levels:
-        level, ticks = test_case
+        level, action, ticks = test_case
 
         breakout.reset()
         breakout.load_level(level)
+
+        game_model.set_action(action)
 
         run_gui_test(
             main_window=main_window,

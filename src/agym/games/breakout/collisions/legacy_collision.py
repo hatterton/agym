@@ -160,23 +160,36 @@ def calculate_platform_walls_colls(platform: Platform, wall_rect, dt: float) -> 
             platform=platform,
         )
 
-def calculate_ball_ball_colls(ball1: Ball, ball2: Ball, dt: float) -> Iterable[CollisionPlatformWall]:
+def calculate_ball_ball_colls(ball1: Ball, ball2: Ball, dt: float) -> Iterable[CollisionBallBall]:
     radius = ball1.radius
-    b1, e1 = ball1.fake_update(dt)
-    b2, e2 = ball2.fake_update(dt)
+    s1, f1 = ball1.fake_update(dt)
+    s2, f2 = ball2.fake_update(dt)
 
     is_coll, point = False, None
-    if not is_coll:
-        is_coll, point = collide_circle_circle(b1, b2, radius)
+    # is_coll, point = collide_circle_circle(f1, f2, radius)
 
     if not is_coll:
-        is_coll, point = collide_circle_circle(b1, e2, radius)
+        v1 = f1 - s1
+        v2 = f2 - s2
+        a = s1 - s2
+        b = v1 - v2
 
-    if not is_coll:
-        is_coll, point = collide_circle_circle(e1, b2, radius)
+        t = -a.scalar(b)
+        t = max(0, min(t, b.norm2()))
 
-    if not is_coll:
-        is_coll, point = collide_circle_circle(e1, e2, radius)
+        shift = a * b.norm2() + b * t
+
+        if shift.norm2() < ((2 * radius - EPS) * b.norm2()) ** 2:
+            is_coll, point = True, (f1 + f2) / 2
+
+    # if not is_coll:
+    #     is_coll, point = collide_circle_circle(s1, f2, radius)
+
+    # if not is_coll:
+    #     is_coll, point = collide_circle_circle(f1, s2, radius)
+
+    # if not is_coll:
+    #     is_coll, point = collide_circle_circle(f1, f2, radius)
 
     if is_coll:
         yield CollisionBallBall(
@@ -315,8 +328,7 @@ def is_point_in_circle(point, circle, radius) -> bool:
 
 def collide_circle_circle(p1, p2, radius):
     shift = p2 - p1
-    if shift.norm2() + EPS < 4 * radius ** 2:
+    if shift.norm2() < (2 * radius - EPS) ** 2:
         return True, p1 + shift / 2
-
 
     return False, None

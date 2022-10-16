@@ -1,7 +1,7 @@
 import pytest
 
 from agym.containers import create_app
-from .testing_levels import *
+from .levels import *
 
 
 @pytest.fixture

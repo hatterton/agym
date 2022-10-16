@@ -157,6 +157,7 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
                     else:
                         max_dt = possible_dt
 
+                print(min_dt)
                 self.real_update(min_dt)
                 colls = self._get_step_collisions(self.eps)
                 reward += self.perform_colls(colls)
@@ -282,10 +283,16 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
         velocity2 = leaked_velocity - velocity_shift
 
         ball1.speed = velocity1.norm()
-        ball1.velocity = velocity1 / velocity1.norm()
+        if abs(ball1.speed) < self.eps:
+            ball1.velocity = Vec2(x=1, y=0)
+        else:
+            ball1.velocity = velocity1 / velocity1.norm()
 
         ball2.speed = velocity2.norm()
-        ball2.velocity = velocity2 / velocity2.norm()
+        if abs(ball2.speed) < self.eps:
+            ball2.velocity = Vec2(x=1, y=0)
+        else:
+            ball2.velocity = velocity2 / velocity2.norm()
 
     def real_update(self, dt: float) -> None:
         self.timestamp += dt

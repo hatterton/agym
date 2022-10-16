@@ -23,7 +23,7 @@ class PerformanceLevelBuilder:
             n_balls=4,
             radius=10,
             ball_speed=self.ball_speed,
-            # ball_speed=1,
+            # ball_speed=2,
             shift=100,
         )
 
@@ -33,7 +33,7 @@ class PerformanceLevelBuilder:
         self._center_platform(platform)
 
         blocks = self._make_target_wall(
-            n_rows=4,
+            n_rows=6,
         )
 
         return Level(
@@ -81,12 +81,12 @@ class PerformanceLevelBuilder:
 
     def _make_target_wall(
         self,
-        n_rows: int = 5,
+        n_rows: int = 6,
         block_width: int = 60,
         block_height: int = 20,
         top_shift: int = 50,
         horisontal_shift: int = 5,
-        vertical_shift: int = 40,
+        vertical_shift: int = 19,
         health: int = 100,
     ) -> List[Block]:
         image_name_template = "block_{} 60x20.png"
