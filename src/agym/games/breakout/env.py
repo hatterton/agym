@@ -305,6 +305,7 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
 
                 velocity = Vec2(x=miss*1, y=-1)
                 velocity /= velocity.norm()
+                ball.velocity = velocity
 
                 ball.rect.bottom -= 1
 

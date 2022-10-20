@@ -21,8 +21,8 @@ class Settings(BaseSettings):
     ga_bg_color: Color = (130, 160, 230)
 
     game_speed: float = 1
-    platform_speed: float = 15
-    ball_speed: float = 5
+    platform_speed: float = 10
+    ball_speed: float = 15
     max_lives: int = 1
     default_reward: int = 10
     catch_reward: int = 250
