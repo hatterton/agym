@@ -22,10 +22,10 @@ from agym.games.breakout.items import (
     Platform,
     Block,
 )
-from .protocols import ICollisionDetector
-from .collisions.legacy_collision import normalize
-from .collisions import (
-    LegacyCollisionDetector,
+from agym.games.breakout.protocols import ICollisionDetector
+from agym.games.breakout.collisions import (
+    CollisionDetector,
+    LegacyCollisionDetectorEngine,
     Collision,
     CollisionBallBlock,
     CollisionBallPlatform,
@@ -76,7 +76,10 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
             ball_speed=ball_speed,
             platform_speed=platform_speed,
         )
-        self.collision_detector: ICollisionDetector = LegacyCollisionDetector()
+        self.detector: ICollisionDetector = CollisionDetector(
+            engine=LegacyCollisionDetectorEngine(),
+        )
+
         self.balls: List[Ball]
         self.platform: Platform
         self.blocks: List[Block]
@@ -136,32 +139,14 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
 
         reward = 0
 
-        # платформа возле стены
-        colls = self._get_step_collisions(self.eps)
-        self.perform_colls(colls)
+        while dt > self.eps:
+            step_dt = self.detector.get_time_before_collision(self.state, dt)
+            self.real_update(step_dt)
 
-        # многоступенчатое определение времени столкновения
-        colls = self._get_step_collisions(dt)
-        if not self._any_colls(colls):
-            self.real_update(dt)
-        else:
-            while dt > self.eps:
-                min_dt, max_dt = 0.0, dt
-                while max_dt - min_dt > self.eps:
-                    possible_dt = (max_dt + min_dt) / 2
+            colls = self.detector.get_step_collisions(self.state, self.eps)
+            self.perform_colls(colls)
 
-                    colls = self._get_step_collisions(possible_dt)
-
-                    if not self._any_colls(colls):
-                        min_dt = possible_dt
-                    else:
-                        max_dt = possible_dt
-
-                print(min_dt)
-                self.real_update(min_dt)
-                colls = self._get_step_collisions(self.eps)
-                reward += self.perform_colls(colls)
-                dt -= min_dt
+            dt -= step_dt
 
         # Проверки на конец игры
         if len(self.blocks) == 0:
@@ -176,13 +161,8 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
 
         return reward, is_done
 
-    def _get_step_collisions(self, dt: float) -> Iterable[Collision]:
-        return self.collision_detector.generate_step_collisions(
-            state=self._get_state(),
-            dt=dt,
-        )
-
-    def _get_state(self) -> GameState:
+    @property
+    def state(self) -> GameState:
         return GameState(
             platforms=[self.platform],
             balls=self.balls,
@@ -190,16 +170,8 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
             wall_rect=self.env_rect,
         )
 
-    @profile("any_colls", "env_step")
-    def _any_colls(self, colls: Iterable[Collision]) -> bool:
-        return any(colls)
-
     def perform_colls(self, colls: Iterable[Collision]) -> int:
-        return self._perform_colls(self._get_all_colls(colls))
-
-    @profile("all_colls", "env_step")
-    def _get_all_colls(self, colls: Iterable[Collision]) -> List[Collision]:
-        return list(colls)
+        return self._perform_colls(colls)
 
     @profile("perf_colls", "env_step")
     def _perform_colls(self, colls: Iterable[Collision]) -> int:
@@ -330,10 +302,10 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
             if not ball.thrown:
                 ball.thrown = True
                 miss = random.random() - 0.5
-                velocity = [miss*1, -1]
-                velocity = normalize(velocity)
 
-                ball.velocity = Vec2.from_list(velocity)
+                velocity = Vec2(x=miss*1, y=-1)
+                velocity /= velocity.norm()
+
                 ball.rect.bottom -= 1
 
     def blit(self, screen) -> None:

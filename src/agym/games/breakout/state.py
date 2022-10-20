@@ -16,3 +16,11 @@ class GameState:
     blocks: List[Block]
 
     wall_rect: Rectangle
+
+    def duplicate_empty(self) -> "GameState":
+        return GameState(
+            platforms=[],
+            balls=[],
+            blocks=[],
+            wall_rect=self.wall_rect,
+        )

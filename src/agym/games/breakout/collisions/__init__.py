@@ -7,4 +7,5 @@ from .dtos import (
     CollisionBallBall,
 )
 
-from .legacy import LegacyCollisionDetector
+from .legacy import LegacyCollisionDetectorEngine
+from .detector import CollisionDetector

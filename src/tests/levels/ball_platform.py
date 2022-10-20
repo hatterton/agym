@@ -71,7 +71,7 @@ def ball_platform_side_collision_level(item_manager: ItemManager) -> LevelTestCa
     return (
         Level(blocks=blocks, balls=[ball], platform=platform),
         BreakoutAction.LEFT,
-        60,
+        70,
     )
 
 

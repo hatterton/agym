@@ -171,7 +171,7 @@ def ball_ball_towards_between_collision_level(item_manager: ItemManager) -> Leve
     return (
         Level(blocks=blocks, balls=balls, platform=platform),
         BreakoutAction.NOTHING,
-        60,
+        50,
     )
 
 

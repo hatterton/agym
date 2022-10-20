@@ -8,7 +8,7 @@ from ..state import GameState
 from agym.utils import CachedCollection
 
 
-class LegacyCollisionDetector:
+class LegacyCollisionDetectorEngine:
     def generate_step_collisions(self, state: GameState, dt: float) -> Iterable[Collision]:
         return CachedCollection(
             calculate_colls(

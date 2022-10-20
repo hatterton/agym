@@ -48,8 +48,6 @@ def test_ball_platform_cliping_collision_type(
     )
 
     events = breakout.pop_events()
-    assert len(events) == 12
-
     expected_collisions = [
         CollisionBallPlatform,
         CollisionBallWall,
@@ -63,8 +61,12 @@ def test_ball_platform_cliping_collision_type(
         CollisionBallWall,
         CollisionBallPlatform,
         CollisionBallWall,
+        CollisionBallPlatform,
+        CollisionBallWall,
+        CollisionPlatformWall,
     ]
 
+    assert len(events) == len(expected_collisions)
     for expected_coll_type, event in zip(expected_collisions, events):
         assert isinstance(event, CollisionEvent)
         assert isinstance(event.collision, expected_coll_type)

@@ -41,7 +41,7 @@ class Application(DeclarativeContainer):
     fps_limiter = Singleton(
         FPSLimiter,
         max_fps=config.max_fps,
-        history_size=4000,
+        history_size=1000,
     )
     time_profiler = Singleton(
         TimeProfiler,
