@@ -3,8 +3,12 @@ from dataclasses import dataclass
 from itertools import combinations
 from statistics import mean
 
-from .point import Point
-from .segment import Segment
+from ..basic import (
+    Point,
+    Segment,
+)
+from .rectangle import Rectangle
+
 
 @dataclass
 class Triangle:
@@ -20,3 +24,20 @@ class Triangle:
         c = (self.points[0] + self.points[1] + self.points[2]) / 3
 
         return c
+
+    @property
+    def bounding_box(self) -> Rectangle:
+        xs = [p.x for p in self.points]
+        ys = [p.y for p in self.points]
+
+        left = min(xs)
+        right = max(xs)
+        top = min(ys)
+        bottom = max(ys)
+
+        return Rectangle(
+            left=left,
+            top=top,
+            width=right-left,
+            height=bottom-top,
+        )

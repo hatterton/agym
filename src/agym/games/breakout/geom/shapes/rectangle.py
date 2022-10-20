@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
-from .point import Point
+from ..basic import Point
+
 
 @dataclass
 class Rectangle:
@@ -16,6 +17,14 @@ class Rectangle:
             top=rect.top,
             width=rect.width,
             height=rect.height,
+        )
+
+    def copy(self) -> "Rectangle":
+        return Rectangle(
+            left=self.left,
+            top=self.top,
+            width=self.width,
+            height=self.height,
         )
 
     @property
@@ -75,7 +84,36 @@ class Rectangle:
     def centery(self, value: float) -> None:
         self.top = value - self.height / 2
 
-    # def __str__(self):
-    #     result = "(({}, {}), ({}, {}))".format(
-    #         self._w, self._h, *self.center)
-    #     return result
+    def union(self, rect: "Rectangle") -> "Rectangle":
+        left = min(self.left, rect.left)
+        right = max(self.right, rect.right)
+        top = min(self.top, rect.top)
+        bottom = max(self.bottom, rect.bottom)
+        return Rectangle(
+            left=left,
+            top=top,
+            width=right-left,
+            height=bottom-top,
+        )
+
+    def is_intersected(self, rect: "Rectangle") -> bool:
+        if self.left > rect.right or rect.left > self.right:
+            return False
+
+        elif self.top > rect.bottom or rect.top > self.bottom:
+            return False
+
+        return True
+
+    def contains(self, p: Point) -> bool:
+        if p.x < self.left or p.x > self.right:
+            return False
+
+        elif p.y < self.top or p.y > self.bottom:
+            return False
+
+        return True
+
+    @property
+    def bounding_box(self) -> "Rectangle":
+        return self

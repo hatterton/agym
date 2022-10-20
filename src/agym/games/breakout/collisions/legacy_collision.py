@@ -47,7 +47,7 @@ def calculate_platforms_walls_colls(platforms: List[Platform], wall_rect, dt: fl
         yield from calculate_platform_walls_colls(platform, wall_rect, dt)
 
 
-def calculate_balls_balls_colls(balls: List[Ball], dt: float) -> Iterable[CollisionPlatformWall]:
+def calculate_balls_balls_colls(balls: List[Ball], dt: float) -> Iterable[CollisionBallBall]:
     for ball1, ball2 in combinations(balls, 2):
         yield from calculate_ball_ball_colls(ball1, ball2, dt)
 

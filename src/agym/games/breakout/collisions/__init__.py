@@ -8,4 +8,5 @@ from .dtos import (
 )
 
 from .legacy import LegacyCollisionDetectorEngine
+from .kdtree import KDTreeCollisionDetectorEngine
 from .detector import CollisionDetector

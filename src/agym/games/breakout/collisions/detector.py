@@ -48,6 +48,7 @@ class CollisionDetector:
         while max_dt - min_dt > EPS:
             mid_dt = (max_dt + min_dt) / 2
 
+            print(f"\nmid_dt={mid_dt}")
             colls = self._engine.generate_step_collisions(state, mid_dt)
 
             if any(colls):
@@ -56,7 +57,7 @@ class CollisionDetector:
             else:
                 min_dt = mid_dt
 
-        print(min_dt)
+        print(f"\nmin_dt={min_dt}")
         return min_dt
 
     def _build_collided_state(self, state: GameState, colls: Iterable[Collision]) -> GameState:

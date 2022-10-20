@@ -382,3 +382,47 @@ def test_circle_segment_intersection():
     ep = Point(x=2.5, y=2.5)
     assert ip is not None
     assert almost_equal_point(ip, ep)
+
+
+def test_circle_vertical_segment_intersection():
+    s = Segment(
+        begin=Point(x=0, y=0),
+        end=Point(x=0, y=5),
+    )
+
+    c = Circle(
+        center=Point(x=4, y=-4),
+        radius=5,
+    )
+    ip = get_intersection_circle_segment(c, s)
+    assert ip is None
+
+    c = Circle(
+        center=Point(x=4, y=-2),
+        radius=5,
+    )
+    ip = get_intersection_circle_segment(c, s)
+    ep = Point(x=0, y=0)
+    assert almost_equal_point(ip, ep)
+
+
+def test_circle_horisontal_segment_intersection():
+    s = Segment(
+        begin=Point(x=0, y=0),
+        end=Point(x=5, y=0),
+    )
+
+    c = Circle(
+        center=Point(x=-4, y=4),
+        radius=5,
+    )
+    ip = get_intersection_circle_segment(c, s)
+    assert ip is None
+
+    c = Circle(
+        center=Point(x=-4, y=2),
+        radius=5,
+    )
+    ip = get_intersection_circle_segment(c, s)
+    ep = Point(x=0, y=0)
+    assert almost_equal_point(ip, ep)

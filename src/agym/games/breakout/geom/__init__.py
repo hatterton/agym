@@ -1,12 +1,20 @@
-from .point import Vec2, Point
-from .line import Line2
-from .segment import Segment
-from .triangle import Triangle
-from .circle import Circle
-from .rectangle import Rectangle
+from .basic import (
+    Point,
+    Vec2,
+    Segment,
+    Line2,
+)
+from .shapes import (
+    Triangle,
+    Rectangle,
+    Circle,
+    Shape,
+)
+from .protocols import (
+    SupportsBoundingBox,
+)
 from .intersecting import (
     Intersection,
-    Shape,
     is_intersected,
     get_intersection,
     get_intersection_circle_circle,
@@ -16,5 +24,11 @@ from .intersecting import (
     get_intersection_segment_segment,
     get_intersection_line_line,
     get_intersection_circle_segment,
+)
+from .kdtree import (
+    KDTree,
+    Record,
+    ClassId,
+    ItemId,
 )
 

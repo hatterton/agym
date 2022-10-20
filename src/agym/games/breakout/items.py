@@ -1,7 +1,8 @@
 import pygame
 import os
-from typing import List
+from typing import Iterable
 
+from abc import ABC, abstractmethod
 from pygame.sprite import Sprite
 from agym.games.breakout.geom import (
     Shape,
@@ -15,7 +16,7 @@ from agym.games.breakout.geom import (
 ItemId = int
 
 
-class Item(Sprite):
+class Item(ABC, Sprite):
     def __init__(self, image_name: str, item_id: ItemId):
         super(Item, self).__init__()
         image_path = os.path.join(
@@ -31,6 +32,10 @@ class Item(Sprite):
         rect = self.image.get_rect().move(self.rect.left, self.rect.top)
         screen.blit(self.image, rect)
 
+    @abstractmethod
+    def get_ghost_trace(self, dt: float) -> Iterable[Shape]:
+        raise NotImplemented
+
 
 class Block(Item):
     def __init__(self, image_name: str, top: int, left: int, health: int, item_id: ItemId):
@@ -40,7 +45,8 @@ class Block(Item):
 
         self.health = health
 
-    def get_ghost_trace(self, dt) -> List[Shape]:
+    def get_ghost_trace(self, dt: float) -> Iterable[Shape]:
+        # return [self.rect.copy()]
         return [
             Triangle(
                 points=[
@@ -70,7 +76,7 @@ class Platform(Item):
         self.default_freeze_time = 2
 
     def fake_update(self, dt):
-        fake_rect = Rectangle.from_rect(self.rect)
+        fake_rect = self.rect.copy()
 
         if self.rest_freeze_time <= dt:
             dt -= self.rest_freeze_time
@@ -81,21 +87,41 @@ class Platform(Item):
     def freeze(self):
         self.rest_freeze_time = self.default_freeze_time
 
-    def get_ghost_trace(self, dt) -> List[Shape]:
+    def get_ghost_trace(self, dt: float) -> Iterable[Shape]:
+        start_rect = self.rect.copy()
+
+        dt = max(0, dt - self.rest_freeze_time)
+        finish_rect = self.rect.copy()
+        finish_rect.center += self.velocity * self.speed * dt
+
         # TODO it is not valid ghost trace
         return [
             Triangle(
                 points=[
-                    Point(x=self.rect.left, y=self.rect.top),
-                    Point(x=self.rect.right, y=self.rect.top),
-                    Point(x=self.rect.left, y=self.rect.bottom),
+                    Point(x=start_rect.left, y=start_rect.top),
+                    Point(x=start_rect.right, y=start_rect.top),
+                    Point(x=start_rect.left, y=start_rect.bottom),
                 ]
             ),
             Triangle(
                 points=[
-                    Point(x=self.rect.right, y=self.rect.bottom),
-                    Point(x=self.rect.right, y=self.rect.top),
-                    Point(x=self.rect.left, y=self.rect.bottom),
+                    Point(x=start_rect.right, y=start_rect.bottom),
+                    Point(x=start_rect.right, y=start_rect.top),
+                    Point(x=start_rect.left, y=start_rect.bottom),
+                ]
+            ),
+            Triangle(
+                points=[
+                    Point(x=finish_rect.left, y=finish_rect.top),
+                    Point(x=finish_rect.right, y=finish_rect.top),
+                    Point(x=finish_rect.left, y=finish_rect.bottom),
+                ]
+            ),
+            Triangle(
+                points=[
+                    Point(x=finish_rect.right, y=finish_rect.bottom),
+                    Point(x=finish_rect.right, y=finish_rect.top),
+                    Point(x=finish_rect.left, y=finish_rect.bottom),
                 ]
             ),
         ]
@@ -113,20 +139,20 @@ class Ball(Item):
         self.speed = speed
 
     def fake_update(self, dt):
-        fake_rect = Rectangle.from_rect(self.rect)
+        fake_rect = self.rect.copy()
         fake_rect.center += self.velocity * self.speed * dt
 
         return self.rect.center, fake_rect.center
 
-    def get_ghost_trace(self, dt) -> List[Shape]:
-        s = self.speed * dt
-
-        vel = Vec2(x=self.velocity[0], y=self.velocity[1])
+    def get_ghost_trace(self, dt: float) -> Iterable[Shape]:
+        vel = self.velocity
         normal_vel = Vec2(x=vel.y, y=-vel.x)
-        scaled_normal_vel = normal_vel * s
+        scaled_normal_vel = normal_vel * self.radius
+        # scaled_normal_vel = normal_vel * self.speed * dt
 
-        start_center = Point(x=self.rect.centerx, y=self.rect.centery)
-        shift = vel * s
+        start_center = self.rect.center
+
+        shift = vel * self.speed * dt
         finish_center = start_center + shift
 
         start_p1 = start_center + scaled_normal_vel

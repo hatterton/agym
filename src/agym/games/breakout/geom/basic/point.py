@@ -15,8 +15,17 @@ class Vec2:
     def norm2(self) -> T:
         return self.x ** 2 + self.y ** 2
 
+    def normal(self) -> "Vec2":
+        return Vec2(x=-self.y, y=self.x)
+
     def scalar(self, other: "Vec2") -> T:
         return self.x * other.x + self.y * other.y
+
+    def copy(self) -> "Vec2":
+        return Vec2(
+            x=self.x,
+            y=self.y,
+        )
 
     def __neg__(self) -> "Vec2":
         return Vec2(

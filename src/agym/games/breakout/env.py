@@ -13,7 +13,11 @@ from typing import (
 )
 from agym.interfaces import IEventHandler
 
-from .levels import DefaultLevelBuilder, PerformanceLevelBuilder, Level
+from .levels import (
+    DefaultLevelBuilder,
+    PerformanceLevelBuilder,
+    Level,
+)
 from .events import Event, CollisionEvent
 from .geom import Point, Vec2, Rectangle
 from agym.games import IGameEnviroment
@@ -26,6 +30,7 @@ from agym.games.breakout.protocols import ICollisionDetector
 from agym.games.breakout.collisions import (
     CollisionDetector,
     LegacyCollisionDetectorEngine,
+    KDTreeCollisionDetectorEngine,
     Collision,
     CollisionBallBlock,
     CollisionBallPlatform,
@@ -77,7 +82,8 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
             platform_speed=platform_speed,
         )
         self.detector: ICollisionDetector = CollisionDetector(
-            engine=LegacyCollisionDetectorEngine(),
+            # engine=LegacyCollisionDetectorEngine(),
+            engine=KDTreeCollisionDetectorEngine(),
         )
 
         self.balls: List[Ball]
@@ -144,6 +150,16 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
             self.real_update(step_dt)
 
             colls = self.detector.get_step_collisions(self.state, self.eps)
+            print()
+            print(step_dt)
+            for coll in colls:
+                print(coll)
+                if hasattr(coll, "ball"):
+                    print(coll.ball.rect)
+
+                if hasattr(coll, "block"):
+                    print(coll.block.rect)
+
             self.perform_colls(colls)
 
             dt -= step_dt

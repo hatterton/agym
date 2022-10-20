@@ -21,10 +21,10 @@ class PerformanceLevelBuilder:
     def build(self) -> Level:
         balls = self._make_balls(
             # n_balls=4,
-            n_balls=6,
+            n_balls=2,
             radius=10,
             # ball_speed=self.ball_speed,
-            ball_speed=10,
+            ball_speed=2,
             shift=100,
         )
 

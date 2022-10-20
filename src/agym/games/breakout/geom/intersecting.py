@@ -1,15 +1,20 @@
 from typing import Union, Optional
 from itertools import product
 
-from .point import Point, Vec2
-from .triangle import Triangle
-from .rectangle import Rectangle
-from .circle import Circle
-from .segment import Segment
-from .line import Line2
+from .basic import (
+    Point,
+    Vec2,
+    Segment,
+    Line2,
+)
+from .shapes import (
+    Triangle,
+    Rectangle,
+    Circle,
+    Shape,
+)
 
 
-Shape = Union[Triangle, Circle, Rectangle]
 IntersectionStrict = Point
 Intersection = Optional[IntersectionStrict]
 
@@ -152,6 +157,9 @@ def intersect_rectangles(a: Rectangle, b: Rectangle) -> Rectangle:
 
 
 def get_intersection_circle_segment(c: Circle, s: Segment) -> Intersection:
+    # print()
+    # print(c)
+    # print(s)
     for p in [s.begin, s.end]:
         diff = c.center - p
         sd = diff.x ** 2 + diff.y ** 2
@@ -161,14 +169,28 @@ def get_intersection_circle_segment(c: Circle, s: Segment) -> Intersection:
             return p
 
     s_line = s.line
+    # print(s_line)
     den = s_line.a ** 2 + s_line.b ** 2
     t = - s_line.place(c.center) / den
     n = s_line.normal
+    # n /= n.norm()
 
+    # print(n)
+    # print(t)
     pr = c.center + n * t
 
-    xs = sorted([s.begin.x, s.end.x])
-    if pr.x < xs[0] or pr.x > xs[1]:
+    left = min(s.begin.x, s.end.x)
+    right = max(s.begin.x, s.end.x)
+    top = min(s.begin.y, s.end.y)
+    bottom = max(s.begin.y, s.end.y)
+    area = Rectangle(
+        left=left,
+        top=top,
+        width=right-left,
+        height=bottom-top,
+    )
+
+    if not area.contains(pr):
         return None
 
     dist = abs(t) * den ** 0.5

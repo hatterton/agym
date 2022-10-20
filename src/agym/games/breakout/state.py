@@ -1,12 +1,16 @@
 from dataclasses import dataclass
-from typing import List
+from typing import (
+    List,
+    Iterable,
+)
 
-from .items import (
+from agym.games.breakout.items import (
     Ball,
     Platform,
     Block,
+    Item,
 )
-from .geom import Rectangle
+from agym.games.breakout.geom import Rectangle
 
 
 @dataclass
@@ -24,3 +28,8 @@ class GameState:
             blocks=[],
             wall_rect=self.wall_rect,
         )
+
+    def get_items(self) -> Iterable[Item]:
+        yield from self.platforms
+        yield from self.balls
+        yield from self.blocks
