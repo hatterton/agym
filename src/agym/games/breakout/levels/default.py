@@ -2,7 +2,13 @@
 import math
 from typing import Optional, List
 
-from ..items import Platform, Ball, Block
+from agym.games.breakout.items import (
+    Ball,
+    Block,
+    Platform,
+    Wall,
+)
+from agym.games.breakout.geom import Rectangle
 
 from .level import Level
 from .item_manager import ItemManager
@@ -18,6 +24,8 @@ class DefaultLevelBuilder:
         self.platform_speed = platform_speed
 
     def build(self) -> Level:
+        walls = self._make_walls()
+
         ball = self.item_manager.create_ball(
             radius=10,
             speed=self.ball_speed,
@@ -34,7 +42,36 @@ class DefaultLevelBuilder:
             platform=platform,
             balls=[ball],
             blocks=blocks,
+            walls=walls,
         )
+
+    def _make_walls(self) -> List[Wall]:
+        return [
+            self.item_manager.create_wall(
+                rect=Rectangle(
+                    left=-1.,
+                    top=0.,
+                    width=1.,
+                    height=self.env_height,
+                ),
+            ),
+            self.item_manager.create_wall(
+                rect=Rectangle(
+                    left=0.,
+                    top=-1.,
+                    width=self.env_width,
+                    height=1.,
+                ),
+            ),
+            self.item_manager.create_wall(
+                rect=Rectangle(
+                    left=self.env_width,
+                    top=0.,
+                    width=1.,
+                    height=self.env_height,
+                ),
+            ),
+        ]
 
     def _make_target_wall(self,
                           n_rows: int = 4,

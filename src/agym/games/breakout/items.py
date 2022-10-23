@@ -1,9 +1,13 @@
-import pygame
 import os
-from typing import Iterable
-
+from typing import (
+    Iterable,
+    Optional,
+)
 from abc import ABC, abstractmethod
+
+import pygame as pg
 from pygame.sprite import Sprite
+
 from agym.games.breakout.geom import (
     Shape,
     Circle,
@@ -17,29 +21,77 @@ ItemId = int
 
 
 class Item(ABC, Sprite):
-    def __init__(self, image_name: str, item_id: ItemId):
+    def __init__(self, item_id: ItemId, image_name: Optional[str] = None, rect: Optional[Rectangle] = None):
         super(Item, self).__init__()
-        image_path = os.path.join(
-            "agym/static/images/breakout",
-            image_name,
-        )
-        self.image = pygame.image.load(image_path)
+
+        if image_name is not None:
+            image_path = os.path.join(
+                "agym/static/images/breakout",
+                image_name,
+            )
+            self.image = pg.image.load(image_path)
+            self.rect = Rectangle.from_rect(self.image.get_rect())
+
+        elif rect is not None:
+            self.image = None
+            self.rect = rect
+
+        else:
+            raise ValueError("Invalid item initialization")
+
         self.id = item_id
 
-        self.rect = Rectangle.from_rect(self.image.get_rect())
 
     def blit(self, screen) -> None:
-        rect = self.image.get_rect().move(self.rect.left, self.rect.top)
-        screen.blit(self.image, rect)
+        if self.image is None:
+            rect = pg.Rect(
+                (self.rect.left-1, self.rect.top-1),
+                (self.rect.width+2, self.rect.height+2),
+            )
+            pg.draw.rect(screen, (150, 50, 50), rect)
+
+        else:
+            rect = self.image.get_rect().move(self.rect.left, self.rect.top)
+            screen.blit(self.image, rect)
 
     @abstractmethod
     def get_ghost_trace(self, dt: float) -> Iterable[Shape]:
         raise NotImplemented
 
 
+class Wall(Item):
+    def __init__(self, rect: Rectangle, item_id: ItemId):
+        super().__init__(
+            item_id=item_id,
+            rect=rect,
+        )
+
+    def get_ghost_trace(self, dt: float) -> Iterable[Shape]:
+        return [
+            Triangle(
+                points=[
+                    Point(x=self.rect.left, y=self.rect.top),
+                    Point(x=self.rect.right, y=self.rect.top),
+                    Point(x=self.rect.left, y=self.rect.bottom),
+                ]
+            ),
+            Triangle(
+                points=[
+                    Point(x=self.rect.right, y=self.rect.bottom),
+                    Point(x=self.rect.right, y=self.rect.top),
+                    Point(x=self.rect.left, y=self.rect.bottom),
+                ]
+            ),
+        ]
+
+
 class Block(Item):
     def __init__(self, image_name: str, top: int, left: int, health: int, item_id: ItemId):
-        super(Block, self).__init__(image_name, item_id)
+        super().__init__(
+            item_id=item_id,
+            image_name=image_name,
+        )
+
         self.rect.top = top
         self.rect.left = left
 
@@ -67,7 +119,11 @@ class Block(Item):
 
 class Platform(Item):
     def __init__(self, image_name: str, speed: float, item_id: ItemId):
-        super(Platform, self).__init__(image_name, item_id)
+        super().__init__(
+            item_id=item_id,
+            image_name=image_name,
+        )
+
 
         self.speed: float = speed
         self.velocity: Vec2 = Vec2(x=0, y=0)
@@ -129,10 +185,14 @@ class Platform(Item):
 
 class Ball(Item):
     def __init__(self, image_name, radius, speed, thrown: bool, item_id: ItemId):
-        super(Ball, self).__init__(image_name, item_id)
+        super().__init__(
+            item_id=item_id,
+            image_name=image_name,
+        )
+
 
         self.radius = radius
-        self.color_cirle = pygame.Color(0, 0, 0)
+        self.color_cirle = pg.Color(0, 0, 0)
 
         self.thrown = thrown
         self.velocity: Vec2 = Vec2(x=0, y=0)

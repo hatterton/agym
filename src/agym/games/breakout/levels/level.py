@@ -1,11 +1,18 @@
 from typing import List, Optional
 from dataclasses import dataclass
 
-from ..items import Platform, Ball, Block
+from agym.games.breakout.items import (
+    Platform,
+    Ball,
+    Block,
+    Wall,
+)
+
 
 @dataclass
 class Level:
     platform: Platform
     balls: List[Ball]
     blocks: List[Block]
+    walls: List[Wall]
 

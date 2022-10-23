@@ -6,10 +6,11 @@ from agym.games.breakout import (
 
 
 @pytest.fixture
-def breakout():
+def breakout(env_width, env_height):
     breakout = BreakoutEnv(
-        env_width=450,
-        env_height=500,
+        env_width=env_width,
+        env_height=env_height,
+        check_gameover=False,
     )
     breakout.reset()
 

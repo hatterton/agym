@@ -48,7 +48,7 @@ def ball_block_collision_level(item_manager: ItemManager) -> LevelTestCase:
     platform.rect.center = Point(x=100, y=330)
 
     return (
-        Level(blocks=blocks, balls=[ball], platform=platform),
+        Level(blocks=blocks, balls=[ball], platform=platform, walls=[]),
         BreakoutAction.NOTHING,
         60,
     )
@@ -75,7 +75,7 @@ def ball_corner_block_collision_level(item_manager: ItemManager) -> LevelTestCas
     platform.rect.center = Point(x=100, y=330)
 
     return (
-        Level(blocks=blocks, balls=[ball], platform=platform),
+        Level(blocks=blocks, balls=[ball], platform=platform, walls=[]),
         BreakoutAction.NOTHING,
         60,
     )
@@ -105,7 +105,7 @@ def ball_between_blocks_collision_level(item_manager: ItemManager) -> LevelTestC
     platform.rect.center = Point(x=100, y=330)
 
     return (
-        Level(blocks=blocks, balls=[ball], platform=platform),
+        Level(blocks=blocks, balls=[ball], platform=platform, walls=[]),
         BreakoutAction.NOTHING,
         60,
     )

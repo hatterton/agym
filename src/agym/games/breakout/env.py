@@ -25,6 +25,7 @@ from agym.games.breakout.items import (
     Ball,
     Platform,
     Block,
+    Wall,
 )
 from agym.games.breakout.protocols import ICollisionDetector
 from agym.games.breakout.collisions import (
@@ -53,7 +54,7 @@ class BreakoutAction(enum.Enum):
 class BreakoutEnv(IGameEnviroment, IEventHandler):
     def __init__(self, env_width: int, env_height: int,
                  ball_speed: float = 20, platform_speed: float = 15,
-                 eps: float = 1e-3):
+                 check_gameover: bool = True, eps: float = 1e-3):
         self.env_width = env_width
         self.env_height = env_height
 
@@ -66,6 +67,7 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
 
         self.screen = pygame.Surface((env_width, env_height))
 
+        self.check_gameover = check_gameover
         self.eps = eps
         self.n_actions = 4
         self.start_lives = 1
@@ -82,13 +84,14 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
             platform_speed=platform_speed,
         )
         self.detector: ICollisionDetector = CollisionDetector(
-            # engine=LegacyCollisionDetectorEngine(),
-            engine=KDTreeCollisionDetectorEngine(),
+            engine=LegacyCollisionDetectorEngine(),
+            # engine=KDTreeCollisionDetectorEngine(),
         )
 
         self.balls: List[Ball]
         self.platform: Platform
         self.blocks: List[Block]
+        self.walls: List[Wall]
 
     def pop_events(self) -> List[Event]:
         events = self.events
@@ -118,6 +121,7 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
         self.balls = level.balls
         self.blocks = level.blocks
         self.platform = level.platform
+        self.walls = level.walls
 
     def is_done(self):
         return self.n_lives <= 0
@@ -150,8 +154,10 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
             self.real_update(step_dt)
 
             colls = self.detector.get_step_collisions(self.state, self.eps)
-            print()
-            print(step_dt)
+            if dt == 0.:
+                print()
+                print("No movement")
+
             for coll in colls:
                 print(coll)
                 if hasattr(coll, "ball"):
@@ -165,13 +171,13 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
             dt -= step_dt
 
         # Проверки на конец игры
-        if len(self.blocks) == 0:
-            self.win()
-            reward += 100
+        if self.check_gameover:
+            if len(self.blocks) == 0:
+                self.win()
+                reward += 100
 
-        # if self.ball.rect.top > self.env_rect.bottom + 10:
-        #     self.lose()
-        #     reward -= 100
+            if not self.balls:
+                self.lose()
 
         is_done = self.is_done()
 
@@ -183,7 +189,7 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
             platforms=[self.platform],
             balls=self.balls,
             blocks=self.blocks,
-            wall_rect=self.env_rect,
+            walls=self.walls,
         )
 
     def perform_colls(self, colls: Iterable[Collision]) -> int:
@@ -290,25 +296,25 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
 
     def update_platform(self, dt: float) -> None:
         platform: Platform = self.platform
-        if platform.rest_freeze_time <= dt:
-            dt -= platform.rest_freeze_time
-            platform.rect.center += platform.velocity * platform.speed * dt
 
-        if platform.rect.left < 0:
-            platform.rect.left = 0
-
-        if platform.rect.right > self.env_width:
-            platform.rect.right = self.env_width
-
+        fdt = max(0, dt - platform.rest_freeze_time)
+        platform.rect.center += platform.velocity * platform.speed * fdt
         platform.rest_freeze_time = max(0, platform.rest_freeze_time - dt)
 
     def update_balls(self, dt: float) -> None:
+        removed_balls = []
         for ball in self.balls:
             if ball.thrown:
                 ball.rect.center += ball.velocity * ball.speed * dt
             else:
                 ball.rect.bottom = self.platform.rect.top
                 ball.rect.centerx = self.platform.rect.centerx
+
+            if ball.rect.top > self.env_rect.bottom:
+                removed_balls.append(ball)
+
+        for ball in removed_balls:
+            self.balls.remove(ball)
 
     def move_ball_on_platform(self, ball: Ball) -> None:
         ball.thrown = False
@@ -339,6 +345,9 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
 
         for block in self.blocks:
             block.blit(self.screen)
+
+        for wall in self.walls:
+            wall.blit(self.screen)
 
         screen.blit(self.screen, self_screen_rect)
 

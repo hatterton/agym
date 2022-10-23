@@ -85,6 +85,10 @@ class CollisionDetector:
 
     def _build_index(self, state: GameState) -> Dict[ItemId, Item]:
         index = dict()
+
+        for wall in state.walls:
+            index[wall.id] = wall
+
         for ball in state.balls:
             index[ball.id] = ball
 

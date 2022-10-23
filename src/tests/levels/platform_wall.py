@@ -6,7 +6,11 @@ from agym.games.breakout import (
     BreakoutAction,
     Level,
 )
-from agym.games.breakout.geom import Point, Vec2
+from agym.games.breakout.geom import (
+    Point,
+    Vec2,
+    Rectangle,
+)
 from .dtos import (
     LevelTestCase,
     PI,
@@ -25,26 +29,37 @@ def platform_wall_collision_levels(
 
 
 @pytest.fixture
-def platform_left_wall_collision_level(item_manager: ItemManager) -> LevelTestCase:
-    platform = item_manager.create_platform(speed=2)
+def platform_left_wall_collision_level(item_manager: ItemManager, env_height) -> LevelTestCase:
+    platform = item_manager.create_platform(speed=5)
     platform.rect.center = Point(x=150, y=330)
     platform.rect.left = 70
     platform.velocity = Vec2(x=-1, y=0)
 
     blocks = [
-        item_manager.create_block(top=0, left=0)
+        item_manager.create_block(top=0, left=0),
+    ]
+
+    walls = [
+        item_manager.create_wall(
+            rect=Rectangle(
+                left=-1.,
+                top=0.,
+                width=1.,
+                height=env_height,
+            ),
+        ),
     ]
 
     return (
-        Level(blocks=blocks, balls=[], platform=platform),
+        Level(blocks=blocks, balls=[], platform=platform, walls=walls),
         BreakoutAction.LEFT,
         60,
     )
 
 
 @pytest.fixture
-def platform_right_wall_collision_level(item_manager: ItemManager) -> LevelTestCase:
-    platform = item_manager.create_platform(speed=2)
+def platform_right_wall_collision_level(item_manager: ItemManager, env_width, env_height) -> LevelTestCase:
+    platform = item_manager.create_platform(speed=5)
     platform.rect.center = Point(x=150, y=330)
     platform.rect.right = 380
     platform.velocity = Vec2(x=1, y=0)
@@ -53,8 +68,19 @@ def platform_right_wall_collision_level(item_manager: ItemManager) -> LevelTestC
         item_manager.create_block(top=0, left=0)
     ]
 
+    walls = [
+        item_manager.create_wall(
+            rect=Rectangle(
+                left=env_width,
+                top=0.,
+                width=1.,
+                height=env_height,
+            ),
+        ),
+    ]
+
     return (
-        Level(blocks=blocks, balls=[], platform=platform),
+        Level(blocks=blocks, balls=[], platform=platform, walls=walls),
         BreakoutAction.RIGHT,
         60,
     )

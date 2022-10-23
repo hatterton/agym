@@ -55,15 +55,6 @@ def test_ball_platform_cliping_collision_type(
         CollisionBallWall,
         CollisionBallPlatform,
         CollisionBallWall,
-        CollisionBallPlatform,
-        CollisionBallWall,
-        CollisionBallPlatform,
-        CollisionBallWall,
-        CollisionBallPlatform,
-        CollisionBallWall,
-        CollisionBallPlatform,
-        CollisionBallWall,
-        CollisionPlatformWall,
     ]
 
     assert len(events) == len(expected_collisions)

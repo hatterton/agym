@@ -9,6 +9,7 @@ from agym.games.breakout.items import (
     Ball,
     Block,
     Platform,
+    Wall,
 )
 
 
@@ -44,19 +45,21 @@ class CollisionBallPlatform(Collision):
 @dataclass
 class CollisionBallWall(Collision):
     ball: Ball
+    wall: Wall
 
     @property
     def item_ids(self) -> Iterable[ItemId]:
-        return [self.ball.id]
+        return [self.ball.id, self.wall.id]
 
 
 @dataclass
 class CollisionPlatformWall(Collision):
     platform: Platform
+    wall: Wall
 
     @property
     def item_ids(self) -> Iterable[ItemId]:
-        return [self.platform.id]
+        return [self.platform.id, self.wall.id]
 
 
 @dataclass

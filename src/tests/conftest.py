@@ -14,6 +14,14 @@ def application():
 def config(application):
     return application.config
 
+@pytest.fixture
+def env_width(config):
+    return config.env_width()
+
+@pytest.fixture
+def env_height(config):
+    return config.env_height()
+
 
 @pytest.fixture
 def main_window(application):
@@ -27,4 +35,7 @@ def game_monitor(application):
 
 @pytest.fixture
 def breakout(game_monitor):
-    return game_monitor().env
+    res = game_monitor().env
+    res.check_gameover = False
+
+    return res

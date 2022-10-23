@@ -12,7 +12,7 @@ class LegacyCollisionDetectorEngine:
     def generate_step_collisions(self, state: GameState, dt: float) -> Iterable[Collision]:
         return CachedCollection(
             calculate_colls(
-                wall_rect=state.wall_rect,
+                walls=state.walls,
                 platforms=state.platforms,
                 balls=state.balls,
                 blocks=state.blocks,

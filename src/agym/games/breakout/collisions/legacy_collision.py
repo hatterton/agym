@@ -3,8 +3,17 @@ import math
 from itertools import product, combinations
 from typing import List, Iterable
 
-from ..geom import Point
-from ..items import Ball, Platform, Block
+from agym.games.breakout.geom import (
+    Point,
+    Circle,
+    Rectangle,
+)
+from agym.games.breakout.items import (
+    Ball,
+    Platform,
+    Block,
+    Wall,
+)
 from agym.utils import profile
 from .dtos import (
     Collision,
@@ -18,33 +27,38 @@ from .dtos import (
 EPS = 1e-4
 
 
-def calculate_colls(wall_rect, platforms, balls, blocks, dt) -> Iterable[Collision]:
+def calculate_colls(
+    walls: List[Wall],
+    platforms: List[Platform],
+    balls: List[Ball],
+    blocks: List[Block],
+    dt: float,
+) -> Iterable[Collision]:
     yield from calculate_balls_balls_colls(balls, dt)
-    yield from calculate_platforms_walls_colls(platforms, wall_rect, dt)
-    yield from calculate_balls_walls_colls(balls, wall_rect, dt)
+    yield from calculate_platforms_walls_colls(platforms, walls, dt)
+    yield from calculate_balls_walls_colls(balls, walls, dt)
     yield from calculate_balls_platforms_colls(balls, platforms, dt)
     yield from calculate_balls_blocks_colls(balls, blocks, dt)
 
 
 def calculate_balls_blocks_colls(balls: List[Ball], blocks: List[Block], dt: float) -> Iterable[CollisionBallBlock]:
-    for ball in balls:
-        yield from calculate_ball_blocks_colls(ball, blocks, dt)
+    for ball, block in product(balls, blocks):
+        yield from calculate_ball_block_colls(ball, block, dt)
 
 
 def calculate_balls_platforms_colls(balls: List[Ball], platforms: List[Platform], dt: float) -> Iterable[CollisionBallPlatform]:
-    for ball in balls:
-        for platform in platforms:
-            yield from calculate_ball_platform_colls(ball, platform, dt)
+    for ball, platform in product(balls, platforms):
+        yield from calculate_ball_platform_colls(ball, platform, dt)
 
 
-def calculate_balls_walls_colls(balls: List[Ball], wall_rect, dt: float) -> Iterable[CollisionBallWall]:
-    for ball in balls:
-        yield from calculate_ball_walls_colls(ball, wall_rect, dt)
+def calculate_balls_walls_colls(balls: List[Ball], walls: List[Wall], dt: float) -> Iterable[CollisionBallWall]:
+    for ball, wall in product(balls, walls):
+        yield from calculate_ball_wall_colls(ball, wall, dt)
 
 
-def calculate_platforms_walls_colls(platforms: List[Platform], wall_rect, dt: float) -> Iterable[CollisionPlatformWall]:
-    for platform in platforms:
-        yield from calculate_platform_walls_colls(platform, wall_rect, dt)
+def calculate_platforms_walls_colls(platforms: List[Platform], walls: List[Wall], dt: float) -> Iterable[CollisionPlatformWall]:
+    for platform, wall in product(platforms, walls):
+        yield from calculate_platform_wall_colls(platform, wall, dt)
 
 
 def calculate_balls_balls_colls(balls: List[Ball], dt: float) -> Iterable[CollisionBallBall]:
@@ -52,42 +66,37 @@ def calculate_balls_balls_colls(balls: List[Ball], dt: float) -> Iterable[Collis
         yield from calculate_ball_ball_colls(ball1, ball2, dt)
 
 
-def calculate_ball_blocks_colls(ball: Ball, blocks: List[Block], dt: float) -> Iterable[CollisionBallBlock]:
+def calculate_ball_block_colls(ball: Ball, block: Block, dt: float) -> Iterable[CollisionBallBlock]:
     ball_radius = ball.radius
     ball_bp, ball_ep = ball.fake_update(dt)
 
-    for block in blocks:
-        w, h = block.rect.w, block.rect.h
-        diag = (w ** 2 + h ** 2) ** 0.5
-        min_dist = (diag / 2 + ball.radius +
-                    ball.speed * dt)
+    w, h = block.rect.w, block.rect.h
+    diag = (w ** 2 + h ** 2) ** 0.5
+    min_dist = (diag / 2 + ball.radius +
+                ball.speed * dt)
 
-        dist = (block.rect.center - ball.rect.center).norm()
-        # dist = (
-        #     (block.rect.centerx - ball.rect.centerx) ** 2 +
-        #     (block.rect.centery - ball.rect.centery) ** 2
-        # ) ** 0.5
+    dist = (block.rect.center - ball.rect.center).norm()
 
-        if dist > min_dist + EPS:
-            continue
+    if dist > min_dist + EPS:
+        return
 
-        is_coll, point = False, None
-        is_coll, point = collide_circle_rect(ball_ep, 
-                                             block.rect, ball_radius)
+    is_coll, point = False, None
+    is_coll, point = collide_circle_rect(ball_ep, 
+                                         block.rect, ball_radius)
 
-        if not is_coll:
-            is_coll, point = collide_thick_segment_rect(
-                [ball_bp, ball_ep],
-                block.rect,
-                ball_radius,
-            )
+    if not is_coll:
+        is_coll, point = collide_thick_segment_rect(
+            [ball_bp, ball_ep],
+            block.rect,
+            ball_radius,
+        )
 
-        if is_coll:
-            yield CollisionBallBlock(
-                point=point,
-                ball=ball,
-                block=block,
-            )
+    if is_coll:
+        yield CollisionBallBlock(
+            point=point,
+            ball=ball,
+            block=block,
+        )
 
 
 def calculate_ball_platform_colls(ball: Ball, platform: Platform, dt: float) -> Iterable[CollisionBallPlatform]:
@@ -119,46 +128,56 @@ def calculate_ball_platform_colls(ball: Ball, platform: Platform, dt: float) -> 
             )
 
 
-def calculate_ball_walls_colls(ball: Ball, wall_rect, dt: float) -> Iterable[CollisionBallWall]:
-    _, ball_ep = ball.fake_update(dt)
+def calculate_ball_wall_colls(ball: Ball, wall: Wall, dt: float) -> Iterable[CollisionBallWall]:
+    ball_bp, ball_ep = ball.fake_update(dt)
+    begin_circle = Circle(center=ball_bp, radius=ball.radius)
+    end_circle = Circle(center=ball_ep, radius=ball.radius)
 
-    is_coll, point = False, None
-    if ball_ep.x - ball.radius < wall_rect.left:
-        is_coll, point = True, [wall_rect.left, ball_ep.y]
+    ball_coll_rect = begin_circle.bounding_box.union(end_circle.bounding_box)
 
-    if ball_ep.x + ball.radius > wall_rect.right:
-        is_coll, point = True, [wall_rect.right, ball_ep.y]
 
-    if ball_ep.y - ball.radius < wall_rect.top:
-        is_coll, point = True, [ball_ep.x, wall_rect.top]
+    if ball_coll_rect.is_intersected(wall.rect):
+        if end_circle.bounding_box.is_intersected(wall.rect):
+            coll_rect = intersect_rects(end_circle.bounding_box, wall.rect)
+        else:
+            coll_rect = intersect_rects(ball_coll_rect, wall.rect)
 
-    # if ball_ep[1] + ball_radius > wall_rect.bottom:
-    #     is_coll, point = True, [ball_ep[0], wall_rect.bottom]
-
-    if is_coll:
         yield CollisionBallWall(
-            point=Point.from_list(point),
+            point=coll_rect.center,
             ball=ball,
+            wall=wall,
         )
 
+def intersect_rects(r1: Rectangle, r2: Rectangle) -> Rectangle:
+    left = max(r1.left, r2.left)
+    right = min(r1.right, r2.right)
+    top = max(r1.top, r2.top)
+    bottom = min(r1.bottom, r2.bottom)
 
-def calculate_platform_walls_colls(platform: Platform, wall_rect, dt: float) -> Iterable[CollisionPlatformWall]:
+    right = max(left, right)
+    bottom = max(top, bottom)
+
+    return Rectangle(
+        left=left,
+        top=top,
+        width=right-left,
+        height=bottom-top,
+    )
+
+
+def calculate_platform_wall_colls(platform: Platform, wall: Wall, dt: float) -> Iterable[CollisionPlatformWall]:
     b_rect, e_rect = platform.fake_update(dt)
+    platform_coll_rect = b_rect.union(e_rect)
 
-    is_coll, point = False, None
-    if e_rect.left < wall_rect.left:
-        is_coll = True
-        point = [wall_rect.left, platform.rect.centery]
+    if platform_coll_rect.is_intersected(wall.rect):
+        coll_rect = intersect_rects(platform_coll_rect, wall.rect)
 
-    if e_rect.right > wall_rect.right:
-        is_coll = True
-        point = [wall_rect.right, platform.rect.centery]
-
-    if is_coll:
         yield CollisionPlatformWall(
-            point=Point.from_list(point),
+            point=coll_rect.center,
             platform=platform,
+            wall=wall,
         )
+
 
 def calculate_ball_ball_colls(ball1: Ball, ball2: Ball, dt: float) -> Iterable[CollisionBallBall]:
     radius = ball1.radius

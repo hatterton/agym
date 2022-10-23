@@ -10,7 +10,6 @@ tests-unit:
 .PHONY: tests-integration
 tests-integration:
 	cd src && poetry run python -m pytest -xs tests/integration
-	# cd src && poetry run python -m pytest -xs tests/integration/breakout_collisions/test_ball_block.py::test_ball_corner_block_collision_type
 
 .PHONY: tests-gui
 tests-gui:

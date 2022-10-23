@@ -5,8 +5,16 @@ from typing import List, Optional
 from .item_manager import ItemManager
 from .level import Level
 
-from ..items import Ball, Block, Platform
-from ..geom import Vec2
+from agym.games.breakout.items import (
+    Ball,
+    Block,
+    Platform,
+    Wall,
+)
+from agym.games.breakout.geom import (
+    Vec2,
+    Rectangle,
+)
 
 
 class PerformanceLevelBuilder:
@@ -19,6 +27,8 @@ class PerformanceLevelBuilder:
         self.platform_speed = platform_speed
 
     def build(self) -> Level:
+        walls = self._make_walls()
+
         balls = self._make_balls(
             # n_balls=4,
             n_balls=2,
@@ -41,7 +51,36 @@ class PerformanceLevelBuilder:
             platform=platform,
             balls=balls,
             blocks=blocks,
+            walls=walls,
         )
+
+    def _make_walls(self) -> List[Wall]:
+        return [
+            self.item_manager.create_wall(
+                rect=Rectangle(
+                    left=-1.,
+                    top=0.,
+                    width=1.,
+                    height=self.env_height,
+                ),
+            ),
+            self.item_manager.create_wall(
+                rect=Rectangle(
+                    left=0.,
+                    top=-1.,
+                    width=self.env_width,
+                    height=1.,
+                ),
+            ),
+            self.item_manager.create_wall(
+                rect=Rectangle(
+                    left=self.env_width,
+                    top=0.,
+                    width=1.,
+                    height=self.env_height,
+                ),
+            ),
+        ]
 
     def _make_balls(
         self,
