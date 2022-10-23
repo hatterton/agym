@@ -5,16 +5,24 @@ from agym.main_window import (
 )
 from tests.gui.game_model import DummyModel
 
-
-@pytest.fixture
-def main_window(main_window) -> MainWindow:
-    return main_window()
+from agym.games.breakout import BreakoutEnv
 
 
 @pytest.fixture
-def game_model(game_monitor) -> DummyModel:
-    model = DummyModel()
-    game_monitor().model = model
+def env(config, collision_detector, level_builder):
+    breakout = BreakoutEnv(
+        env_width=config.env_width,
+        env_height=config.env_height,
+        level_builder=level_builder,
+        collision_detector=collision_detector,
+        checking_gameover=False,
+    )
+    breakout.reset()
 
-    return model
+    return breakout
+
+
+@pytest.fixture
+def game_model() -> DummyModel:
+    return DummyModel()
 

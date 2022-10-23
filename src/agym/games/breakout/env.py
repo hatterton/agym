@@ -14,8 +14,6 @@ from typing import (
 from agym.interfaces import IEventHandler
 
 from .levels import (
-    DefaultLevelBuilder,
-    PerformanceLevelBuilder,
     Level,
 )
 from .events import Event, CollisionEvent
@@ -27,11 +25,11 @@ from agym.games.breakout.items import (
     Block,
     Wall,
 )
-from agym.games.breakout.protocols import ICollisionDetector
+from agym.games.breakout.protocols import (
+    ICollisionDetector,
+    ILevelBuilder,
+)
 from agym.games.breakout.collisions import (
-    CollisionDetector,
-    LegacyCollisionDetectorEngine,
-    KDTreeCollisionDetectorEngine,
     Collision,
     CollisionBallBlock,
     CollisionBallPlatform,
@@ -52,9 +50,15 @@ class BreakoutAction(enum.Enum):
 
 
 class BreakoutEnv(IGameEnviroment, IEventHandler):
-    def __init__(self, env_width: int, env_height: int,
-                 ball_speed: float = 20, platform_speed: float = 15,
-                 check_gameover: bool = True, eps: float = 1e-3):
+    def __init__(
+        self,
+        env_width: int,
+        env_height: int,
+        collision_detector: ICollisionDetector,
+        level_builder: ILevelBuilder,
+        checking_gameover: bool = True,
+        eps: float = 1e-3,
+    ):
         self.env_width = env_width
         self.env_height = env_height
 
@@ -67,26 +71,14 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
 
         self.screen = pygame.Surface((env_width, env_height))
 
-        self.check_gameover = check_gameover
+        self.checking_gameover = checking_gameover
         self.eps = eps
-        self.n_actions = 4
-        self.start_lives = 1
-        self.n_lives: int
 
         self.timestamp: float
         self.events: List[Event]
 
-        # self.level_builder = DefaultLevelBuilder(
-        self.level_builder = PerformanceLevelBuilder(
-            env_width=env_width,
-            env_height=env_height,
-            ball_speed=ball_speed,
-            platform_speed=platform_speed,
-        )
-        self.detector: ICollisionDetector = CollisionDetector(
-            engine=LegacyCollisionDetectorEngine(),
-            # engine=KDTreeCollisionDetectorEngine(),
-        )
+        self.level_builder = level_builder
+        self.collision_detector = collision_detector
 
         self.balls: List[Ball]
         self.platform: Platform
@@ -105,8 +97,6 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
         return False
 
     def reset(self) -> None:
-        self.n_lives = self.start_lives
-
         self.reset_level()
 
         self.timestamp = 0.
@@ -123,14 +113,13 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
         self.platform = level.platform
         self.walls = level.walls
 
-    def is_done(self):
-        return self.n_lives <= 0
+    def is_done(self) -> bool:
+        return False
 
-    def lose(self):
-        self.n_lives -= 1
+    def lose(self) -> None:
         self.reset_level()
 
-    def win(self):
+    def win(self) -> None:
         self.reset_level()
 
     @profile("env_step", "game_update")
@@ -150,10 +139,10 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
         reward = 0
 
         while dt > self.eps:
-            step_dt = self.detector.get_time_before_collision(self.state, dt)
+            step_dt = self.collision_detector.get_time_before_collision(self.state, dt)
             self.real_update(step_dt)
 
-            colls = self.detector.get_step_collisions(self.state, self.eps)
+            colls = self.collision_detector.get_step_collisions(self.state, self.eps)
             if dt == 0.:
                 print()
                 print("No movement")
@@ -171,10 +160,9 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
             dt -= step_dt
 
         # Проверки на конец игры
-        if self.check_gameover:
+        if self.checking_gameover:
             if len(self.blocks) == 0:
                 self.win()
-                reward += 100
 
             if not self.balls:
                 self.lose()

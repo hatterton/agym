@@ -10,12 +10,21 @@ from dependency_injector.providers import (
     List as pList,
 )
 
+from agym.games.breakout.collisions import (
+    LegacyCollisionDetectorEngine,
+    CollisionDetector,
+    KDTreeCollisionDetectorEngine,
+)
 from agym.settings import Settings
 from agym.game_monitor import GameMonitor
 from agym.games import (
     IGameEnviroment,
     BreakoutEnv,
     ManualBreakoutModel,
+)
+from agym.games.breakout.levels import (
+    DefaultLevelBuilder,
+    PerformanceLevelBuilder,
 )
 from agym.main_window import MainWindow
 from agym.utils import (
@@ -89,12 +98,30 @@ class Application(DeclarativeContainer):
         ups=config.log_fps,
     )
 
-    breakout = Singleton(
-        BreakoutEnv,
+    level_builder = Singleton(
+        # DefaultLevelBuilder,
+        PerformanceLevelBuilder,
         env_width=config.env_width,
         env_height=config.env_height,
         ball_speed=config.ball_speed,
         platform_speed=config.platform_speed,
+    )
+
+    collision_detector_engine = Singleton(
+        LegacyCollisionDetectorEngine,
+        # KDTreeCollisionDetectorEngine,
+    )
+    collision_detector = Singleton(
+        CollisionDetector,
+        engine=collision_detector_engine,
+    )
+
+    breakout = Singleton(
+        BreakoutEnv,
+        env_width=config.env_width,
+        env_height=config.env_height,
+        collision_detector=collision_detector,
+        level_builder=level_builder,
     )
 
     model = Singleton(

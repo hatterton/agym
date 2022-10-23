@@ -11,6 +11,11 @@ from agym.games.breakout import (
 from tests.gui.game_model import DummyModel
 
 
+@pytest.fixture
+def breakout(env):
+    return env
+
+
 def run_gui_test(main_window: MainWindow, t: float) -> None:
     t1 = Thread(target=main_window.run)
     t2 = Timer(t, main_window.deactivate)
@@ -23,6 +28,7 @@ def run_gui_test(main_window: MainWindow, t: float) -> None:
 
 
 TICKS_PER_SECOND = 20
+
 
 def test_gui(
     main_window: MainWindow,

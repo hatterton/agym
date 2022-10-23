@@ -26,12 +26,6 @@ class IGameEnviroment:
     def step(self, action, dt): raise NotImplementedError
 
     @abstractmethod
-    def get_visual_state(self): raise NotImplementedError
-
-    @abstractmethod
-    def get_flatten_state(self): raise NotImplementedError
-
-    @abstractmethod
     def blit(self, screen): raise NotImplementedError
 
 
