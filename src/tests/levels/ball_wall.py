@@ -43,12 +43,11 @@ def ball_vertical_wall_left_collision_level(item_manager: ItemManager, env_heigh
     r2 = 2 ** 0.5
     ball.velocity = Vec2(x=-r2 / 2, y=-r2 / 2)
 
-    blocks = [
-        item_manager.create_block(top=0, left=0)
-    ]
+    blocks = [ ]
 
-    platform = item_manager.create_platform(speed=0)
-    platform.rect.center = Point(x=100, y=330)
+    platforms = []
+    # platform = item_manager.create_platform(speed=0)
+    # platform.rect.center = Point(x=100, y=330)
 
     walls = [
         item_manager.create_wall(
@@ -62,7 +61,7 @@ def ball_vertical_wall_left_collision_level(item_manager: ItemManager, env_heigh
     ]
 
     return (
-        Level(blocks=blocks, balls=[ball], platforms=[platform], walls=walls),
+        Level(blocks=blocks, balls=[ball], platforms=platforms, walls=walls),
         BreakoutAction.NOTHING,
         60,
     )
@@ -79,12 +78,11 @@ def ball_vertical_wall_right_collision_level(item_manager: ItemManager, env_widt
     r2 = 2 ** 0.5
     ball.velocity = Vec2(x=r2 / 2, y=-r2 / 2)
 
-    blocks = [
-        item_manager.create_block(top=0, left=0)
-    ]
+    blocks = [ ]
 
-    platform = item_manager.create_platform(speed=0)
-    platform.rect.center = Point(x=100, y=330)
+    platforms = []
+    # platform = item_manager.create_platform(speed=0)
+    # platform.rect.center = Point(x=100, y=330)
 
     walls = [
         item_manager.create_wall(
@@ -98,7 +96,7 @@ def ball_vertical_wall_right_collision_level(item_manager: ItemManager, env_widt
     ]
 
     return (
-        Level(blocks=blocks, balls=[ball], platforms=[platform], walls=walls),
+        Level(blocks=blocks, balls=[ball], platforms=platforms, walls=walls),
         BreakoutAction.NOTHING,
         60,
     )
@@ -115,12 +113,11 @@ def ball_vertical_wall_top_collision_level(item_manager: ItemManager, env_width)
     r2 = 2 ** 0.5
     ball.velocity = Vec2(x=r2 / 2, y=-r2 / 2)
 
-    blocks = [
-        item_manager.create_block(top=0, left=0)
-    ]
+    blocks = [ ]
 
-    platform = item_manager.create_platform(speed=0)
-    platform.rect.center = Point(x=100, y=330)
+    platforms = []
+    # platform = item_manager.create_platform(speed=0)
+    # platform.rect.center = Point(x=100, y=330)
 
     walls = [
         item_manager.create_wall(
@@ -134,7 +131,7 @@ def ball_vertical_wall_top_collision_level(item_manager: ItemManager, env_width)
     ]
 
     return (
-        Level(blocks=blocks, balls=[ball], platforms=[platform], walls=walls),
+        Level(blocks=blocks, balls=[ball], platforms=platforms, walls=walls),
         BreakoutAction.NOTHING,
         60,
     )
@@ -152,12 +149,11 @@ def ball_corner_wall_collision_level(item_manager: ItemManager, env_width, env_h
     r2 = 2 ** 0.5
     ball.velocity = Vec2(x=r2 / 2, y=-r2 / 2)
 
-    blocks = [
-        item_manager.create_block(top=0, left=0)
-    ]
+    blocks = [ ]
 
-    platform = item_manager.create_platform(speed=0)
-    platform.rect.center = Point(x=100, y=330)
+    platforms = []
+    # platform = item_manager.create_platform(speed=0)
+    # platform.rect.center = Point(x=100, y=330)
 
     walls = [
         item_manager.create_wall(
@@ -179,7 +175,7 @@ def ball_corner_wall_collision_level(item_manager: ItemManager, env_width, env_h
     ]
 
     return (
-        Level(blocks=blocks, balls=[ball], platforms=[platform], walls=walls),
+        Level(blocks=blocks, balls=[ball], platforms=platforms, walls=walls),
         BreakoutAction.NOTHING,
         60,
     )

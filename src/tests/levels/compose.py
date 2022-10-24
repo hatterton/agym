@@ -27,10 +27,10 @@ def all_levels(
 ) -> List[LevelTestCase]:
     levels = []
 
-    levels += ball_wall_collision_levels
-    levels += platform_wall_collision_levels
+    levels += ball_ball_collision_levels
     levels += ball_block_collision_levels
     levels += ball_platform_collision_levels
-    levels += ball_ball_collision_levels
+    levels += ball_wall_collision_levels
+    levels += platform_wall_collision_levels
 
     return levels

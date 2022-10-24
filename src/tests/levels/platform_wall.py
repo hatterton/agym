@@ -36,7 +36,6 @@ def platform_left_wall_collision_level(item_manager: ItemManager, env_height) ->
     platform.velocity = Vec2(x=-1, y=0)
 
     blocks = [
-        item_manager.create_block(top=0, left=0),
     ]
 
     walls = [
@@ -65,7 +64,6 @@ def platform_right_wall_collision_level(item_manager: ItemManager, env_width, en
     platform.velocity = Vec2(x=1, y=0)
 
     blocks = [
-        item_manager.create_block(top=0, left=0)
     ]
 
     walls = [

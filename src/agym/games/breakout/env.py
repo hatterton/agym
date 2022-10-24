@@ -293,12 +293,15 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
 
     def update_balls(self, dt: float) -> None:
         removed_balls = []
-        for ball, platform in product(self.balls, self.platforms):
+        for ball in self.balls:
             if ball.thrown:
                 ball.rect.center += ball.velocity * ball.speed * dt
             else:
-                ball.rect.bottom = platform.rect.top
-                ball.rect.centerx = platform.rect.centerx
+                for platform in self.platforms:
+                    ball.rect.bottom = platform.rect.top
+                    ball.rect.centerx = platform.rect.centerx
+                else:
+                    removed_balls.append(ball)
 
             if ball.rect.top > self.env_rect.bottom:
                 removed_balls.append(ball)

@@ -20,7 +20,7 @@ tests: | tests-unit tests-integration
 
 .PHONY: tests-custom
 tests-custom:
-	cd src && poetry run python -m pytest -m "intersections" tests
+	cd src && poetry run python -m pytest -m "collisions and ball" tests
 
 .PHONY: env
 env:
