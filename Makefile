@@ -15,10 +15,12 @@ tests-integration:
 tests-gui:
 	cd src && poetry run python -m pytest -xs tests/gui
 
-.PHONY: tests-gui
+.PHONY: tests
 tests: | tests-unit tests-integration
-# tests:
-#     cd src && poetry run python -m pytest -xs tests/unit/test_kdtree.py
+
+.PHONY: tests-custom
+tests-custom:
+	cd src && poetry run python -m pytest -m "intersections" tests
 
 .PHONY: env
 env:

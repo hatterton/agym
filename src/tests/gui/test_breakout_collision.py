@@ -30,6 +30,8 @@ def run_gui_test(main_window: MainWindow, t: float) -> None:
 TICKS_PER_SECOND = 20
 
 
+@pytest.mark.gui
+@pytest.mark.breakout
 def test_gui(
     main_window: MainWindow,
     breakout: BreakoutEnv,

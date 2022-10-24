@@ -13,3 +13,4 @@ def almost_equal_vec(a: Vec, b: Vec) -> bool:
         almost_equal_float(a[1], b[1])
     )
 
+almost_equal_point = almost_equal_vec

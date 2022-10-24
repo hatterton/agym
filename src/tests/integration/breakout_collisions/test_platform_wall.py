@@ -1,3 +1,5 @@
+import pytest
+
 from agym.games.breakout import (
     BreakoutEnv,
     BreakoutAction,
@@ -12,41 +14,48 @@ from tests.math_utils import (
 )
 
 
-def test_platform_left_wall_collision_type(
-    breakout: BreakoutEnv,
-    platform_left_wall_collision_level,
-):
-    level, action, ticks = platform_left_wall_collision_level
-    breakout.load_level(level)
+@pytest.mark.breakout
+@pytest.mark.collisions
+@pytest.mark.platform
+@pytest.mark.wall
+class TestCollisionsPlatformWall:
+    def test_platform_left_wall_collision_type(
+        self,
+        breakout: BreakoutEnv,
+        platform_left_wall_collision_level,
+    ):
+        level, action, ticks = platform_left_wall_collision_level
+        breakout.load_level(level)
 
-    breakout.step(
-        action=action.value,
-        dt=ticks,
-    )
+        breakout.step(
+            action=action.value,
+            dt=ticks,
+        )
 
-    events = breakout.pop_events()
-    assert len(events) == 1
-    event = events[0]
-    assert isinstance(event, CollisionEvent)
-    assert isinstance(event.collision, CollisionPlatformWall)
-    assert almost_equal_float(breakout.platform.rect.left, 0, eps=1e-3)
+        events = breakout.pop_events()
+        assert len(events) == 1
+        event = events[0]
+        assert isinstance(event, CollisionEvent)
+        assert isinstance(event.collision, CollisionPlatformWall)
+        assert almost_equal_float(breakout.platform.rect.left, 0, eps=1e-3)
 
 
-def test_platform_right_wall_collision_type(
-    breakout: BreakoutEnv,
-    platform_right_wall_collision_level,
-):
-    level, action, ticks = platform_right_wall_collision_level
-    breakout.load_level(level)
+    def test_platform_right_wall_collision_type(
+        self,
+        breakout: BreakoutEnv,
+        platform_right_wall_collision_level,
+    ):
+        level, action, ticks = platform_right_wall_collision_level
+        breakout.load_level(level)
 
-    breakout.step(
-        action=action.value,
-        dt=ticks,
-    )
+        breakout.step(
+            action=action.value,
+            dt=ticks,
+        )
 
-    events = breakout.pop_events()
-    assert len(events) == 1
-    event = events[0]
-    assert isinstance(event, CollisionEvent)
-    assert isinstance(event.collision, CollisionPlatformWall)
-    assert almost_equal_float(breakout.platform.rect.right, breakout.env_width, eps=1e-3)
+        events = breakout.pop_events()
+        assert len(events) == 1
+        event = events[0]
+        assert isinstance(event, CollisionEvent)
+        assert isinstance(event.collision, CollisionPlatformWall)
+        assert almost_equal_float(breakout.platform.rect.right, breakout.env_width, eps=1e-3)
