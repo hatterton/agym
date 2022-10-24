@@ -62,7 +62,7 @@ def ball_vertical_wall_left_collision_level(item_manager: ItemManager, env_heigh
     ]
 
     return (
-        Level(blocks=blocks, balls=[ball], platform=platform, walls=walls),
+        Level(blocks=blocks, balls=[ball], platforms=[platform], walls=walls),
         BreakoutAction.NOTHING,
         60,
     )
@@ -98,7 +98,7 @@ def ball_vertical_wall_right_collision_level(item_manager: ItemManager, env_widt
     ]
 
     return (
-        Level(blocks=blocks, balls=[ball], platform=platform, walls=walls),
+        Level(blocks=blocks, balls=[ball], platforms=[platform], walls=walls),
         BreakoutAction.NOTHING,
         60,
     )
@@ -134,7 +134,7 @@ def ball_vertical_wall_top_collision_level(item_manager: ItemManager, env_width)
     ]
 
     return (
-        Level(blocks=blocks, balls=[ball], platform=platform, walls=walls),
+        Level(blocks=blocks, balls=[ball], platforms=[platform], walls=walls),
         BreakoutAction.NOTHING,
         60,
     )
@@ -179,7 +179,7 @@ def ball_corner_wall_collision_level(item_manager: ItemManager, env_width, env_h
     ]
 
     return (
-        Level(blocks=blocks, balls=[ball], platform=platform, walls=walls),
+        Level(blocks=blocks, balls=[ball], platforms=[platform], walls=walls),
         BreakoutAction.NOTHING,
         60,
     )

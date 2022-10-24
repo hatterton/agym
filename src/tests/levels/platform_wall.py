@@ -51,7 +51,7 @@ def platform_left_wall_collision_level(item_manager: ItemManager, env_height) ->
     ]
 
     return (
-        Level(blocks=blocks, balls=[], platform=platform, walls=walls),
+        Level(blocks=blocks, balls=[], platforms=[platform], walls=walls),
         BreakoutAction.LEFT,
         60,
     )
@@ -80,7 +80,7 @@ def platform_right_wall_collision_level(item_manager: ItemManager, env_width, en
     ]
 
     return (
-        Level(blocks=blocks, balls=[], platform=platform, walls=walls),
+        Level(blocks=blocks, balls=[], platforms=[platform], walls=walls),
         BreakoutAction.RIGHT,
         60,
     )

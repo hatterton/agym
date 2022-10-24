@@ -48,7 +48,7 @@ def ball_platform_collision_level(item_manager: ItemManager) -> LevelTestCase:
     ]
 
     return (
-        Level(blocks=blocks, balls=[ball], platform=platform, walls=[]),
+        Level(blocks=blocks, balls=[ball], platforms=[platform], walls=[]),
         BreakoutAction.NOTHING,
         60,
     )
@@ -84,7 +84,7 @@ def ball_platform_side_collision_level(item_manager: ItemManager, env_height) ->
     ]
 
     return (
-        Level(blocks=blocks, balls=[ball], platform=platform, walls=walls),
+        Level(blocks=blocks, balls=[ball], platforms=[platform], walls=walls),
         BreakoutAction.LEFT,
         80,
     )
@@ -108,7 +108,7 @@ def ball_platform_race_collision_level(item_manager: ItemManager) -> LevelTestCa
     ]
 
     return (
-        Level(blocks=blocks, balls=[ball], platform=platform, walls=[]),
+        Level(blocks=blocks, balls=[ball], platforms=[platform], walls=[]),
         BreakoutAction.RIGHT,
         60,
     )

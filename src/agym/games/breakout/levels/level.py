@@ -11,7 +11,7 @@ from agym.games.breakout.items import (
 
 @dataclass
 class Level:
-    platform: Platform
+    platforms: List[Platform]
     balls: List[Ball]
     blocks: List[Block]
     walls: List[Wall]

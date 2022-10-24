@@ -59,7 +59,7 @@ def ball_ball_moving_stop_collision_level(item_manager: ItemManager) -> LevelTes
     ]
 
     return (
-        Level(blocks=blocks, balls=balls, platform=platform, walls=[]),
+        Level(blocks=blocks, balls=balls, platforms=[platform], walls=[]),
         BreakoutAction.NOTHING,
         60,
     )
@@ -93,7 +93,7 @@ def ball_ball_angle_stop_collision_level(item_manager: ItemManager) -> LevelTest
     ]
 
     return (
-        Level(blocks=blocks, balls=balls, platform=platform, walls=[]),
+        Level(blocks=blocks, balls=balls, platforms=[platform], walls=[]),
         BreakoutAction.NOTHING,
         60,
     )
@@ -127,7 +127,7 @@ def ball_ball_towards_collision_level(item_manager: ItemManager) -> LevelTestCas
     ]
 
     return (
-        Level(blocks=blocks, balls=balls, platform=platform, walls=[]),
+        Level(blocks=blocks, balls=balls, platforms=[platform], walls=[]),
         BreakoutAction.NOTHING,
         50,
     )
@@ -169,7 +169,7 @@ def ball_ball_towards_between_collision_level(item_manager: ItemManager) -> Leve
     ]
 
     return (
-        Level(blocks=blocks, balls=balls, platform=platform, walls=[]),
+        Level(blocks=blocks, balls=balls, platforms=[platform], walls=[]),
         BreakoutAction.NOTHING,
         50,
     )
@@ -204,7 +204,7 @@ def ball_ball_race_collision_level(item_manager: ItemManager) -> LevelTestCase:
     ]
 
     return (
-        Level(blocks=blocks, balls=balls, platform=platform, walls=[]),
+        Level(blocks=blocks, balls=balls, platforms=[platform], walls=[]),
         BreakoutAction.RIGHT,
         60,
     )

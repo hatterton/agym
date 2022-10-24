@@ -37,7 +37,7 @@ class TestCollisionsPlatformWall:
         event = events[0]
         assert isinstance(event, CollisionEvent)
         assert isinstance(event.collision, CollisionPlatformWall)
-        assert almost_equal_float(breakout.platform.rect.left, 0, eps=1e-3)
+        assert almost_equal_float(event.collision.platform.rect.left, 0, eps=1e-3)
 
 
     def test_platform_right_wall_collision_type(
@@ -58,4 +58,4 @@ class TestCollisionsPlatformWall:
         event = events[0]
         assert isinstance(event, CollisionEvent)
         assert isinstance(event.collision, CollisionPlatformWall)
-        assert almost_equal_float(breakout.platform.rect.right, breakout.env_width, eps=1e-3)
+        assert almost_equal_float(event.collision.platform.rect.right, breakout.env_width, eps=1e-3)

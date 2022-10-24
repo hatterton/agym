@@ -39,7 +39,7 @@ class DefaultLevelBuilder:
         blocks = self._make_target_wall()
 
         return Level(
-            platform=platform,
+            platforms=[platform],
             balls=[ball],
             blocks=blocks,
             walls=walls,

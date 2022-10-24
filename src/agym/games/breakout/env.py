@@ -11,6 +11,10 @@ from typing import (
     List,
     Iterable,
 )
+from itertools import (
+    product,
+)
+
 from agym.interfaces import IEventHandler
 
 from .levels import (
@@ -81,7 +85,7 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
         self.collision_detector = collision_detector
 
         self.balls: List[Ball]
-        self.platform: Platform
+        self.platforms: List[Platform]
         self.blocks: List[Block]
         self.walls: List[Wall]
 
@@ -106,11 +110,10 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
         level = self.level_builder.build()
         self.load_level(level)
 
-
     def load_level(self, level: Level) -> None:
         self.balls = level.balls
         self.blocks = level.blocks
-        self.platform = level.platform
+        self.platforms = level.platforms
         self.walls = level.walls
 
     def is_done(self) -> bool:
@@ -126,15 +129,16 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
     def step(self, action: int, dt: float) -> Tuple[int, bool]:
 
         a = BreakoutAction(action)
-        self.platform.velocity[0] = 0
-        if a == BreakoutAction.LEFT:
-            self.platform.velocity[0] = -1
-        elif a == BreakoutAction.RIGHT:
-            self.platform.velocity[0] = 1
-        elif a == BreakoutAction.THROW:
-            self.throw_ball()
-        elif a == BreakoutAction.NOTHING:
-            pass
+
+        for platform in self.platforms:
+            if a == BreakoutAction.LEFT:
+                platform.velocity.x = -1
+            elif a == BreakoutAction.RIGHT:
+                platform.velocity.x = 1
+            elif a == BreakoutAction.THROW:
+                self.throw_ball(platform)
+            elif a == BreakoutAction.NOTHING:
+                platform.velocity.x = 0
 
         reward = 0
 
@@ -174,7 +178,7 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
     @property
     def state(self) -> GameState:
         return GameState(
-            platforms=[self.platform],
+            platforms=self.platforms,
             balls=self.balls,
             blocks=self.blocks,
             walls=self.walls,
@@ -213,7 +217,7 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
                     self.blocks.remove(coll.block)
 
             elif isinstance(coll, CollisionPlatformWall):
-                self.platform.velocity.x = 0
+                coll.platform.velocity.x = 0
 
             elif isinstance(coll, CollisionBallBall):
                 self.perform_ball_ball_coll(
@@ -242,8 +246,7 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
         velocity.x /= 2
         velocity = velocity / velocity.norm()
 
-        if (ball.rect.centery >
-            self.platform.rect.centery + 2):
+        if (ball.rect.centery > platform.rect.centery + 2):
             velocity.y += 0.2
             velocity = velocity / velocity.norm()
 
@@ -279,33 +282,29 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
     def real_update(self, dt: float) -> None:
         self.timestamp += dt
 
-        self.update_platform(dt)
+        self.update_platforms(dt)
         self.update_balls(dt)
 
-    def update_platform(self, dt: float) -> None:
-        platform: Platform = self.platform
-
-        fdt = max(0, dt - platform.rest_freeze_time)
-        platform.rect.center += platform.velocity * platform.speed * fdt
-        platform.rest_freeze_time = max(0, platform.rest_freeze_time - dt)
+    def update_platforms(self, dt: float) -> None:
+        for platform in self.platforms:
+            fdt = max(0, dt - platform.rest_freeze_time)
+            platform.rect.center += platform.velocity * platform.speed * fdt
+            platform.rest_freeze_time = max(0, platform.rest_freeze_time - dt)
 
     def update_balls(self, dt: float) -> None:
         removed_balls = []
-        for ball in self.balls:
+        for ball, platform in product(self.balls, self.platforms):
             if ball.thrown:
                 ball.rect.center += ball.velocity * ball.speed * dt
             else:
-                ball.rect.bottom = self.platform.rect.top
-                ball.rect.centerx = self.platform.rect.centerx
+                ball.rect.bottom = platform.rect.top
+                ball.rect.centerx = platform.rect.centerx
 
             if ball.rect.top > self.env_rect.bottom:
                 removed_balls.append(ball)
 
         for ball in removed_balls:
             self.balls.remove(ball)
-
-    def move_ball_on_platform(self, ball: Ball) -> None:
-        ball.thrown = False
 
     def throw_ball(self) -> None:
         for ball in self.balls:
@@ -326,7 +325,9 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
         self_screen_rect.centerx = screen_rect.centerx
 
         self.screen.fill((30, 20, 10))
-        self.platform.blit(self.screen)
+
+        for platform in self.platforms:
+            platform.blit(self.screen)
 
         for ball in self.balls:
             ball.blit(self.screen)

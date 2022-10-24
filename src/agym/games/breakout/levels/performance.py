@@ -48,7 +48,7 @@ class PerformanceLevelBuilder:
         )
 
         return Level(
-            platform=platform,
+            platforms=[platform],
             balls=balls,
             blocks=blocks,
             walls=walls,
