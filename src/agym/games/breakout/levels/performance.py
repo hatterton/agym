@@ -3,7 +3,6 @@ import random
 from typing import List, Optional
 
 from .item_manager import ItemManager
-from .level import Level
 
 from agym.games.breakout.items import (
     Ball,
@@ -15,6 +14,7 @@ from agym.games.breakout.geom import (
     Vec2,
     Rectangle,
 )
+from agym.games.breakout.state import GameState
 
 
 class PerformanceLevelBuilder:
@@ -26,7 +26,7 @@ class PerformanceLevelBuilder:
         self.ball_speed = ball_speed
         self.platform_speed = platform_speed
 
-    def build(self) -> Level:
+    def build(self) -> GameState:
         walls = self._make_walls()
 
         balls = self._make_balls(
@@ -47,12 +47,7 @@ class PerformanceLevelBuilder:
             n_rows=6,
         )
 
-        return Level(
-            platforms=[platform],
-            balls=balls,
-            blocks=blocks,
-            walls=walls,
-        )
+        return self.item_manager.extract_state()
 
     def _make_walls(self) -> List[Wall]:
         return [

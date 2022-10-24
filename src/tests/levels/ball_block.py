@@ -5,7 +5,6 @@ from typing import List, Tuple
 from agym.games.breakout import (
     ItemManager,
     BreakoutAction,
-    Level,
 )
 from agym.games.breakout.geom import Point, Vec2
 from .dtos import (
@@ -39,14 +38,9 @@ def ball_block_collision_level(item_manager: ItemManager) -> LevelTestCase:
 
     block = item_manager.create_block(top=0, left=0)
     block.rect.center = Point(x=100, y=140)
-    blocks = [
-        block,
-    ]
-
-    platforms = []
 
     return (
-        Level(blocks=blocks, balls=[ball], platforms=platforms, walls=[]),
+        item_manager.extract_state(),
         BreakoutAction.NOTHING,
         60,
     )
@@ -64,14 +58,9 @@ def ball_corner_block_collision_level(item_manager: ItemManager) -> LevelTestCas
 
     block = item_manager.create_block(top=100, left=0)
     block.rect.right = 100
-    blocks = [
-        block,
-    ]
-
-    platforms = []
 
     return (
-        Level(blocks=blocks, balls=[ball], platforms=platforms, walls=[]),
+        item_manager.extract_state(),
         BreakoutAction.NOTHING,
         60,
     )
@@ -91,17 +80,9 @@ def ball_between_blocks_collision_level(item_manager: ItemManager) -> LevelTestC
     block1.rect.right = 95
     block2 = item_manager.create_block(top=150, left=0)
     block2.rect.left = 105
-    blocks = [
-        block1,
-        block2,
-    ]
-
-    platforms = []
-    # platform = item_manager.create_platform(speed=0)
-    # platform.rect.center = Point(x=100, y=330)
 
     return (
-        Level(blocks=blocks, balls=[ball], platforms=platforms, walls=[]),
+        item_manager.extract_state(),
         BreakoutAction.NOTHING,
         60,
     )

@@ -5,7 +5,6 @@ from typing import List, Tuple
 from agym.games.breakout import (
     ItemManager,
     BreakoutAction,
-    Level,
 )
 from agym.games.breakout.geom import Point, Vec2
 from .dtos import (
@@ -49,16 +48,8 @@ def ball_ball_moving_stop_collision_level(item_manager: ItemManager) -> LevelTes
     ball2.thrown = True
     ball2.velocity = Vec2(x=0, y=0)
 
-    balls = [ball1, ball2]
-
-    platforms = []
-    # platform = item_manager.create_platform(speed=1.)
-    # platform.rect.center = Point(x=100, y=330)
-
-    blocks = [ ]
-
     return (
-        Level(blocks=blocks, balls=balls, platforms=platforms, walls=[]),
+        item_manager.extract_state(),
         BreakoutAction.NOTHING,
         60,
     )
@@ -82,16 +73,8 @@ def ball_ball_angle_stop_collision_level(item_manager: ItemManager) -> LevelTest
     ball2.thrown = True
     ball2.velocity = Vec2(x=0, y=0)
 
-    balls = [ball1, ball2]
-
-    platforms = []
-    # platform = item_manager.create_platform(speed=1.)
-    # platform.rect.center = Point(x=100, y=330)
-
-    blocks = [ ]
-
     return (
-        Level(blocks=blocks, balls=balls, platforms=platforms, walls=[]),
+        item_manager.extract_state(),
         BreakoutAction.NOTHING,
         60,
     )
@@ -115,17 +98,8 @@ def ball_ball_towards_collision_level(item_manager: ItemManager) -> LevelTestCas
     ball2.thrown = True
     ball2.velocity = Vec2(x=-1, y=0)
 
-    balls = [ball1, ball2]
-
-    platforms = []
-    # = item_manager.create_platform(speed=1.)
-    # platform.rect.center = Point(x=100, y=330)
-
-    blocks = [
-    ]
-
     return (
-        Level(blocks=blocks, balls=balls, platforms=platforms, walls=[]),
+        item_manager.extract_state(),
         BreakoutAction.NOTHING,
         50,
     )
@@ -157,16 +131,8 @@ def ball_ball_towards_between_collision_level(item_manager: ItemManager) -> Leve
     ball3.thrown = True
     ball3.velocity = Vec2(x=0, y=-1)
 
-    balls = [ball1, ball2, ball3]
-
-    platforms = []
-    # = item_manager.create_platform(speed=1.)
-    # platform.rect.center = Point(x=100, y=330)
-
-    blocks = [ ]
-
     return (
-        Level(blocks=blocks, balls=balls, platforms=platforms, walls=[]),
+        item_manager.extract_state(),
         BreakoutAction.NOTHING,
         50,
     )
@@ -191,18 +157,11 @@ def ball_ball_race_collision_level(item_manager: ItemManager) -> LevelTestCase:
     ball2.thrown = True
     ball2.velocity = Vec2(x=1, y=0)
 
-    balls = [ball1, ball2]
-
-    # platforms = []
     platform = item_manager.create_platform(speed=2.)
     platform.rect.center = Point(x=100, y=330)
 
-    blocks = [ ]
-
     return (
-        Level(blocks=blocks, balls=balls, platforms=[platform], walls=[]),
+        item_manager.extract_state(),
         BreakoutAction.RIGHT,
         60,
     )
-
-

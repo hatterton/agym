@@ -9,8 +9,8 @@ from agym.games.breakout.items import (
     Wall,
 )
 from agym.games.breakout.geom import Rectangle
+from agym.games.breakout.state import GameState
 
-from .level import Level
 from .item_manager import ItemManager
 
 
@@ -23,7 +23,7 @@ class DefaultLevelBuilder:
         self.ball_speed = ball_speed
         self.platform_speed = platform_speed
 
-    def build(self) -> Level:
+    def build(self) -> GameState:
         walls = self._make_walls()
 
         ball = self.item_manager.create_ball(
@@ -38,12 +38,7 @@ class DefaultLevelBuilder:
 
         blocks = self._make_target_wall()
 
-        return Level(
-            platforms=[platform],
-            balls=[ball],
-            blocks=blocks,
-            walls=walls,
-        )
+        return self.item_manager.extract_state()
 
     def _make_walls(self) -> List[Wall]:
         return [

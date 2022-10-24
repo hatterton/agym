@@ -2,7 +2,6 @@ import pytest
 
 from agym.games.breakout import (
     BreakoutEnv,
-    Level,
     BreakoutAction,
     CollisionEvent,
 )
@@ -22,7 +21,7 @@ class TestCollisionsBallWall:
         ball_vertical_wall_left_collision_level,
     ):
         level, action, ticks = ball_vertical_wall_left_collision_level
-        breakout.load_level(level)
+        breakout.import_state(level)
 
         breakout.step(
             action=action.value,
@@ -44,7 +43,7 @@ class TestCollisionsBallWall:
         ball_vertical_wall_right_collision_level,
     ):
         level, action, ticks = ball_vertical_wall_right_collision_level
-        breakout.load_level(level)
+        breakout.import_state(level)
 
         breakout.step(
             action=action.value,
@@ -66,7 +65,7 @@ class TestCollisionsBallWall:
         ball_vertical_wall_top_collision_level,
     ):
         level, action, ticks = ball_vertical_wall_top_collision_level
-        breakout.load_level(level)
+        breakout.import_state(level)
 
         breakout.step(
             action=action.value,

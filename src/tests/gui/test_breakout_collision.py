@@ -42,7 +42,7 @@ def test_gui(
         level, action, ticks = test_case
 
         breakout.reset()
-        breakout.load_level(level)
+        breakout.import_state(level)
 
         game_model.set_action(action)
 

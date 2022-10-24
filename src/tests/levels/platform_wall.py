@@ -4,7 +4,6 @@ from typing import List, Tuple
 from agym.games.breakout import (
     ItemManager,
     BreakoutAction,
-    Level,
 )
 from agym.games.breakout.geom import (
     Point,
@@ -35,22 +34,17 @@ def platform_left_wall_collision_level(item_manager: ItemManager, env_height) ->
     platform.rect.left = 70
     platform.velocity = Vec2(x=-1, y=0)
 
-    blocks = [
-    ]
-
-    walls = [
-        item_manager.create_wall(
-            rect=Rectangle(
-                left=-1.,
-                top=0.,
-                width=1.,
-                height=env_height,
-            ),
+    item_manager.create_wall(
+        rect=Rectangle(
+            left=-1.,
+            top=0.,
+            width=1.,
+            height=env_height,
         ),
-    ]
+    )
 
     return (
-        Level(blocks=blocks, balls=[], platforms=[platform], walls=walls),
+        item_manager.extract_state(),
         BreakoutAction.LEFT,
         60,
     )
@@ -63,22 +57,17 @@ def platform_right_wall_collision_level(item_manager: ItemManager, env_width, en
     platform.rect.right = 380
     platform.velocity = Vec2(x=1, y=0)
 
-    blocks = [
-    ]
-
-    walls = [
-        item_manager.create_wall(
-            rect=Rectangle(
-                left=env_width,
-                top=0.,
-                width=1.,
-                height=env_height,
-            ),
+    item_manager.create_wall(
+        rect=Rectangle(
+            left=env_width,
+            top=0.,
+            width=1.,
+            height=env_height,
         ),
-    ]
+    )
 
     return (
-        Level(blocks=blocks, balls=[], platforms=[platform], walls=walls),
+        item_manager.extract_state(),
         BreakoutAction.RIGHT,
         60,
     )

@@ -25,7 +25,7 @@ class TestCollisionsBallBlock:
         ball_block_collision_level,
     ):
         level, action, ticks = ball_block_collision_level
-        breakout.load_level(level)
+        breakout.import_state(level)
 
         breakout.step(
             action=action.value,
@@ -46,7 +46,7 @@ class TestCollisionsBallBlock:
         ball_corner_block_collision_level,
     ):
         level, action, ticks = ball_corner_block_collision_level
-        breakout.load_level(level)
+        breakout.import_state(level)
 
         breakout.step(
             action=action.value,

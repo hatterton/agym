@@ -27,7 +27,7 @@ class TestCollisionsBallPlatform:
         ball_platform_collision_level,
     ):
         level, action, ticks = ball_platform_collision_level
-        breakout.load_level(level)
+        breakout.import_state(level)
 
         breakout.step(
             action=action.value,
@@ -48,7 +48,7 @@ class TestCollisionsBallPlatform:
         ball_platform_side_collision_level,
     ):
         level, action, ticks = ball_platform_side_collision_level
-        breakout.load_level(level)
+        breakout.import_state(level)
 
         breakout.step(
             action=action.value,
@@ -77,7 +77,7 @@ class TestCollisionsBallPlatform:
         ball_platform_race_collision_level,
     ):
         level, action, ticks = ball_platform_race_collision_level
-        breakout.load_level(level)
+        breakout.import_state(level)
 
         breakout.step(
             action=action.value,

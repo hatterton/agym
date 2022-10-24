@@ -25,7 +25,7 @@ class TestCollisionsPlatformWall:
         platform_left_wall_collision_level,
     ):
         level, action, ticks = platform_left_wall_collision_level
-        breakout.load_level(level)
+        breakout.import_state(level)
 
         breakout.step(
             action=action.value,
@@ -46,7 +46,7 @@ class TestCollisionsPlatformWall:
         platform_right_wall_collision_level,
     ):
         level, action, ticks = platform_right_wall_collision_level
-        breakout.load_level(level)
+        breakout.import_state(level)
 
         breakout.step(
             action=action.value,

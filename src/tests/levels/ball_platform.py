@@ -4,7 +4,6 @@ from typing import List, Tuple
 from agym.games.breakout import (
     ItemManager,
     BreakoutAction,
-    Level,
 )
 from agym.games.breakout.geom import (
     Point,
@@ -43,10 +42,8 @@ def ball_platform_collision_level(item_manager: ItemManager) -> LevelTestCase:
     platform = item_manager.create_platform(speed=0)
     platform.rect.center = Point(x=300, y=330)
 
-    blocks = [ ]
-
     return (
-        Level(blocks=blocks, balls=[ball], platforms=[platform], walls=[]),
+        item_manager.extract_state(),
         BreakoutAction.NOTHING,
         60,
     )
@@ -66,21 +63,17 @@ def ball_platform_side_collision_level(item_manager: ItemManager, env_height) ->
     platform.rect.center = Point(x=140, y=330)
     platform.velocity = Vec2(x=-1, y=0)
 
-    blocks = [ ]
-
-    walls = [
-        item_manager.create_wall(
-            rect=Rectangle(
-                left=-1.,
-                top=0,
-                width=1.,
-                height=env_height,
-            ),
+    item_manager.create_wall(
+        rect=Rectangle(
+            left=-1.,
+            top=0,
+            width=1.,
+            height=env_height,
         ),
-    ]
+    )
 
     return (
-        Level(blocks=blocks, balls=[ball], platforms=[platform], walls=walls),
+        item_manager.extract_state(),
         BreakoutAction.LEFT,
         80,
     )
@@ -99,10 +92,8 @@ def ball_platform_race_collision_level(item_manager: ItemManager) -> LevelTestCa
     platform = item_manager.create_platform(speed=2.)
     platform.rect.center = Point(x=100, y=330)
 
-    blocks = [ ]
-
     return (
-        Level(blocks=blocks, balls=[ball], platforms=[platform], walls=[]),
+        item_manager.extract_state(),
         BreakoutAction.RIGHT,
         60,
     )

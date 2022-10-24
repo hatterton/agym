@@ -17,9 +17,6 @@ from itertools import (
 
 from agym.interfaces import IEventHandler
 
-from .levels import (
-    Level,
-)
 from .events import Event, CollisionEvent
 from .geom import Point, Vec2, Rectangle
 from agym.games import IGameEnviroment
@@ -107,14 +104,14 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
         self.events = []
 
     def reset_level(self) -> None:
-        level = self.level_builder.build()
-        self.load_level(level)
+        state = self.level_builder.build()
+        self.import_state(state)
 
-    def load_level(self, level: Level) -> None:
-        self.balls = level.balls
-        self.blocks = level.blocks
-        self.platforms = level.platforms
-        self.walls = level.walls
+    def import_state(self, state: GameState) -> None:
+        self.balls = state.balls
+        self.blocks = state.blocks
+        self.platforms = state.platforms
+        self.walls = state.walls
 
     def is_done(self) -> bool:
         return False

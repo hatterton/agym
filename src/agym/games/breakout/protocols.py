@@ -6,7 +6,6 @@ from typing import (
 
 from .collisions import Collision
 from .state import GameState
-from .levels import Level
 
 
 class ICollisionDetector(Protocol):
@@ -23,5 +22,5 @@ class ICollisionDetectorEngine(Protocol):
 
 
 class ILevelBuilder(Protocol):
-    def build(self) -> Level:
+    def build(self) -> GameState:
         pass

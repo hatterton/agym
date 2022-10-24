@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import (
     List,
     Iterable,
@@ -16,10 +16,10 @@ from agym.games.breakout.geom import Rectangle
 
 @dataclass
 class GameState:
-    platforms: List[Platform]
-    balls: List[Ball]
-    blocks: List[Block]
-    walls: List[Wall]
+    platforms: List[Platform] = field(default_factory=list)
+    balls: List[Ball] = field(default_factory=list)
+    blocks: List[Block] = field(default_factory=list)
+    walls: List[Wall] = field(default_factory=list)
 
     def duplicate_empty(self) -> "GameState":
         return GameState(

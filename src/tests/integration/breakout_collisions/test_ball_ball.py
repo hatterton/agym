@@ -27,7 +27,7 @@ class TestCollisionsBallBall:
         ball_ball_moving_stop_collision_level,
     ):
         level, action, ticks = ball_ball_moving_stop_collision_level
-        breakout.load_level(level)
+        breakout.import_state(level)
 
         breakout.step(
             action=action.value,
@@ -52,7 +52,7 @@ class TestCollisionsBallBall:
         ball_ball_angle_stop_collision_level,
     ):
         level, action, ticks = ball_ball_angle_stop_collision_level
-        breakout.load_level(level)
+        breakout.import_state(level)
 
         breakout.step(
             action=action.value,
@@ -78,7 +78,7 @@ class TestCollisionsBallBall:
         ball_ball_towards_collision_level,
     ):
         level, action, ticks = ball_ball_towards_collision_level
-        breakout.load_level(level)
+        breakout.import_state(level)
 
         breakout.step(
             action=action.value,
@@ -103,7 +103,7 @@ class TestCollisionsBallBall:
         ball_ball_towards_between_collision_level,
     ):
         level, action, ticks = ball_ball_towards_between_collision_level
-        breakout.load_level(level)
+        breakout.import_state(level)
 
         breakout.step(
             action=action.value,
@@ -130,7 +130,7 @@ class TestCollisionsBallBall:
         ball_ball_race_collision_level,
     ):
         level, action, ticks = ball_ball_race_collision_level
-        breakout.load_level(level)
+        breakout.import_state(level)
 
         breakout.step(
             action=action.value,

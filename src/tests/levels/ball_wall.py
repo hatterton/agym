@@ -4,7 +4,6 @@ from typing import List, Tuple
 from agym.games.breakout import (
     ItemManager,
     BreakoutAction,
-    Level,
 )
 from agym.games.breakout.geom import (
     Point,
@@ -43,25 +42,17 @@ def ball_vertical_wall_left_collision_level(item_manager: ItemManager, env_heigh
     r2 = 2 ** 0.5
     ball.velocity = Vec2(x=-r2 / 2, y=-r2 / 2)
 
-    blocks = [ ]
-
-    platforms = []
-    # platform = item_manager.create_platform(speed=0)
-    # platform.rect.center = Point(x=100, y=330)
-
-    walls = [
-        item_manager.create_wall(
-            rect=Rectangle(
-                left=-1.,
-                top=0,
-                width=1.,
-                height=env_height,
-            ),
+    item_manager.create_wall(
+        rect=Rectangle(
+            left=-1.,
+            top=0,
+            width=1.,
+            height=env_height,
         ),
-    ]
+    )
 
     return (
-        Level(blocks=blocks, balls=[ball], platforms=platforms, walls=walls),
+        item_manager.extract_state(),
         BreakoutAction.NOTHING,
         60,
     )
@@ -78,25 +69,17 @@ def ball_vertical_wall_right_collision_level(item_manager: ItemManager, env_widt
     r2 = 2 ** 0.5
     ball.velocity = Vec2(x=r2 / 2, y=-r2 / 2)
 
-    blocks = [ ]
-
-    platforms = []
-    # platform = item_manager.create_platform(speed=0)
-    # platform.rect.center = Point(x=100, y=330)
-
-    walls = [
-        item_manager.create_wall(
-            rect=Rectangle(
-                left=env_width,
-                top=0,
-                width=1.,
-                height=env_height,
-            ),
+    item_manager.create_wall(
+        rect=Rectangle(
+            left=env_width,
+            top=0,
+            width=1.,
+            height=env_height,
         ),
-    ]
+    )
 
     return (
-        Level(blocks=blocks, balls=[ball], platforms=platforms, walls=walls),
+        item_manager.extract_state(),
         BreakoutAction.NOTHING,
         60,
     )
@@ -113,25 +96,17 @@ def ball_vertical_wall_top_collision_level(item_manager: ItemManager, env_width)
     r2 = 2 ** 0.5
     ball.velocity = Vec2(x=r2 / 2, y=-r2 / 2)
 
-    blocks = [ ]
-
-    platforms = []
-    # platform = item_manager.create_platform(speed=0)
-    # platform.rect.center = Point(x=100, y=330)
-
-    walls = [
-        item_manager.create_wall(
-            rect=Rectangle(
-                left=0.,
-                top=-1,
-                width=env_width,
-                height=1.0,
-            ),
+    item_manager.create_wall(
+        rect=Rectangle(
+            left=0.,
+            top=-1,
+            width=env_width,
+            height=1.0,
         ),
-    ]
+    )
 
     return (
-        Level(blocks=blocks, balls=[ball], platforms=platforms, walls=walls),
+        item_manager.extract_state(),
         BreakoutAction.NOTHING,
         60,
     )
@@ -149,33 +124,25 @@ def ball_corner_wall_collision_level(item_manager: ItemManager, env_width, env_h
     r2 = 2 ** 0.5
     ball.velocity = Vec2(x=r2 / 2, y=-r2 / 2)
 
-    blocks = [ ]
-
-    platforms = []
-    # platform = item_manager.create_platform(speed=0)
-    # platform.rect.center = Point(x=100, y=330)
-
-    walls = [
-        item_manager.create_wall(
-            rect=Rectangle(
-                left=0.,
-                top=-1.,
-                width=env_width,
-                height=1.,
-            ),
+    item_manager.create_wall(
+        rect=Rectangle(
+            left=0.,
+            top=-1.,
+            width=env_width,
+            height=1.,
         ),
-        item_manager.create_wall(
-            rect=Rectangle(
-                left=env_width,
-                top=0,
-                width=1.,
-                height=env_height,
-            ),
+    )
+    item_manager.create_wall(
+        rect=Rectangle(
+            left=env_width,
+            top=0,
+            width=1.,
+            height=env_height,
         ),
-    ]
+    )
 
     return (
-        Level(blocks=blocks, balls=[ball], platforms=platforms, walls=walls),
+        item_manager.extract_state(),
         BreakoutAction.NOTHING,
         60,
     )

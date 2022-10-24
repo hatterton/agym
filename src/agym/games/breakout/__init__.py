@@ -17,11 +17,13 @@ from .protocols import (
 )
 from .levels import (
     ItemManager,
-    Level,
     DefaultLevelBuilder,
     PerformanceLevelBuilder,
 )
 from .events import (
     Event,
     CollisionEvent,
+)
+from .state import (
+    GameState,
 )
