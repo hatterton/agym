@@ -99,8 +99,8 @@ class Application(DeclarativeContainer):
     )
 
     level_builder = Singleton(
-        DefaultLevelBuilder,
-        # PerformanceLevelBuilder,
+        # DefaultLevelBuilder,
+        PerformanceLevelBuilder,
         env_width=config.env_width,
         env_height=config.env_height,
         ball_speed=config.ball_speed,

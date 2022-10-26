@@ -46,6 +46,14 @@ class KDTreeCollisionDetectorEngine:
             Wall: ItemClass.WALL.value
         }
 
+        self._collidable_pairs = {
+            (ItemClass.BALL.value, ItemClass.BALL.value),
+            (ItemClass.BALL.value, ItemClass.BLOCK.value),
+            (ItemClass.BALL.value, ItemClass.PLATFORM.value),
+            (ItemClass.BALL.value, ItemClass.WALL.value),
+            (ItemClass.PLATFORM.value, ItemClass.WALL.value),
+        }
+
     def generate_step_collisions(self, state: GameState, dt: float) -> Iterable[Collision]:
         return CachedCollection(self._generate_step_collisions(state, dt))
 
@@ -73,6 +81,7 @@ class KDTreeCollisionDetectorEngine:
         tree = KDTree(
             records=records,
             alpha=0.5,
+            collidable_pairs=self._collidable_pairs,
         )
 
         for (item_id1, item_id2), point in tree.generate_colliding_items():
