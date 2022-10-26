@@ -2,16 +2,16 @@ import pytest
 
 from agym.games.breakout import (
     BreakoutEnv,
-    LegacyCollisionDetectorEngine,
-    KDTreeCollisionDetectorEngine,
+    NaiveCollisionDetectionEngine,
+    KDTreeCollisionDetectionEngine,
     CollisionDetector,
     DefaultLevelBuilder,
 )
 
 @pytest.fixture
 def collision_engine():
-    # return LegacyCollisionDetectorEngine()
-    return KDTreeCollisionDetectorEngine()
+    return NaiveCollisionDetectionEngine()
+    # return KDTreeCollisionDetectionEngine()
 
 
 @pytest.fixture

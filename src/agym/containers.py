@@ -11,9 +11,9 @@ from dependency_injector.providers import (
 )
 
 from agym.games.breakout.collisions import (
-    LegacyCollisionDetectorEngine,
+    NaiveCollisionDetectionEngine,
     CollisionDetector,
-    KDTreeCollisionDetectorEngine,
+    KDTreeCollisionDetectionEngine,
 )
 from agym.settings import Settings
 from agym.game_monitor import GameMonitor
@@ -108,8 +108,8 @@ class Application(DeclarativeContainer):
     )
 
     collision_detector_engine = Singleton(
-        # LegacyCollisionDetectorEngine,
-        KDTreeCollisionDetectorEngine,
+        # NaiveCollisionDetectorEngine,
+        KDTreeCollisionDetectionEngine,
     )
     collision_detector = Singleton(
         CollisionDetector,

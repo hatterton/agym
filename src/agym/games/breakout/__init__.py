@@ -7,8 +7,8 @@ from .manual_model import (
 )
 from .collisions import (
     CollisionDetector,
-    LegacyCollisionDetectorEngine,
-    KDTreeCollisionDetectorEngine,
+    NaiveCollisionDetectionEngine,
+    KDTreeCollisionDetectionEngine,
 )
 from .protocols import (
     ICollisionDetector,

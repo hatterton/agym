@@ -37,7 +37,7 @@ class ItemClass(Enum):
     WALL = auto()
 
 
-class KDTreeCollisionDetectorEngine:
+class KDTreeCollisionDetectionEngine:
     def __init__(self) -> None:
         self._class2class_id = {
             Ball: ItemClass.BALL.value,

@@ -7,6 +7,6 @@ from .dtos import (
     CollisionBallBall,
 )
 
-from .legacy import LegacyCollisionDetectorEngine
-from .kdtree import KDTreeCollisionDetectorEngine
+from .naive import NaiveCollisionDetectionEngine
+from .kdtree import KDTreeCollisionDetectionEngine
 from .detector import CollisionDetector
