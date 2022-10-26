@@ -59,27 +59,63 @@ class Item(ABC, Sprite):
         raise NotImplemented
 
 
-class Wall(Item):
-    def __init__(self, rect: Rectangle, item_id: ItemId):
+class Ball(Item):
+    def __init__(self, image_name, radius, speed, thrown: bool, item_id: ItemId):
         super().__init__(
             item_id=item_id,
-            rect=rect,
+            image_name=image_name,
         )
 
+
+        self.radius = radius
+        self.color_cirle = pg.Color(0, 0, 0)
+
+        self.thrown = thrown
+        self.velocity: Vec2 = Vec2(x=0, y=0)
+        self.speed = speed
+
+    def fake_update(self, dt):
+        fake_rect = self.rect.copy()
+        fake_rect.center += self.velocity * self.speed * dt
+
+        return self.rect.center, fake_rect.center
+
     def get_ghost_trace(self, dt: float) -> Iterable[Shape]:
+        vel = self.velocity
+        normal_vel = Vec2(x=vel.y, y=-vel.x)
+        scaled_normal_vel = normal_vel * self.radius
+
+        start_center = self.rect.center
+
+        shift = vel * self.speed * dt
+        finish_center = start_center + shift
+
+        start_p1 = start_center + scaled_normal_vel
+        start_p2 = start_center - scaled_normal_vel
+        finish_p1 = finish_center + scaled_normal_vel
+        finish_p2 = finish_center - scaled_normal_vel
+
         return [
+            Circle(
+                center=start_center,
+                radius=self.radius,
+            ),
+            Circle(
+                center=finish_center,
+                radius=self.radius,
+            ),
             Triangle(
                 points=[
-                    Point(x=self.rect.left, y=self.rect.top),
-                    Point(x=self.rect.right, y=self.rect.top),
-                    Point(x=self.rect.left, y=self.rect.bottom),
+                    start_p1,
+                    start_p2,
+                    finish_p1,
                 ]
             ),
             Triangle(
                 points=[
-                    Point(x=self.rect.right, y=self.rect.bottom),
-                    Point(x=self.rect.right, y=self.rect.top),
-                    Point(x=self.rect.left, y=self.rect.bottom),
+                    finish_p1,
+                    finish_p2,
+                    start_p2,
                 ]
             ),
         ]
@@ -98,7 +134,6 @@ class Block(Item):
         self.health = health
 
     def get_ghost_trace(self, dt: float) -> Iterable[Shape]:
-        # return [self.rect.copy()]
         return [
             Triangle(
                 points=[
@@ -150,97 +185,50 @@ class Platform(Item):
         finish_rect = self.rect.copy()
         finish_rect.center += self.velocity * self.speed * dt
 
-        # TODO it is not valid ghost trace
+        left = min(start_rect.left, finish_rect.left)
+        right = max(start_rect.right, finish_rect.right)
+        top = min(start_rect.top, finish_rect.top)
+        bottom = max(start_rect.bottom, finish_rect.bottom)
+
         return [
             Triangle(
                 points=[
-                    Point(x=start_rect.left, y=start_rect.top),
-                    Point(x=start_rect.right, y=start_rect.top),
-                    Point(x=start_rect.left, y=start_rect.bottom),
+                    Point(x=left, y=top),
+                    Point(x=right, y=top),
+                    Point(x=left, y=bottom),
                 ]
             ),
             Triangle(
                 points=[
-                    Point(x=start_rect.right, y=start_rect.bottom),
-                    Point(x=start_rect.right, y=start_rect.top),
-                    Point(x=start_rect.left, y=start_rect.bottom),
-                ]
-            ),
-            Triangle(
-                points=[
-                    Point(x=finish_rect.left, y=finish_rect.top),
-                    Point(x=finish_rect.right, y=finish_rect.top),
-                    Point(x=finish_rect.left, y=finish_rect.bottom),
-                ]
-            ),
-            Triangle(
-                points=[
-                    Point(x=finish_rect.right, y=finish_rect.bottom),
-                    Point(x=finish_rect.right, y=finish_rect.top),
-                    Point(x=finish_rect.left, y=finish_rect.bottom),
+                    Point(x=right, y=bottom),
+                    Point(x=right, y=top),
+                    Point(x=left, y=bottom),
                 ]
             ),
         ]
 
 
-class Ball(Item):
-    def __init__(self, image_name, radius, speed, thrown: bool, item_id: ItemId):
+class Wall(Item):
+    def __init__(self, rect: Rectangle, item_id: ItemId):
         super().__init__(
             item_id=item_id,
-            image_name=image_name,
+            rect=rect,
         )
 
-
-        self.radius = radius
-        self.color_cirle = pg.Color(0, 0, 0)
-
-        self.thrown = thrown
-        self.velocity: Vec2 = Vec2(x=0, y=0)
-        self.speed = speed
-
-    def fake_update(self, dt):
-        fake_rect = self.rect.copy()
-        fake_rect.center += self.velocity * self.speed * dt
-
-        return self.rect.center, fake_rect.center
-
     def get_ghost_trace(self, dt: float) -> Iterable[Shape]:
-        vel = self.velocity
-        normal_vel = Vec2(x=vel.y, y=-vel.x)
-        scaled_normal_vel = normal_vel * self.radius
-        # scaled_normal_vel = normal_vel * self.speed * dt
-
-        start_center = self.rect.center
-
-        shift = vel * self.speed * dt
-        finish_center = start_center + shift
-
-        start_p1 = start_center + scaled_normal_vel
-        start_p2 = start_center - scaled_normal_vel
-        finish_p1 = finish_center + scaled_normal_vel
-        finish_p2 = finish_center - scaled_normal_vel
-
         return [
-            Circle(
-                center=start_center,
-                radius=self.radius,
-            ),
-            Circle(
-                center=finish_center,
-                radius=self.radius,
-            ),
             Triangle(
                 points=[
-                    start_p1,
-                    start_p2,
-                    finish_p1,
+                    Point(x=self.rect.left, y=self.rect.top),
+                    Point(x=self.rect.right, y=self.rect.top),
+                    Point(x=self.rect.left, y=self.rect.bottom),
                 ]
             ),
             Triangle(
                 points=[
-                    finish_p1,
-                    finish_p2,
-                    start_p2,
+                    Point(x=self.rect.right, y=self.rect.bottom),
+                    Point(x=self.rect.right, y=self.rect.top),
+                    Point(x=self.rect.left, y=self.rect.bottom),
                 ]
             ),
         ]

@@ -117,3 +117,6 @@ class Rectangle:
     @property
     def bounding_box(self) -> "Rectangle":
         return self
+
+    def __repr__(self) -> str:
+        return f"(left={self.left}, top={self.top}, right={self.right}, bottom={self.bottom})"

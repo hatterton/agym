@@ -14,6 +14,7 @@ from .shapes import (
     Shape,
 )
 
+EPS = 1e-4
 
 IntersectionStrict = Point
 Intersection = Optional[IntersectionStrict]
@@ -155,47 +156,24 @@ def intersect_rectangles(a: Rectangle, b: Rectangle) -> Rectangle:
         height=bottom-top,
     )
 
-
 def get_intersection_circle_segment(c: Circle, s: Segment) -> Intersection:
-    # print()
-    # print(c)
-    # print(s)
-    for p in [s.begin, s.end]:
-        diff = c.center - p
-        sd = diff.x ** 2 + diff.y ** 2
-        sr = c.radius ** 2
+    v0 = s.begin
+    v1 = s.end
+    v2 = c.center
+    r = c.radius
 
-        if sd < sr:
-            return p
+    a = v1 - v0
+    an2 = a.norm2()
+    b = v2 - v0
 
-    s_line = s.line
-    # print(s_line)
-    den = s_line.a ** 2 + s_line.b ** 2
-    t = - s_line.place(c.center) / den
-    n = s_line.normal
-    # n /= n.norm()
+    t = max(0, min(a.scalar(b), an2))
 
-    # print(n)
-    # print(t)
-    pr = c.center + n * t
-
-    left = min(s.begin.x, s.end.x)
-    right = max(s.begin.x, s.end.x)
-    top = min(s.begin.y, s.end.y)
-    bottom = max(s.begin.y, s.end.y)
-    area = Rectangle(
-        left=left,
-        top=top,
-        width=right-left,
-        height=bottom-top,
-    )
-
-    if not area.contains(pr):
+    if (r * an2) ** 2 <= (a * t - b * an2).norm2():
         return None
 
-    dist = abs(t) * den ** 0.5
+    if an2 == 0.:
+        return v0
 
-    if dist < c.radius:
-        return pr
-    else:
-        return None
+    p = a * t / an2 + v0
+
+    return p

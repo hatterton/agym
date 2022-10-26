@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import Enum, auto
 from typing import (
     Iterable,
 )
@@ -15,6 +15,7 @@ from agym.games.breakout.items import (
     Platform,
     Ball,
     Block,
+    Wall,
 )
 from agym.games.breakout.collisions import (
     Collision,
@@ -30,25 +31,19 @@ from .dtos import Collision
 
 
 class ItemClass(Enum):
-    WALL = 0
-    BLOCK = 1
-    BALL = 2
-    PLATFORM = 3
+    BALL = auto()
+    BLOCK = auto()
+    PLATFORM = auto()
+    WALL = auto()
 
 
 class KDTreeCollisionDetectorEngine:
     def __init__(self) -> None:
-        # self._collidable_pairs = {
-        #     (ItemClass.WALL.value, ItemClass.BALL.value),
-        #     (ItemClass.WALL.value, ItemClass.PLATFORM.value),
-        #     (ItemClass.BLOCK.value, ItemClass.BALL.value),
-        #     (ItemClass.BALL.value, ItemClass.BALL.value),
-        #     (ItemClass.BALL.value, ItemClass.PLATFORM.value),
-        # }
         self._class2class_id = {
             Ball: ItemClass.BALL.value,
             Block: ItemClass.BLOCK.value,
             Platform: ItemClass.PLATFORM.value,
+            Wall: ItemClass.WALL.value
         }
 
     def generate_step_collisions(self, state: GameState, dt: float) -> Iterable[Collision]:
@@ -80,11 +75,9 @@ class KDTreeCollisionDetectorEngine:
             alpha=0.5,
         )
 
-        # print("Start")
         for (item_id1, item_id2), point in tree.generate_colliding_items():
             class_id1 = item_id2item_class[item_id1]
             class_id2 = item_id2item_class[item_id2]
-            # print((class_id1, class_id2))
 
             if class_id1 > class_id2:
                 item_id1, item_id2 = item_id2, item_id1
@@ -93,26 +86,28 @@ class KDTreeCollisionDetectorEngine:
             # if not self._is_collidable(class_id1, class_id2):
             #     continue
 
-            if (class_id1 == ItemClass.WALL.value and
-                class_id2 == ItemClass.BALL.value):
+            if (class_id1 == ItemClass.BALL.value and
+                class_id2 == ItemClass.WALL.value):
                 yield CollisionBallWall(
                     point=point,
-                    ball=item_id2item[item_id2],
+                    ball=item_id2item[item_id1],
+                    wall=item_id2item[item_id2],
                 )
 
-            elif (class_id1 == ItemClass.WALL.value and
-                  class_id2 == ItemClass.PLATFORM.value):
+            elif (class_id1 == ItemClass.PLATFORM.value and
+                  class_id2 == ItemClass.WALL.value):
                 yield CollisionPlatformWall(
                     point=point,
-                    platform=item_id2item[item_id2],
+                    platform=item_id2item[item_id1],
+                    wall=item_id2item[item_id2],
                 )
 
-            elif (class_id1 == ItemClass.BLOCK.value and
-                  class_id2 == ItemClass.BALL.value):
+            elif (class_id1 == ItemClass.BALL.value and
+                  class_id2 == ItemClass.BLOCK.value):
                 yield CollisionBallBlock(
                     point=point,
-                    block=item_id2item[item_id1],
-                    ball=item_id2item[item_id2],
+                    ball=item_id2item[item_id1],
+                    block=item_id2item[item_id2],
                 )
 
             elif (class_id1 == ItemClass.BALL.value and
@@ -130,7 +125,3 @@ class KDTreeCollisionDetectorEngine:
                     ball=item_id2item[item_id1],
                     platform=item_id2item[item_id2],
                 )
-
-
-    # def _is_collidable(self, idx1: ClassId, idx2: ClassId) -> bool:
-    #     return (idx1, idx2) in self._collidable_pairs

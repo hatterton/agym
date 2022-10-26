@@ -76,6 +76,16 @@ class TestIntersectionsCircleSegment:
         )
         ip = get_intersection_circle_segment(c, s)
         ep = Point(x=0, y=0)
+        assert ip is not None
+        assert almost_equal_point(ip, ep)
+
+        c = Circle(
+            center=Point(x=2, y=2.5),
+            radius=3,
+        )
+        ip = get_intersection_circle_segment(c, s)
+        ep = Point(x=0, y=2.5)
+        assert ip is not None
         assert almost_equal_point(ip, ep)
 
 
@@ -98,4 +108,14 @@ class TestIntersectionsCircleSegment:
         )
         ip = get_intersection_circle_segment(c, s)
         ep = Point(x=0, y=0)
+        assert ip is not None
+        assert almost_equal_point(ip, ep)
+
+        c = Circle(
+            center=Point(x=2.5, y=2),
+            radius=3,
+        )
+        ip = get_intersection_circle_segment(c, s)
+        ep = Point(x=2.5, y=0)
+        assert ip is not None
         assert almost_equal_point(ip, ep)

@@ -133,7 +133,7 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
             elif a == BreakoutAction.RIGHT:
                 platform.velocity.x = 1
             elif a == BreakoutAction.THROW:
-                self.throw_ball(platform)
+                self.throw_ball()
             elif a == BreakoutAction.NOTHING:
                 platform.velocity.x = 0
 
@@ -144,17 +144,6 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
             self.real_update(step_dt)
 
             colls = self.collision_detector.get_step_collisions(self.state, self.eps)
-            if dt == 0.:
-                print()
-                print("No movement")
-
-            for coll in colls:
-                print(coll)
-                if hasattr(coll, "ball"):
-                    print(coll.ball.rect)
-
-                if hasattr(coll, "block"):
-                    print(coll.block.rect)
 
             self.perform_colls(colls)
 
@@ -297,6 +286,7 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
                 for platform in self.platforms:
                     ball.rect.bottom = platform.rect.top
                     ball.rect.centerx = platform.rect.centerx
+                    break
                 else:
                     removed_balls.append(ball)
 

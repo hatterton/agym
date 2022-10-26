@@ -41,7 +41,6 @@ class TestCollisionsBallPlatform:
         assert isinstance(event.collision, CollisionBallPlatform)
         assert almost_equal_vec(breakout.balls[0].velocity, [0, -1])
 
-
     def test_ball_platform_cliping_collision_type(
         self,
         breakout: BreakoutEnv,
@@ -69,7 +68,6 @@ class TestCollisionsBallPlatform:
         for expected_coll_type, event in zip(expected_collisions, events):
             assert isinstance(event, CollisionEvent)
             assert isinstance(event.collision, expected_coll_type)
-
 
     def test_ball_platform_race_collision_type(
         self,

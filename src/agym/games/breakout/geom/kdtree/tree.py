@@ -41,9 +41,5 @@ class KDTree:
                 continue
 
             collided_ids.add((idx1, idx2))
-            print()
-            print(r1)
-            print(r2)
-            print(intersection)
 
             yield (idx1, idx2), intersection
