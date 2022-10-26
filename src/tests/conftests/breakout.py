@@ -10,8 +10,8 @@ from agym.games.breakout import (
 
 @pytest.fixture
 def collision_engine():
-    return NaiveCollisionDetectionEngine()
-    # return KDTreeCollisionDetectionEngine()
+    # return NaiveCollisionDetectionEngine()
+    return KDTreeCollisionDetectionEngine()
 
 
 @pytest.fixture

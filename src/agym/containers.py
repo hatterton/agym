@@ -108,7 +108,7 @@ class Application(DeclarativeContainer):
     )
 
     collision_detector_engine = Singleton(
-        # NaiveCollisionDetectorEngine,
+        # NaiveCollisionDetectionEngine,
         KDTreeCollisionDetectionEngine,
     )
     collision_detector = Singleton(
