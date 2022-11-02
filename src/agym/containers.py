@@ -99,6 +99,7 @@ class Application(DeclarativeContainer):
     )
 
     level_builder = Singleton(
+
         # DefaultLevelBuilder,
         PerformanceLevelBuilder,
         env_width=config.env_width,
@@ -108,6 +109,7 @@ class Application(DeclarativeContainer):
     )
 
     collision_detector_engine = Singleton(
+
         # NaiveCollisionDetectionEngine,
         KDTreeCollisionDetectionEngine,
     )

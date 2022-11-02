@@ -8,10 +8,13 @@ from agym.games.breakout import (
     DefaultLevelBuilder,
 )
 
-@pytest.fixture
-def collision_engine():
-    # return NaiveCollisionDetectionEngine()
-    return KDTreeCollisionDetectionEngine()
+
+@pytest.fixture(params=[
+    NaiveCollisionDetectionEngine(),
+    KDTreeCollisionDetectionEngine(),
+])
+def collision_engine(request):
+    return request.param
 
 
 @pytest.fixture
