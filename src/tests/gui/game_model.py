@@ -1,11 +1,9 @@
 from pygame.event import Event
 
 from agym.games.breakout import BreakoutAction
-from agym.interfaces import IEventHandler
-from agym.models import IModel
 
 
-class DummyModel(IModel, IEventHandler):
+class DummyModel:
     def __init__(self) -> None:
         self._action = BreakoutAction.NOTHING
 
@@ -15,8 +13,5 @@ class DummyModel(IModel, IEventHandler):
     def get_action(self, *args, **kwargs) -> int:
         return self._action.value
 
-    def try_consume_event(self, event: Event) -> bool:
-        return False
-
-    def try_delegate_event(self, event: Event) -> bool:
+    def try_handle_event(self, event: Event) -> bool:
         return False

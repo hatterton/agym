@@ -1,7 +1,5 @@
 import enum
 import os
-
-# import torch
 from time import sleep
 
 import pygame
@@ -9,17 +7,8 @@ from pygame.event import Event
 from pygame.mixer import Sound
 
 from agym.constants import TIME_RESOLUTION
-from agym.games import IGameEnviroment
 from agym.gui import TextLabel
-
-# from agym.gui import Menu
-# from agym.config import Config
-# from agym.models import (
-#     IModel,
-# ConvQValuesModel,
-# )
-from agym.interfaces import IEventHandler
-from agym.model_wrappers import EmptyWrapper  # IModelWrapper,; SarsaWrapper,
+from agym.protocols import IEventHandler
 from agym.utils import TimeProfiler, format_stats, profile, register_profiler
 
 
@@ -63,20 +52,13 @@ class GameMonitor(IEventHandler):
         bsound.set_volume(0.2)
         bsound.play(loops=-1)
 
-    def try_consume_event(self, event: Event) -> bool:
-        return False
-
     @profile("game_event")
-    def try_delegate_event(self, event: Event) -> bool:
-        delegated = False
+    def try_handle_event(self, event: Event) -> bool:
+        handled = False
+        handled = handled or self.model.try_handle_event(event)
+        handled = handled or self.env.try_handle_event(event)
 
-        if not delegated:
-            delegated = self.model.try_handle_event(event)
-
-        if not delegated:
-            delegated = self.env.try_handle_event(event)
-
-        return delegated
+        return handled
 
     @profile("game_update")
     def update(self) -> None:

@@ -1,30 +1,40 @@
-from typing import Tuple
+from typing import Optional, Tuple
 
-import pygame
+import pygame as pg
 
-Color = Tuple[int, int, int]
+from agym.dtos import Color, Shift
+from agym.rendering import blit_screen, render_text
 
 
 class TextLabel:
     def __init__(
         self,
-        x: int,
-        y: int,
+        shift: Shift,
+        # font_path: str,
         font_size: int = 20,
-        color: Color = (230, 230, 130),
+        foreground_color: Color = Color(30, 30, 30),
+        background_color: Optional[Color] = None,
+        alpha: Optional[int] = None,
         text: str = "",
     ):
-        self.shift = (x, y)
+        self._shift = shift
 
-        self.color = color
-        self.font_size = font_size
-        self.font = pygame.font.SysFont("Hack", self.font_size)
+        self._foreground_color = foreground_color
+        self._background_color = background_color
+        self._alpha = alpha
 
-        self.text: str = text
+        # self._font = pg.font.Font(font_path, font_size)
+        self._font = pg.font.SysFont("Hack", font_size)
 
-    def blit(self, screen) -> None:
-        line_height = self.font_size
-        for idx, text_line in enumerate(self.text.split("\n")):
-            text_line_image = self.font.render(text_line, True, self.color)
-            shift = (self.shift[0], self.font_size * idx + self.shift[1])
-            screen.blit(text_line_image, shift)
+        self.text = text
+
+    def blit(self, screen: pg.surface.Surface) -> None:
+        text_screen = render_text(
+            font=self._font,
+            text=self.text,
+            foreground_color=self._foreground_color,
+            background_color=self._background_color,
+            alpha=self._alpha,
+        )
+
+        blit_screen(screen, text_screen, self._shift)

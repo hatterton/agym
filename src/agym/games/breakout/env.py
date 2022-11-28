@@ -7,7 +7,6 @@ import numpy as np
 import pygame
 from pygame.event import Event as PygameEvent
 
-from agym.games import IGameEnviroment
 from agym.games.breakout.dtos import (
     Ball,
     Block,
@@ -23,7 +22,6 @@ from agym.games.breakout.dtos import (
     Wall,
 )
 from agym.games.breakout.protocols import ICollisionDetector, ILevelBuilder
-from agym.interfaces import IEventHandler
 from agym.utils import profile
 
 from .geom import Point, Rectangle, Vec2
@@ -37,7 +35,7 @@ class BreakoutAction(enum.Enum):
     THROW = 3
 
 
-class BreakoutEnv(IGameEnviroment, IEventHandler):
+class BreakoutEnv:
     def __init__(
         self,
         env_width: int,
@@ -78,10 +76,7 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
         self.events = []
         return events
 
-    def try_consume_event(self, event: PygameEvent) -> bool:
-        return False
-
-    def try_delegate_event(self, event: PygameEvent) -> bool:
+    def try_handle_event(self, event: PygameEvent) -> bool:
         return False
 
     def reset(self) -> None:

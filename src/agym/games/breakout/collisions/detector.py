@@ -1,4 +1,4 @@
-from typing import Dict, Iterable, List
+from typing import Dict, Iterable, List, Mapping
 
 from agym.games.breakout.constants import EPS
 from agym.games.breakout.dtos import (
@@ -86,8 +86,8 @@ class CollisionDetector:
 
         return substate
 
-    def _build_index(self, state: GameState) -> Dict[ItemId, Item]:
-        index = dict()
+    def _build_index(self, state: GameState) -> Mapping[ItemId, Item]:
+        index: Dict[ItemId, Item] = dict()
 
         for wall in state.walls:
             index[wall.id] = wall
