@@ -1,47 +1,31 @@
 import pygame
+from dependency_injector.containers import DeclarativeContainer
+from dependency_injector.providers import Configuration, Factory
+from dependency_injector.providers import List as pList
+from dependency_injector.providers import Singleton
 
-from dependency_injector.containers import (
-    DeclarativeContainer,
-)
-from dependency_injector.providers import (
-    Configuration,
-    Singleton,
-    Factory,
-    List as pList,
-)
-
-from agym.games.breakout.collisions import (
-    NaiveCollisionDetectionEngine,
+from agym.audio_handler import AudioHandler
+from agym.game_monitor import GameMonitor
+from agym.games import BreakoutEnv, IGameEnviroment, ManualBreakoutModel
+from agym.games.breakout import (
     CollisionDetector,
     KDTreeCollisionDetectionEngine,
-)
-from agym.settings import Settings
-from agym.game_monitor import GameMonitor
-from agym.games import (
-    IGameEnviroment,
-    BreakoutEnv,
-    ManualBreakoutModel,
+    NaiveCollisionDetectionEngine,
 )
 from agym.games.breakout.levels import (
     DefaultLevelBuilder,
     PerformanceLevelBuilder,
 )
-from agym.main_window import MainWindow
-from agym.utils import (
-    FPSLimiter,
-)
-from agym.updaters import (
-    FPSUpdater,
-    ProfileUpdater,
-    ComposeUpdater,
-    LimitedUpdater,
-)
-from agym.audio_handler import AudioHandler
 from agym.gui import TextLabel
-from agym.utils import (
-    TimeProfiler,
-    register_profiler,
+from agym.main_window import MainWindow
+from agym.settings import Settings
+from agym.updaters import (
+    ComposeUpdater,
+    FPSUpdater,
+    LimitedUpdater,
+    ProfileUpdater,
 )
+from agym.utils import FPSLimiter, TimeProfiler, register_profiler
 
 
 class Application(DeclarativeContainer):
@@ -57,7 +41,6 @@ class Application(DeclarativeContainer):
         window_size=10000,
         log_self=False,
     )
-
 
     fps_label = Singleton(
         TextLabel,
@@ -99,7 +82,6 @@ class Application(DeclarativeContainer):
     )
 
     level_builder = Singleton(
-
         DefaultLevelBuilder,
         # PerformanceLevelBuilder,
         env_width=config.env_width,
@@ -109,7 +91,6 @@ class Application(DeclarativeContainer):
     )
 
     collision_detector_engine = Singleton(
-
         # NaiveCollisionDetectionEngine,
         KDTreeCollisionDetectionEngine,
     )

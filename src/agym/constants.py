@@ -1,4 +1,3 @@
-
 TIME_RESOLUTION = 1000
 
 # import pygame

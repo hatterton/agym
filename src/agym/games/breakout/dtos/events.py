@@ -1,7 +1,8 @@
 from dataclasses import dataclass, field
 from typing import Tuple
 
-from .geom import Point
+from agym.games.breakout.geom import Point
+
 from .collisions import Collision
 
 
@@ -13,4 +14,3 @@ class Event:
 @dataclass
 class CollisionEvent(Event):
     collision: Collision
-

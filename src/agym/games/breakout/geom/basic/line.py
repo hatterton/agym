@@ -2,7 +2,6 @@ from dataclasses import dataclass
 
 from .point import Vec2
 
-
 T = float
 
 

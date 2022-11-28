@@ -1,15 +1,7 @@
 import pytest
 
-from agym.games.breakout.geom import (
-    Point,
-    Triangle,
-    is_intersected,
-)
-
-from tests.math_utils import (
-    almost_equal_point,
-    almost_equal_float,
-)
+from agym.games.breakout.geom import Point, Triangle, is_intersected
+from tests.math_utils import almost_equal_float, almost_equal_point
 
 
 @pytest.mark.geom
@@ -114,4 +106,3 @@ class TestIntersectionsTriangleTriangle:
         )
         assert not is_intersected(t1, t2)
         assert not is_intersected(t2, t1)
-

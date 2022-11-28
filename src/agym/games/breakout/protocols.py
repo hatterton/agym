@@ -1,23 +1,25 @@
-from typing import (
-    Protocol,
-    Iterable,
-    List,
-)
+from typing import Iterable, List, Protocol
 
-from .collisions import Collision
+from .dtos import Collision
 from .state import GameState
 
 
 class ICollisionDetector(Protocol):
-    def get_step_collisions(self, state: GameState, dt: float) -> List[Collision]:
+    def get_step_collisions(
+        self, state: GameState, dt: float
+    ) -> List[Collision]:
         pass
 
-    def get_time_before_collision(self, state: GameState, max_dt: float) -> float:
+    def get_time_before_collision(
+        self, state: GameState, max_dt: float
+    ) -> float:
         pass
 
 
 class ICollisionDetectorEngine(Protocol):
-    def generate_step_collisions(self, state: GameState, dt: float) -> Iterable[Collision]:
+    def generate_step_collisions(
+        self, state: GameState, dt: float
+    ) -> Iterable[Collision]:
         pass
 
 

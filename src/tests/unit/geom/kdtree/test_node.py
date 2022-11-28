@@ -1,18 +1,20 @@
 import pytest
 
+from agym.games.breakout.geom import Rectangle
 from agym.games.breakout.geom.kdtree.node import TreeNode
 from agym.games.breakout.geom.kdtree.record import Record
-from agym.games.breakout.geom import Rectangle
 
 from .tree_utils import get_depth, traveres
 
 
-def build_record(left: float, top: float, right: float, bottom: float) -> Record:
+def build_record(
+    left: float, top: float, right: float, bottom: float
+) -> Record:
     shape = Rectangle(
         left=left,
         top=top,
-        width=right-left,
-        height=bottom-top,
+        width=right - left,
+        height=bottom - top,
     )
 
     return Record(
@@ -22,12 +24,13 @@ def build_record(left: float, top: float, right: float, bottom: float) -> Record
         bounding_box=shape.bounding_box,
     )
 
+
 def rect_contains(outer: Rectangle, inner: Rectangle) -> bool:
     return (
-        outer.left <= inner.left and
-        outer.right >= inner.right and
-        outer.top <= inner.top and
-        outer.bottom >= inner.bottom
+        outer.left <= inner.left
+        and outer.right >= inner.right
+        and outer.top <= inner.top
+        and outer.bottom >= inner.bottom
     )
 
 
@@ -115,7 +118,6 @@ class TestTreeNode:
 
         for node, num_items in zip(nodes, expected_items):
             assert len(node.items) == num_items
-
 
     def test_item_iterations(self):
         r = build_record(

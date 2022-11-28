@@ -1,18 +1,8 @@
-from typing import Union, Optional
 from itertools import product
+from typing import Optional, Union
 
-from .basic import (
-    Point,
-    Vec2,
-    Segment,
-    Line2,
-)
-from .shapes import (
-    Triangle,
-    Rectangle,
-    Circle,
-    Shape,
-)
+from .basic import Line2, Point, Segment, Vec2
+from .shapes import Circle, Rectangle, Shape, Triangle
 
 EPS = 1e-4
 
@@ -50,7 +40,9 @@ def get_intersection(a: Shape, b: Shape) -> Intersection:
     )
 
 
-def get_intersection_rectangle_rectangle(a: Rectangle, b: Rectangle) -> Intersection:
+def get_intersection_rectangle_rectangle(
+    a: Rectangle, b: Rectangle
+) -> Intersection:
     inter = intersect_rectangles(a, b)
 
     if inter.width <= 0 or inter.height <= 0:
@@ -59,7 +51,9 @@ def get_intersection_rectangle_rectangle(a: Rectangle, b: Rectangle) -> Intersec
     return inter.center
 
 
-def get_intersection_triangle_triangle(a: Triangle, b: Triangle) -> Intersection:
+def get_intersection_triangle_triangle(
+    a: Triangle, b: Triangle
+) -> Intersection:
     for p in [*a.points, a.center]:
         if is_point_in_triangle(p, b):
             return p
@@ -79,7 +73,7 @@ def get_intersection_triangle_triangle(a: Triangle, b: Triangle) -> Intersection
 
 def get_intersection_circle_circle(a: Circle, b: Circle) -> Intersection:
     s = a.center - b.center
-    sd = s.x ** 2 + s.y ** 2
+    sd = s.x**2 + s.y**2
     sr = (a.radius + b.radius) ** 2
 
     if sd < sr:
@@ -152,9 +146,10 @@ def intersect_rectangles(a: Rectangle, b: Rectangle) -> Rectangle:
     return Rectangle(
         left=left,
         top=top,
-        width=right-left,
-        height=bottom-top,
+        width=right - left,
+        height=bottom - top,
     )
+
 
 def get_intersection_circle_segment(c: Circle, s: Segment) -> Intersection:
     v0 = s.begin
@@ -171,7 +166,7 @@ def get_intersection_circle_segment(c: Circle, s: Segment) -> Intersection:
     if (r * an2) ** 2 <= (a * t - b * an2).norm2():
         return None
 
-    if an2 == 0.:
+    if an2 == 0.0:
         return v0
 
     p = a * t / an2 + v0

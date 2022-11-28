@@ -1,20 +1,9 @@
 import pytest
 
-from agym.games.breakout import (
-    BreakoutEnv,
-    BreakoutAction,
-    CollisionEvent,
-)
-from agym.games.breakout.geom import (
-    Vec2,
-)
-from agym.games.breakout.collisions import (
-    CollisionBallBall,
-)
-from tests.math_utils import (
-    almost_equal_vec,
-    almost_equal_float,
-)
+from agym.games.breakout import BreakoutAction, BreakoutEnv, CollisionEvent
+from agym.games.breakout.dtos import CollisionBallBall
+from agym.games.breakout.geom import Vec2
+from tests.math_utils import almost_equal_float, almost_equal_vec
 
 
 @pytest.mark.breakout
@@ -45,7 +34,6 @@ class TestCollisionsBallBall:
         assert almost_equal_vec(ball1.velocity * ball1.speed, Vec2(x=0, y=0))
         assert almost_equal_vec(ball2.velocity, Vec2(x=1, y=0))
 
-
     def test_ball_ball_noncentral_collision_type(
         self,
         breakout: BreakoutEnv,
@@ -71,7 +59,6 @@ class TestCollisionsBallBall:
         assert almost_equal_vec(ball2.velocity, Vec2(x=0, y=-1))
         assert almost_equal_float(ball1.speed, ball2.speed)
 
-
     def test_ball_ball_central_towards_collision_type(
         self,
         breakout: BreakoutEnv,
@@ -95,7 +82,6 @@ class TestCollisionsBallBall:
         ball2 = breakout.balls[1]
         assert almost_equal_vec(ball1.velocity, Vec2(x=-1, y=0))
         assert almost_equal_vec(ball2.velocity, Vec2(x=1, y=0))
-
 
     def test_ball_ball_central_towards_between_collision_type(
         self,
@@ -122,7 +108,6 @@ class TestCollisionsBallBall:
         assert almost_equal_vec(ball1.velocity, Vec2(x=-1, y=0))
         assert almost_equal_vec(ball2.velocity, Vec2(x=1, y=0))
         assert almost_equal_vec(ball3.velocity, Vec2(x=0, y=-1))
-
 
     def test_ball_ball_central_ghost_race_collision_type(
         self,

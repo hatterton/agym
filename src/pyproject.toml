@@ -13,6 +13,49 @@ pydantic = "^1.9.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
+mypy = "^0.991"
+isort = "^5.10.1"
+black = "^22.10.0"
+
+[tool.black]
+line-length = 80
+
+[tool.mypy]
+check_untyped_defs = true
+
+[tool.isort]
+line_length = 80
+profile = "black"
+
+[tool.pytest.ini_options]
+markers = """
+    gui: Run gui tests
+
+    breakout: Run tests connected with breakout
+
+    collisions: Run collision detection tests
+    intersections: Run intersection detection tests
+
+    geom: Run tests connected with geometry primitives
+
+    circle: Run tests connected with circle
+    triangle: Run tests connected with triangle
+    rectangle: Run tests connected with rectangle
+
+    segment: Run tests connected with segment
+    line: Run tests connected with line
+
+    platform: Run tests connected with platform's logic
+    ball: Run tests connected with ball's logic
+    wall: Run tests connected with wall's logic
+    block: Run tests connected with block's logic
+
+    kdtree: Run tests connected with kdtree
+
+    score: Run tests for spliting kdtree scores
+    node: Run tests for kdtree node
+    tree: Run tests for kdtree class
+"""
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

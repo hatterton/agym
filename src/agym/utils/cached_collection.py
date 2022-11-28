@@ -1,13 +1,7 @@
-from typing import (
-    List,
-    Iterable,
-    # Generic,
-    TypeVar,
-    Collection,
-    Iterator,
-)
+from typing import Collection, Iterable, Iterator, List, TypeVar  # Generic,
 
 T = TypeVar("T")
+
 
 class CachedCollection(Iterable[T]):
     def __init__(self, it: Iterable[T]) -> None:
@@ -28,4 +22,3 @@ class CachedCollection(Iterable[T]):
         self._values.append(value)
 
         return value
-

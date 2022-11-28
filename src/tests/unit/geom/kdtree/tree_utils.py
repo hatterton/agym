@@ -1,7 +1,4 @@
-from typing import (
-    Optional,
-    Iterable,
-)
+from typing import Iterable, Optional
 
 from agym.games.breakout.geom.kdtree.node import TreeNode
 
@@ -28,4 +25,3 @@ def traveres(node: Optional[TreeNode]) -> Iterable[TreeNode]:
     yield node
     yield from traveres(node.middle)
     yield from traveres(node.right)
-

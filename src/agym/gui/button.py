@@ -1,6 +1,7 @@
 import pygame
 import pygame.ftfont
 
+
 # outdated
 class Button:
     def __init__(self, arg, screen, surface, pos, text, func):
@@ -25,20 +26,30 @@ class Button:
         active_state_text = self.font.render(self.text, True, self.active_color)
 
         if not arg.wide_button_flag:
-            self.active_image = pygame.image.load('agym/images/new/active_button 150x60.png')
+            self.active_image = pygame.image.load(
+                "agym/images/new/active_button 150x60.png"
+            )
         else:
-            self.active_image = pygame.image.load('agym/images/new/active_button 200x40.png')
+            self.active_image = pygame.image.load(
+                "agym/images/new/active_button 200x40.png"
+            )
         temp_rect = active_state_text.get_rect()
-        temp_rect.centerx = self.active_image.get_rect().width//2
-        temp_rect.centery = self.active_image.get_rect().height//2
+        temp_rect.centerx = self.active_image.get_rect().width // 2
+        temp_rect.centery = self.active_image.get_rect().height // 2
         self.active_image.blit(active_state_text, temp_rect)
 
-        nonactive_state_text = self.font.render(self.text, True, self.nonactive_color)
+        nonactive_state_text = self.font.render(
+            self.text, True, self.nonactive_color
+        )
 
         if not arg.wide_button_flag:
-            self.nonactive_image = pygame.image.load('agym/images/new/nonactive_button 150x60.png')
+            self.nonactive_image = pygame.image.load(
+                "agym/images/new/nonactive_button 150x60.png"
+            )
         else:
-            self.nonactive_image = pygame.image.load('agym/images/new/nonactive_button 200x40.png')
+            self.nonactive_image = pygame.image.load(
+                "agym/images/new/nonactive_button 200x40.png"
+            )
         self.nonactive_image.blit(nonactive_state_text, temp_rect)
 
     def update(self, cursor_pos):

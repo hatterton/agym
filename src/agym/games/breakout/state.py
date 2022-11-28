@@ -1,16 +1,7 @@
 from dataclasses import dataclass, field
-from typing import (
-    List,
-    Iterable,
-)
+from typing import Iterable, List
 
-from agym.games.breakout.items import (
-    Ball,
-    Platform,
-    Block,
-    Wall,
-    Item,
-)
+from agym.games.breakout.dtos import Ball, Block, Item, Platform, Wall
 from agym.games.breakout.geom import Rectangle
 
 

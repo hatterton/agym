@@ -1,10 +1,6 @@
 from dataclasses import dataclass, field
 
-from ..shapes import (
-    Rectangle,
-    Shape,
-)
-
+from ..shapes import Rectangle, Shape
 
 Id = int
 ItemId = Id

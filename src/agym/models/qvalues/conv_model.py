@@ -1,14 +1,11 @@
+from typing import List
+
 import numpy as np
-import torch, torch.nn as nn
+import torch
+import torch.nn as nn
 from torch.autograd import Variable
 
-from agym.models import (
-    IQValuesModel,
-)
-
-from typing import (
-    List,
-)
+from agym.models import IQValuesModel
 
 
 class GlobalMaxPooling(nn.Module):
@@ -23,23 +20,28 @@ class GlobalMaxPooling(nn.Module):
 
 
 class ConvQValuesModel(IQValuesModel):
-    def __init__(self, n_actions: int,
-                 filters_list: List[int],
-                 hidden_units_list: List[int]):
+    def __init__(
+        self,
+        n_actions: int,
+        filters_list: List[int],
+        hidden_units_list: List[int],
+    ):
         layers: List[nn.Module] = []
 
         prev_filters = filters_list[0]
         for filters in filters_list[1:-1]:
-            layers.append(nn.Conv2d(prev_filters, filters,
-                                    kernel_size=3, padding=1))
+            layers.append(
+                nn.Conv2d(prev_filters, filters, kernel_size=3, padding=1)
+            )
             layers.append(nn.ReLU())
             layers.append(nn.MaxPool2d(2))
             prev_filters = filters
 
         if len(filters_list) >= 2:
             filters = filters_list[-1]
-            layers.append(nn.Conv2d(prev_filters, filters,
-                                    kernel_size=3, padding=1))
+            layers.append(
+                nn.Conv2d(prev_filters, filters, kernel_size=3, padding=1)
+            )
             layers.append(nn.ReLU())
 
         layers.append(GlobalMaxPooling([2, 3]))

@@ -10,4 +10,3 @@ def main_window(init_pygame, config, game_monitor):
         height=config.window_screen_height,
         game_monitor=game_monitor,
     )
-

@@ -92,8 +92,8 @@ class Rectangle:
         return Rectangle(
             left=left,
             top=top,
-            width=right-left,
-            height=bottom-top,
+            width=right - left,
+            height=bottom - top,
         )
 
     def is_intersected(self, rect: "Rectangle") -> bool:

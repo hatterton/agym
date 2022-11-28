@@ -1,19 +1,12 @@
 import pytest
 
-from agym.games.breakout import (
-    BreakoutEnv,
-    BreakoutAction,
-    CollisionEvent,
-)
-from agym.games.breakout.collisions import (
+from agym.games.breakout import BreakoutAction, BreakoutEnv, CollisionEvent
+from agym.games.breakout.dtos import (
     CollisionBallPlatform,
     CollisionBallWall,
     CollisionPlatformWall,
 )
-from tests.math_utils import (
-    almost_equal_vec,
-    almost_equal_float,
-)
+from tests.math_utils import almost_equal_float, almost_equal_vec
 
 
 @pytest.mark.breakout

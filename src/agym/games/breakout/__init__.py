@@ -1,29 +1,15 @@
-from .env import (
-    BreakoutEnv,
-    BreakoutAction,
-)
-from .manual_model import (
-    ManualBreakoutModel,
-)
 from .collisions import (
     CollisionDetector,
-    NaiveCollisionDetectionEngine,
     KDTreeCollisionDetectionEngine,
+    NaiveCollisionDetectionEngine,
 )
+from .dtos import CollisionEvent, Event
+from .env import BreakoutAction, BreakoutEnv
+from .levels import DefaultLevelBuilder, ItemManager, PerformanceLevelBuilder
+from .manual_model import ManualBreakoutModel
 from .protocols import (
     ICollisionDetector,
     ICollisionDetectorEngine,
     ILevelBuilder,
 )
-from .levels import (
-    ItemManager,
-    DefaultLevelBuilder,
-    PerformanceLevelBuilder,
-)
-from .events import (
-    Event,
-    CollisionEvent,
-)
-from .state import (
-    GameState,
-)
+from .state import GameState

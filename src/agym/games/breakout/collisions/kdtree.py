@@ -1,36 +1,24 @@
 from enum import Enum, auto
-from typing import (
-    Iterable,
-)
+from typing import Iterable
 
-from agym.games.breakout.geom import (
-    KDTree,
-    Record,
-    ClassId,
-    ItemId,
-)
-from agym.games.breakout.state import GameState
-from agym.games.breakout.items import (
-    Item,
-    Platform,
+from agym.games.breakout.dtos import (
     Ball,
     Block,
-    Wall,
-)
-from agym.games.breakout.collisions import (
     Collision,
+    CollisionBallBall,
     CollisionBallBlock,
     CollisionBallPlatform,
     CollisionBallWall,
     CollisionPlatformWall,
-    CollisionBallBall,
+    Item,
+    Platform,
+    Wall,
 )
+from agym.games.breakout.geom import ClassId, ItemId, KDTree, Record
+from agym.games.breakout.state import GameState
 from agym.utils import CachedCollection
 
-from .dtos import Collision
-from .precise import (
-    calculate_ball_ball_colls,
-)
+from .precise import calculate_ball_ball_colls
 
 
 class ItemClass(Enum):
@@ -46,7 +34,7 @@ class KDTreeCollisionDetectionEngine:
             Ball: ItemClass.BALL.value,
             Block: ItemClass.BLOCK.value,
             Platform: ItemClass.PLATFORM.value,
-            Wall: ItemClass.WALL.value
+            Wall: ItemClass.WALL.value,
         }
 
         self._collidable_pairs = {
@@ -57,10 +45,14 @@ class KDTreeCollisionDetectionEngine:
             (ItemClass.PLATFORM.value, ItemClass.WALL.value),
         }
 
-    def generate_step_collisions(self, state: GameState, dt: float) -> Iterable[Collision]:
+    def generate_step_collisions(
+        self, state: GameState, dt: float
+    ) -> Iterable[Collision]:
         return CachedCollection(self._generate_step_collisions(state, dt))
 
-    def _generate_step_collisions(self, state: GameState, dt: float) -> Iterable[Collision]:
+    def _generate_step_collisions(
+        self, state: GameState, dt: float
+    ) -> Iterable[Collision]:
 
         items = list(state.get_items())
         item_id2item = {idx: item for idx, item in enumerate(items)}
@@ -91,8 +83,10 @@ class KDTreeCollisionDetectionEngine:
             class_id1 = item_id2item_class[item_id1]
             class_id2 = item_id2item_class[item_id2]
 
-            if (class_id1 == ItemClass.BALL.value and
-                class_id2 == ItemClass.BALL.value):
+            if (
+                class_id1 == ItemClass.BALL.value
+                and class_id2 == ItemClass.BALL.value
+            ):
 
                 ball1 = item_id2item[item_id1]
                 ball2 = item_id2item[item_id2]
@@ -106,32 +100,40 @@ class KDTreeCollisionDetectionEngine:
                         ball2=item_id2item[item_id2],
                     )
 
-            elif (class_id1 == ItemClass.BALL.value and
-                  class_id2 == ItemClass.BLOCK.value):
+            elif (
+                class_id1 == ItemClass.BALL.value
+                and class_id2 == ItemClass.BLOCK.value
+            ):
                 yield CollisionBallBlock(
                     point=point,
                     ball=item_id2item[item_id1],
                     block=item_id2item[item_id2],
                 )
 
-            elif (class_id1 == ItemClass.BALL.value and
-                  class_id2 == ItemClass.PLATFORM.value):
+            elif (
+                class_id1 == ItemClass.BALL.value
+                and class_id2 == ItemClass.PLATFORM.value
+            ):
                 yield CollisionBallPlatform(
                     point=point,
                     ball=item_id2item[item_id1],
                     platform=item_id2item[item_id2],
                 )
 
-            elif (class_id1 == ItemClass.BALL.value and
-                  class_id2 == ItemClass.WALL.value):
+            elif (
+                class_id1 == ItemClass.BALL.value
+                and class_id2 == ItemClass.WALL.value
+            ):
                 yield CollisionBallWall(
                     point=point,
                     ball=item_id2item[item_id1],
                     wall=item_id2item[item_id2],
                 )
 
-            elif (class_id1 == ItemClass.PLATFORM.value and
-                  class_id2 == ItemClass.WALL.value):
+            elif (
+                class_id1 == ItemClass.PLATFORM.value
+                and class_id2 == ItemClass.WALL.value
+            ):
                 yield CollisionPlatformWall(
                     point=point,
                     platform=item_id2item[item_id1],

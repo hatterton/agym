@@ -1,16 +1,12 @@
 import pytest
 
 from agym.games.breakout.geom import (
-    Line2,
     Circle,
+    Line2,
     Point,
     get_intersection_line_line,
 )
-
-from tests.math_utils import (
-    almost_equal_point,
-    almost_equal_float,
-)
+from tests.math_utils import almost_equal_float, almost_equal_point
 
 
 @pytest.mark.geom
@@ -41,4 +37,3 @@ class TestIntersectionsLineLine:
         l2 = Line2(a=1, b=2, c=0)
         ip = get_intersection_line_line(l1, l2)
         assert ip is None
-

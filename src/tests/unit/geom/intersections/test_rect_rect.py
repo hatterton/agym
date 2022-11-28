@@ -1,15 +1,7 @@
 import pytest
 
-from agym.games.breakout.geom import (
-    Rectangle,
-    Point,
-    is_intersected,
-)
-
-from tests.math_utils import (
-    almost_equal_point,
-    almost_equal_float,
-)
+from agym.games.breakout.geom import Point, Rectangle, is_intersected
+from tests.math_utils import almost_equal_float, almost_equal_point
 
 
 @pytest.mark.geom
@@ -77,5 +69,3 @@ class TestIntersectionsRectangleRectangle:
         )
         assert not is_intersected(r1, r2)
         assert not is_intersected(r2, r1)
-
-

@@ -1,46 +1,33 @@
-import random
-import pygame
 import enum
-import numpy as np
+import random
+from itertools import product
+from typing import Any, Iterable, List, Tuple
 
+import numpy as np
+import pygame
 from pygame.event import Event as PygameEvent
 
-from typing import (
-    Any,
-    Tuple,
-    List,
-    Iterable,
-)
-from itertools import (
-    product,
-)
-
-from agym.interfaces import IEventHandler
-
-from .events import Event, CollisionEvent
-from .geom import Point, Vec2, Rectangle
 from agym.games import IGameEnviroment
-from agym.games.breakout.items import (
+from agym.games.breakout.dtos import (
     Ball,
-    Platform,
     Block,
-    Wall,
-)
-from agym.games.breakout.protocols import (
-    ICollisionDetector,
-    ILevelBuilder,
-)
-from agym.games.breakout.collisions import (
     Collision,
+    CollisionBallBall,
     CollisionBallBlock,
     CollisionBallPlatform,
     CollisionBallWall,
+    CollisionEvent,
     CollisionPlatformWall,
-    CollisionBallBall,
+    Event,
+    Platform,
+    Wall,
 )
-from .state import GameState
-
+from agym.games.breakout.protocols import ICollisionDetector, ILevelBuilder
+from agym.interfaces import IEventHandler
 from agym.utils import profile
+
+from .geom import Point, Rectangle, Vec2
+from .state import GameState
 
 
 class BreakoutAction(enum.Enum):
@@ -100,7 +87,7 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
     def reset(self) -> None:
         self.reset_level()
 
-        self.timestamp = 0.
+        self.timestamp = 0.0
         self.events = []
 
     def reset_level(self) -> None:
@@ -140,10 +127,14 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
         reward = 0
 
         while dt > self.eps:
-            step_dt = self.collision_detector.get_time_before_collision(self.state, dt)
+            step_dt = self.collision_detector.get_time_before_collision(
+                self.state, dt
+            )
             self.real_update(step_dt)
 
-            colls = self.collision_detector.get_step_collisions(self.state, self.eps)
+            colls = self.collision_detector.get_step_collisions(
+                self.state, self.eps
+            )
 
             self.perform_colls(colls)
 
@@ -212,13 +203,12 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
                     point=coll.point,
                 )
 
-
         return reward
 
     def perform_ball_coll(self, ball: Ball, point: Point) -> None:
         basis = point - ball.rect.center
         projection = ball.velocity.scalar(basis)
-        velocity = ball.velocity - basis * 2. * projection / basis.norm2()
+        velocity = ball.velocity - basis * 2.0 * projection / basis.norm2()
 
         if abs(velocity.y) < 0.1:
             sign = np.sign(velocity.y)
@@ -227,19 +217,23 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
 
         ball.velocity = velocity
 
-    def perform_platform_ball_coll(self, platform: Platform, ball: Ball, point: Point) -> None:
+    def perform_platform_ball_coll(
+        self, platform: Platform, ball: Ball, point: Point
+    ) -> None:
         velocity = point - platform.rect.center
         velocity.x /= 2
         velocity = velocity / velocity.norm()
 
-        if (ball.rect.centery > platform.rect.centery + 2):
+        if ball.rect.centery > platform.rect.centery + 2:
             velocity.y += 0.2
             velocity = velocity / velocity.norm()
 
         platform.freeze()
         ball.velocity = velocity
 
-    def perform_ball_ball_coll(self, ball1: Ball, ball2: Ball, point: Point) -> None:
+    def perform_ball_ball_coll(
+        self, ball1: Ball, ball2: Ball, point: Point
+    ) -> None:
         velocity1 = ball1.velocity * ball1.speed
         velocity2 = ball2.velocity * ball2.speed
 
@@ -302,7 +296,7 @@ class BreakoutEnv(IGameEnviroment, IEventHandler):
                 ball.thrown = True
                 miss = random.random() - 0.5
 
-                velocity = Vec2(x=miss*1, y=-1)
+                velocity = Vec2(x=miss * 1, y=-1)
                 velocity /= velocity.norm()
                 ball.velocity = velocity
 

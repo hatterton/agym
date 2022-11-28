@@ -1,26 +1,13 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import (
-    Iterable,
-    Tuple,
-    List,
-    Collection,
-    Set,
-)
 from itertools import combinations
+from typing import Collection, Iterable, List, Set, Tuple
 
+from ..intersecting import IntersectionStrict, get_intersection
 from ..shapes import Rectangle
-from .record import (
-    Record,
-    ItemId,
-    ClassId,
-)
-from ..intersecting import (
-    get_intersection,
-    IntersectionStrict,
-)
-from .scores import get_score
 from .node import TreeNode
+from .record import ClassId, ItemId, Record
+from .scores import get_score
 
 
 class BoundType(Enum):
@@ -88,8 +75,12 @@ class KDTree:
                 )
             )
 
-        verticals = sorted(verticals, key=lambda r: (r.bound, r.bound_type.value))
-        horizontals = sorted(horizontals, key=lambda r: (r.bound, r.bound_type.value))
+        verticals = sorted(
+            verticals, key=lambda r: (r.bound, r.bound_type.value)
+        )
+        horizontals = sorted(
+            horizontals, key=lambda r: (r.bound, r.bound_type.value)
+        )
 
         self.root = self._build(
             ids=set(range(len(records))),
@@ -99,10 +90,15 @@ class KDTree:
             depth=0,
         )
 
-
-    def _build(self, ids: Set[int], records: List[Record], verticals: List[RecordInfo], horizontals: List[RecordInfo], depth: int) -> TreeNode:
-        if (depth >= self._max_depth or
-            len(ids) <= self._num_records_stop):
+    def _build(
+        self,
+        ids: Set[int],
+        records: List[Record],
+        verticals: List[RecordInfo],
+        horizontals: List[RecordInfo],
+        depth: int,
+    ) -> TreeNode:
+        if depth >= self._max_depth or len(ids) <= self._num_records_stop:
             return TreeNode(items=[records[idx] for idx in ids])
 
         vscores = self._calculate_bound_scores(
@@ -139,29 +135,41 @@ class KDTree:
             if idx == max_idx:
                 break
 
-        left = self._build(
-            ids=left_ids,
-            records=records,
-            verticals=[b for b in verticals if b.idx in left_ids],
-            horizontals=[b for b in horizontals if b.idx in left_ids],
-            depth=depth+1,
-        ) if left_ids else None
+        left = (
+            self._build(
+                ids=left_ids,
+                records=records,
+                verticals=[b for b in verticals if b.idx in left_ids],
+                horizontals=[b for b in horizontals if b.idx in left_ids],
+                depth=depth + 1,
+            )
+            if left_ids
+            else None
+        )
 
-        middle = self._build(
-            ids=middle_ids,
-            records=records,
-            verticals=[b for b in verticals if b.idx in middle_ids],
-            horizontals=[b for b in horizontals if b.idx in middle_ids],
-            depth=depth+1,
-        ) if middle_ids else None
+        middle = (
+            self._build(
+                ids=middle_ids,
+                records=records,
+                verticals=[b for b in verticals if b.idx in middle_ids],
+                horizontals=[b for b in horizontals if b.idx in middle_ids],
+                depth=depth + 1,
+            )
+            if middle_ids
+            else None
+        )
 
-        right = self._build(
-            ids=right_ids,
-            records=records,
-            verticals=[b for b in verticals if b.idx in right_ids],
-            horizontals=[b for b in horizontals if b.idx in right_ids],
-            depth=depth+1,
-        ) if right_ids else None
+        right = (
+            self._build(
+                ids=right_ids,
+                records=records,
+                verticals=[b for b in verticals if b.idx in right_ids],
+                horizontals=[b for b in horizontals if b.idx in right_ids],
+                depth=depth + 1,
+            )
+            if right_ids
+            else None
+        )
 
         return TreeNode(
             left=left,
@@ -169,7 +177,9 @@ class KDTree:
             right=right,
         )
 
-    def _calculate_bound_scores(self, bounds: List[RecordInfo], num_total: int) -> List[float]:
+    def _calculate_bound_scores(
+        self, bounds: List[RecordInfo], num_total: int
+    ) -> List[float]:
         num_open = 0
         num_closed = 0
 
@@ -188,14 +198,16 @@ class KDTree:
             score = get_score(
                 l=num_closed,
                 m=num_open,
-                r=num_total-num_closed-num_open,
+                r=num_total - num_closed - num_open,
                 alpha=self._alpha,
             )
             scores.append(score)
 
         return scores
 
-    def generate_colliding_items(self) -> Iterable[Tuple[Tuple[ItemId, ItemId], IntersectionStrict]]:
+    def generate_colliding_items(
+        self,
+    ) -> Iterable[Tuple[Tuple[ItemId, ItemId], IntersectionStrict]]:
         yield from self._naive_generate_colliding_items(self._records)
         return
 
@@ -206,7 +218,9 @@ class KDTree:
             collided=collided,
         )
 
-    def _generate_colliding_items(self, node: TreeNode, collided: Set[Tuple[ItemId, ItemId]]) -> Iterable[Tuple[Tuple[ItemId, ItemId], IntersectionStrict]]:
+    def _generate_colliding_items(
+        self, node: TreeNode, collided: Set[Tuple[ItemId, ItemId]]
+    ) -> Iterable[Tuple[Tuple[ItemId, ItemId], IntersectionStrict]]:
         for record in node.items:
             yield from node.generate_intersecting(
                 record=record,
@@ -234,7 +248,9 @@ class KDTree:
                 collided=collided,
             )
 
-    def _naive_generate_colliding_items(self, records: List[Record]) -> Iterable[Tuple[Tuple[ItemId, ItemId], IntersectionStrict]]:
+    def _naive_generate_colliding_items(
+        self, records: List[Record]
+    ) -> Iterable[Tuple[Tuple[ItemId, ItemId], IntersectionStrict]]:
         collided_ids = set()
 
         for r1, r2 in combinations(records, 2):

@@ -2,38 +2,33 @@ import math
 from itertools import product
 from typing import Iterable
 
-from agym.games.breakout.geom import (
-    Point,
-    Circle,
-    Rectangle,
-)
-from agym.games.breakout.items import (
+from agym.games.breakout.dtos import (
     Ball,
-    Platform,
     Block,
-    Wall,
-)
-from agym.utils import profile
-from .dtos import (
     Collision,
+    CollisionBallBall,
     CollisionBallBlock,
     CollisionBallPlatform,
     CollisionBallWall,
     CollisionPlatformWall,
-    CollisionBallBall,
+    Platform,
+    Wall,
 )
+from agym.games.breakout.geom import Circle, Point, Rectangle
+from agym.utils import profile
 
 EPS = 1e-4
 
 
-def calculate_ball_block_colls(ball: Ball, block: Block, dt: float) -> Iterable[CollisionBallBlock]:
+def calculate_ball_block_colls(
+    ball: Ball, block: Block, dt: float
+) -> Iterable[CollisionBallBlock]:
     ball_radius = ball.radius
     ball_bp, ball_ep = ball.fake_update(dt)
 
     w, h = block.rect.w, block.rect.h
-    diag = (w ** 2 + h ** 2) ** 0.5
-    min_dist = (diag / 2 + ball.radius +
-                ball.speed * dt)
+    diag = (w**2 + h**2) ** 0.5
+    min_dist = diag / 2 + ball.radius + ball.speed * dt
 
     dist = (block.rect.center - ball.rect.center).norm()
 
@@ -41,8 +36,7 @@ def calculate_ball_block_colls(ball: Ball, block: Block, dt: float) -> Iterable[
         return
 
     is_coll, point = False, None
-    is_coll, point = collide_circle_rect(ball_ep, 
-                                         block.rect, ball_radius)
+    is_coll, point = collide_circle_rect(ball_ep, block.rect, ball_radius)
 
     if not is_coll:
         is_coll, point = collide_thick_segment_rect(
@@ -59,7 +53,9 @@ def calculate_ball_block_colls(ball: Ball, block: Block, dt: float) -> Iterable[
         )
 
 
-def calculate_ball_platform_colls(ball: Ball, platform: Platform, dt: float) -> Iterable[CollisionBallPlatform]:
+def calculate_ball_platform_colls(
+    ball: Ball, platform: Platform, dt: float
+) -> Iterable[CollisionBallPlatform]:
     ball_radius = ball.radius
     ball_bp, ball_ep = ball.fake_update(dt)
     b_rect, e_rect = platform.fake_update(dt)
@@ -75,9 +71,7 @@ def calculate_ball_platform_colls(ball: Ball, platform: Platform, dt: float) -> 
         if not is_coll:
             for rect in [b_rect, e_rect]:
                 is_coll, point = collide_thick_segment_rect(
-                    [ball_bp, ball_ep],
-                    rect,
-                    ball_radius
+                    [ball_bp, ball_ep], rect, ball_radius
                 )
 
         if is_coll:
@@ -88,13 +82,14 @@ def calculate_ball_platform_colls(ball: Ball, platform: Platform, dt: float) -> 
             )
 
 
-def calculate_ball_wall_colls(ball: Ball, wall: Wall, dt: float) -> Iterable[CollisionBallWall]:
+def calculate_ball_wall_colls(
+    ball: Ball, wall: Wall, dt: float
+) -> Iterable[CollisionBallWall]:
     ball_bp, ball_ep = ball.fake_update(dt)
     begin_circle = Circle(center=ball_bp, radius=ball.radius)
     end_circle = Circle(center=ball_ep, radius=ball.radius)
 
     ball_coll_rect = begin_circle.bounding_box.union(end_circle.bounding_box)
-
 
     if ball_coll_rect.is_intersected(wall.rect):
         if end_circle.bounding_box.is_intersected(wall.rect):
@@ -108,6 +103,7 @@ def calculate_ball_wall_colls(ball: Ball, wall: Wall, dt: float) -> Iterable[Col
             wall=wall,
         )
 
+
 def intersect_rects(r1: Rectangle, r2: Rectangle) -> Rectangle:
     left = max(r1.left, r2.left)
     right = min(r1.right, r2.right)
@@ -120,12 +116,14 @@ def intersect_rects(r1: Rectangle, r2: Rectangle) -> Rectangle:
     return Rectangle(
         left=left,
         top=top,
-        width=right-left,
-        height=bottom-top,
+        width=right - left,
+        height=bottom - top,
     )
 
 
-def calculate_platform_wall_colls(platform: Platform, wall: Wall, dt: float) -> Iterable[CollisionPlatformWall]:
+def calculate_platform_wall_colls(
+    platform: Platform, wall: Wall, dt: float
+) -> Iterable[CollisionPlatformWall]:
     b_rect, e_rect = platform.fake_update(dt)
     platform_coll_rect = b_rect.union(e_rect)
 
@@ -139,7 +137,9 @@ def calculate_platform_wall_colls(platform: Platform, wall: Wall, dt: float) -> 
         )
 
 
-def calculate_ball_ball_colls(ball1: Ball, ball2: Ball, dt: float) -> Iterable[CollisionBallBall]:
+def calculate_ball_ball_colls(
+    ball1: Ball, ball2: Ball, dt: float
+) -> Iterable[CollisionBallBall]:
     radius = ball1.radius
     s1, f1 = ball1.fake_update(dt)
     s2, f2 = ball2.fake_update(dt)
@@ -165,7 +165,7 @@ def calculate_ball_ball_colls(ball1: Ball, ball2: Ball, dt: float) -> Iterable[C
 
 
 def norm(vec):
-    result = sum(item ** 2 for item in vec) ** 0.5
+    result = sum(item**2 for item in vec) ** 0.5
 
     return result
 
@@ -187,7 +187,7 @@ def sum_vec(a, b):
 def make_line(p1, p2):
     a = p1[1] - p2[1]
     b = p2[0] - p1[0]
-    c = - a * p1[0] - b * p1[1]
+    c = -a * p1[0] - b * p1[1]
 
     return [a, b, c]
 
@@ -206,8 +206,10 @@ def collide_seg_seg(first, second):
     second_place_in = [place_in_line(second_line, first[i]) for i in range(2)]
 
     result = False
-    if (first_place_in[0] * first_place_in[1] < 0 and
-        second_place_in[0] * second_place_in[1] < 0):
+    if (
+        first_place_in[0] * first_place_in[1] < 0
+        and second_place_in[0] * second_place_in[1] < 0
+    ):
         result = True
 
     return result, [0, 0]
@@ -277,7 +279,7 @@ def collide_circle_rect(circle, rect, radius):
 
 
 def is_point_in_circle(point, circle, radius) -> bool:
-    dist2 = (circle[0] - point[0])**2 + (circle[1] - point[1])**2
+    dist2 = (circle[0] - point[0]) ** 2 + (circle[1] - point[1]) ** 2
 
     return dist2 < radius**2
 

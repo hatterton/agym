@@ -1,22 +1,14 @@
-import time
 import sys
-from copy import copy
-from statistics import mean
-from functools import wraps
-from dataclasses import dataclass
-from collections import (
-    defaultdict,
-)
-from typing import (
-    List,
-    Tuple,
-    Optional,
-    Generator,
-)
+import time
+from collections import defaultdict
 from contextlib import contextmanager
+from copy import copy
+from dataclasses import dataclass
+from functools import wraps
+from statistics import mean
+from typing import Generator, List, Optional, Tuple
 
 from .queue import Queue
-
 
 Text = str
 Time = float
@@ -62,7 +54,6 @@ class TimeProfiler:
         self.reset()
         register_profiler(self)
 
-
     def set_default_parent(self, defaut_parent: Optional[str] = None) -> None:
         for signup in self.signups:
             if signup.parent_title == self.defaut_parent:
@@ -80,7 +71,9 @@ class TimeProfiler:
             self.add_event(finish_event)
 
     @contextmanager
-    def _profiling(self, start_event: str, finish_event: str) -> Generator[None, None, None]:
+    def _profiling(
+        self, start_event: str, finish_event: str
+    ) -> Generator[None, None, None]:
         try:
             if self.log_self:
                 self._add_event(start_event)
@@ -139,9 +132,11 @@ class TimeProfiler:
             start_event2ids[signup.start_event].append(idx)
             finish_event2ids[signup.finish_event].append(idx)
 
-        accumulated_durations: List[List[float]] = [[] for _ in range(len(self.signups))]
+        accumulated_durations: List[List[float]] = [
+            [] for _ in range(len(self.signups))
+        ]
         is_opened = [False for _ in range(len(self.signups))]
-        opening_times = [0. for _ in range(len(self.signups))]
+        opening_times = [0.0 for _ in range(len(self.signups))]
 
         for event in self.events:
             for idx in start_event2ids[event.text]:
@@ -234,16 +229,20 @@ class ProfilingManager:
 profiling_manager = ProfilingManager()
 
 
-def profile(title: Optional[str] = None, parent_title: Optional[str] = None,
-            start_suffix: str = "_start", finish_suffix: str = "_finish",
-            signup_suffix: str = ""):
+def profile(
+    title: Optional[str] = None,
+    parent_title: Optional[str] = None,
+    start_suffix: str = "_start",
+    finish_suffix: str = "_finish",
+    signup_suffix: str = "",
+):
     def decorator(func):
         if title is None:
             prefix = func.__name__
         else:
             prefix = title
 
-        start_event =  prefix + start_suffix
+        start_event = prefix + start_suffix
         finish_event = prefix + finish_suffix
         signup_title = prefix + signup_suffix
 
@@ -258,7 +257,7 @@ def profile(title: Optional[str] = None, parent_title: Optional[str] = None,
         @wraps(func)
         def derivated(*args, **kwargs):
             profiling_manager.add_event(start_event)
-            result  = func(*args, **kwargs)
+            result = func(*args, **kwargs)
             profiling_manager.add_event(finish_event)
 
             return result
@@ -282,7 +281,7 @@ def format_stats(stats: List[Stat]) -> str:
             stat.average,
             stat.relative,
             stat.parent_title[:20] if stat.parent_title else "",
-            stat.parent_relative if stat.parent_relative else 0.,
+            stat.parent_relative if stat.parent_relative else 0.0,
         )
         lines.append(msg)
 

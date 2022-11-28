@@ -1,16 +1,13 @@
+from .cached_collection import CachedCollection
 from .fps import FPSLimiter
+from .math import get_n_max, get_n_min
 from .queue import Queue
 from .timemanager import (
-    TimeProfiler,
     Signup,
     Stat,
-    profile,
+    TimeProfiler,
     format_stats,
-    register_profiler,
+    profile,
     profiling_manager,
+    register_profiler,
 )
-from .math import (
-    get_n_max,
-    get_n_min,
-)
-from .cached_collection import CachedCollection

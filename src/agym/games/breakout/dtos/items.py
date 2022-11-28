@@ -1,19 +1,16 @@
 import os
-from typing import (
-    Iterable,
-    Optional,
-)
 from abc import ABC, abstractmethod
+from typing import Iterable, Optional
 
 import pygame as pg
 from pygame.sprite import Sprite
 
 from agym.games.breakout.geom import (
-    Shape,
     Circle,
-    Rectangle,
-    Triangle,
     Point,
+    Rectangle,
+    Shape,
+    Triangle,
     Vec2,
 )
 
@@ -21,7 +18,12 @@ ItemId = int
 
 
 class Item(ABC, Sprite):
-    def __init__(self, item_id: ItemId, image_name: Optional[str] = None, rect: Optional[Rectangle] = None):
+    def __init__(
+        self,
+        item_id: ItemId,
+        image_name: Optional[str] = None,
+        rect: Optional[Rectangle] = None,
+    ):
         super(Item, self).__init__()
 
         if image_name is not None:
@@ -41,12 +43,11 @@ class Item(ABC, Sprite):
 
         self.id = item_id
 
-
     def blit(self, screen) -> None:
         if self.image is None:
             rect = pg.Rect(
-                (self.rect.left-1, self.rect.top-1),
-                (self.rect.width+2, self.rect.height+2),
+                (self.rect.left - 1, self.rect.top - 1),
+                (self.rect.width + 2, self.rect.height + 2),
             )
             pg.draw.rect(screen, (150, 50, 50), rect)
 
@@ -60,12 +61,13 @@ class Item(ABC, Sprite):
 
 
 class Ball(Item):
-    def __init__(self, image_name, radius, speed, thrown: bool, item_id: ItemId):
+    def __init__(
+        self, image_name, radius, speed, thrown: bool, item_id: ItemId
+    ):
         super().__init__(
             item_id=item_id,
             image_name=image_name,
         )
-
 
         self.radius = radius
         self.color_cirle = pg.Color(0, 0, 0)
@@ -122,7 +124,9 @@ class Ball(Item):
 
 
 class Block(Item):
-    def __init__(self, image_name: str, top: int, left: int, health: int, item_id: ItemId):
+    def __init__(
+        self, image_name: str, top: int, left: int, health: int, item_id: ItemId
+    ):
         super().__init__(
             item_id=item_id,
             image_name=image_name,
@@ -158,7 +162,6 @@ class Platform(Item):
             item_id=item_id,
             image_name=image_name,
         )
-
 
         self.speed: float = speed
         self.velocity: Vec2 = Vec2(x=0, y=0)
@@ -232,4 +235,3 @@ class Wall(Item):
                 ]
             ),
         ]
-
