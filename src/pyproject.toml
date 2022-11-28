@@ -8,7 +8,6 @@ authors = ["Anton Novikov <thescir@yandex.ru>"]
 python = "3.8"
 pygame = "^2.1.2"
 numpy = "^1.22.1"
-dependency-injector = "^4.37.0"
 pydantic = "^1.9.0"
 
 [tool.poetry.dev-dependencies]
