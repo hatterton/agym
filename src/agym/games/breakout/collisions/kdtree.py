@@ -1,5 +1,5 @@
 from enum import Enum, auto
-from typing import Iterable
+from typing import Iterable, cast
 
 from agym.games.breakout.dtos import (
     Ball,
@@ -88,16 +88,16 @@ class KDTreeCollisionDetectionEngine:
                 and class_id2 == ItemClass.BALL.value
             ):
 
-                ball1 = item_id2item[item_id1]
-                ball2 = item_id2item[item_id2]
+                ball1 = cast(Ball, item_id2item[item_id1])
+                ball2 = cast(Ball, item_id2item[item_id2])
 
                 coll = calculate_ball_ball_colls(ball1, ball2, dt)
 
                 if coll is not None:
                     yield CollisionBallBall(
                         point=point,
-                        ball1=item_id2item[item_id1],
-                        ball2=item_id2item[item_id2],
+                        ball1=ball1,
+                        ball2=ball2,
                     )
 
             elif (
@@ -106,8 +106,8 @@ class KDTreeCollisionDetectionEngine:
             ):
                 yield CollisionBallBlock(
                     point=point,
-                    ball=item_id2item[item_id1],
-                    block=item_id2item[item_id2],
+                    ball=cast(Ball, item_id2item[item_id1]),
+                    block=cast(Block, item_id2item[item_id2]),
                 )
 
             elif (
@@ -116,8 +116,8 @@ class KDTreeCollisionDetectionEngine:
             ):
                 yield CollisionBallPlatform(
                     point=point,
-                    ball=item_id2item[item_id1],
-                    platform=item_id2item[item_id2],
+                    ball=cast(Ball, item_id2item[item_id1]),
+                    platform=cast(Platform, item_id2item[item_id2]),
                 )
 
             elif (
@@ -126,8 +126,8 @@ class KDTreeCollisionDetectionEngine:
             ):
                 yield CollisionBallWall(
                     point=point,
-                    ball=item_id2item[item_id1],
-                    wall=item_id2item[item_id2],
+                    ball=cast(Ball, item_id2item[item_id1]),
+                    wall=cast(Wall, item_id2item[item_id2]),
                 )
 
             elif (
@@ -136,6 +136,6 @@ class KDTreeCollisionDetectionEngine:
             ):
                 yield CollisionPlatformWall(
                     point=point,
-                    platform=item_id2item[item_id1],
-                    wall=item_id2item[item_id2],
+                    platform=cast(Platform, item_id2item[item_id1]),
+                    wall=cast(Wall, item_id2item[item_id2]),
                 )

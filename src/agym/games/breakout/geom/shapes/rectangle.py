@@ -11,7 +11,7 @@ class Rectangle:
     height: float
 
     @classmethod
-    def from_rect(cls, rect: "Rectangle") -> "Rectangle":
+    def from_rect(cls, rect) -> "Rectangle":
         return cls(
             left=rect.left,
             top=rect.top,

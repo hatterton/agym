@@ -4,42 +4,39 @@ import pygame
 from pygame.event import Event
 
 from agym.games.breakout.env import BreakoutAction
-from agym.interfaces import IEventHandler
-from agym.models import IModel
 
 
-class ManualBreakoutModel(IModel, IEventHandler):
+class ManualBreakoutModel:
     def __init__(self):
         self.platform_moving_left = False
         self.platform_moving_right = False
         self.promise_throw = False
 
-    def try_consume_event(self, event: Event) -> bool:
+    def try_handle_event(self, event: Event) -> bool:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
                 self.platform_moving_left = True
                 self.platform_moving_right = False
+                return True
+
             elif event.key == pygame.K_RIGHT:
                 self.platform_moving_left = False
                 self.platform_moving_right = True
+                return True
+
             elif event.key == pygame.K_SPACE:
                 self.promise_throw = True
-            else:
-                return False
+                return True
 
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT:
                 self.platform_moving_left = False
+                return True
+
             elif event.key == pygame.K_RIGHT:
                 self.platform_moving_right = False
-            else:
-                return False
-        else:
-            return False
+                return True
 
-        return True
-
-    def try_delegate_event(self, event: Event) -> bool:
         return False
 
     def get_action(self, state) -> int:

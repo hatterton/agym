@@ -6,6 +6,7 @@ from agym.games.breakout.dtos import (
     CollisionBallWall,
     CollisionPlatformWall,
 )
+from agym.games.breakout.geom import Vec2
 from tests.math_utils import almost_equal_float, almost_equal_vec
 
 
@@ -32,7 +33,7 @@ class TestCollisionsBallPlatform:
         event = events[0]
         assert isinstance(event, CollisionEvent)
         assert isinstance(event.collision, CollisionBallPlatform)
-        assert almost_equal_vec(breakout.balls[0].velocity, [0, -1])
+        assert almost_equal_vec(breakout.balls[0].velocity, Vec2(x=0, y=-1))
 
     def test_ball_platform_cliping_collision_type(
         self,

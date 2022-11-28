@@ -5,8 +5,9 @@ from dependency_injector.providers import List as pList
 from dependency_injector.providers import Singleton
 
 from agym.audio_handler import AudioHandler
+from agym.dtos import Color, Shift
 from agym.game_monitor import GameMonitor
-from agym.games import BreakoutEnv, IGameEnviroment, ManualBreakoutModel
+from agym.games import BreakoutEnv, ManualBreakoutModel
 from agym.games.breakout import (
     CollisionDetector,
     KDTreeCollisionDetectionEngine,
@@ -18,6 +19,7 @@ from agym.games.breakout.levels import (
 )
 from agym.gui import TextLabel
 from agym.main_window import MainWindow
+from agym.protocols import IGameEnvironment
 from agym.settings import Settings
 from agym.updaters import (
     ComposeUpdater,
@@ -44,17 +46,16 @@ class Application(DeclarativeContainer):
 
     fps_label = Singleton(
         TextLabel,
-        x=10,
-        y=10,
+        shift=Shift(x=10, y=10),
         font_size=12,
+        foreground_color=Color(230, 230, 130),
         text="fps",
     )
     profile_label = Singleton(
         TextLabel,
-        x=120,
-        y=10,
+        shift=Shift(x=120, y=10),
         font_size=12,
-        color=(180, 130, 180),
+        foreground_color=Color(180, 130, 180),
         text="profiling",
     )
 

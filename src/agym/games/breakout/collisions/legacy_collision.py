@@ -1,6 +1,6 @@
 import math
 from itertools import product
-from typing import Iterable
+from typing import Iterable, List, Optional, Tuple
 
 from agym.games.breakout.dtos import (
     Ball,
@@ -35,17 +35,16 @@ def calculate_ball_block_colls(
     if dist > min_dist + EPS:
         return
 
-    is_coll, point = False, None
-    is_coll, point = collide_circle_rect(ball_ep, block.rect, ball_radius)
+    point = collide_circle_rect(ball_ep, block.rect, ball_radius)
 
-    if not is_coll:
-        is_coll, point = collide_thick_segment_rect(
+    if not point:
+        point = collide_thick_segment_rect(
             [ball_bp, ball_ep],
             block.rect,
             ball_radius,
         )
 
-    if is_coll:
+    if point:
         yield CollisionBallBlock(
             point=point,
             ball=ball,
@@ -63,18 +62,21 @@ def calculate_ball_platform_colls(
     if ball.thrown:
         is_coll, point = False, None
         for circle, rect in product([ball_bp, ball_ep], [b_rect, e_rect]):
-            is_coll, point = collide_circle_rect(circle, rect, ball_radius)
+            point = collide_circle_rect(circle, rect, ball_radius)
 
-            if is_coll:
+            if point:
                 break
 
-        if not is_coll:
+        if not point:
             for rect in [b_rect, e_rect]:
-                is_coll, point = collide_thick_segment_rect(
+                point = collide_thick_segment_rect(
                     [ball_bp, ball_ep], rect, ball_radius
                 )
 
-        if is_coll:
+                if point:
+                    break
+
+        if point:
             yield CollisionBallPlatform(
                 point=point,
                 ball=ball,
@@ -164,13 +166,13 @@ def calculate_ball_ball_colls(
         )
 
 
-def norm(vec):
+def norm(vec) -> float:
     result = sum(item**2 for item in vec) ** 0.5
 
     return result
 
 
-def normalize(vec):
+def normalize(vec) -> List[float]:
     mod_vec = norm(vec)
 
     result_vec = [item / mod_vec for item in vec]
@@ -178,13 +180,13 @@ def normalize(vec):
     return result_vec
 
 
-def sum_vec(a, b):
+def sum_vec(a, b) -> List[float]:
     result = [a[i] + b[i] for i in range(2)]
 
     return result
 
 
-def make_line(p1, p2):
+def make_line(p1, p2) -> List[float]:
     a = p1[1] - p2[1]
     b = p2[0] - p1[0]
     c = -a * p1[0] - b * p1[1]
@@ -192,33 +194,32 @@ def make_line(p1, p2):
     return [a, b, c]
 
 
-def place_in_line(line, point):
+def place_in_line(line, point) -> float:
     result = line[0] * point[0] + line[1] * point[1] + line[2]
 
     return result
 
 
-def collide_seg_seg(first, second):
+def collide_seg_seg(first, second) -> Optional[Point]:
     first_line = make_line(*first)
     second_line = make_line(*second)
 
     first_place_in = [place_in_line(first_line, second[i]) for i in range(2)]
     second_place_in = [place_in_line(second_line, first[i]) for i in range(2)]
 
-    result = False
     if (
         first_place_in[0] * first_place_in[1] < 0
         and second_place_in[0] * second_place_in[1] < 0
     ):
-        result = True
+        return Point(x=0, y=0)
 
-    return result, [0, 0]
+    return None
 
 
-def collide_thick_segment_rect(segment, rect, thick):
+def collide_thick_segment_rect(segment, rect, thick) -> Optional[Point]:
     vec = [segment[1][i] - segment[0][i] for i in range(2)]
     if norm(vec) < EPS:
-        return False, None
+        return None
     vec = normalize(vec)
 
     rect_segs = []
@@ -241,19 +242,15 @@ def collide_thick_segment_rect(segment, rect, thick):
     seg_segs.append([bps[0], tps[0]])
     seg_segs.append([bps[1], tps[1]])
 
-    result = False
     for rect_seg, seg_seg in product(rect_segs, seg_segs):
-        result, coll_point = collide_seg_seg(rect_seg, seg_seg)
-        if result:
+        coll_point = collide_seg_seg(rect_seg, seg_seg)
+        if coll_point:
             break
 
-    if not result:
-        return False, None
-
-    return True, Point.from_list(coll_point)
+    return coll_point
 
 
-def collide_circle_rect(circle, rect, radius):
+def collide_circle_rect(circle, rect, radius) -> Optional[Point]:
     coll_point = None
     if rect.left < circle[0] < rect.right:
         if math.fabs(circle[1] - rect.top) < radius:
@@ -272,10 +269,10 @@ def collide_circle_rect(circle, rect, radius):
                 if is_point_in_circle((side_1, side_2), circle, radius):
                     coll_point = [side_1, side_2]
 
-    if coll_point is None:
-        return False, None
+    if not coll_point:
+        return None
 
-    return True, Point.from_list(coll_point)
+    return Point.from_list(coll_point)
 
 
 def is_point_in_circle(point, circle, radius) -> bool:
@@ -284,9 +281,9 @@ def is_point_in_circle(point, circle, radius) -> bool:
     return dist2 < radius**2
 
 
-def collide_circle_circle(p1, p2, radius):
+def collide_circle_circle(p1, p2, radius) -> Optional[Point]:
     shift = p2 - p1
     if shift.norm2() < (2 * radius - EPS) ** 2:
-        return True, p1 + shift / 2
+        return p1 + shift / 2
 
-    return False, None
+    return None

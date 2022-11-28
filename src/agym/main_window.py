@@ -2,10 +2,10 @@ import pygame
 from pygame.event import Event
 
 from agym.game_monitor import GameMonitor
-from agym.interfaces import IEventHandler
+from agym.protocols import IEventHandler
 
 
-class MainWindow(IEventHandler):
+class MainWindow:
     def __init__(self, width: int, height: int, game_monitor: GameMonitor):
         pygame.display.set_caption("Arcanoid")
         self.screen = pygame.display.set_mode((width, height))
@@ -48,7 +48,13 @@ class MainWindow(IEventHandler):
 
         pygame.display.flip()
 
-    def try_consume_event(self, event: Event) -> bool:
+    def try_handle_event(self, event: Event) -> bool:
+        handled = self._try_consume_event(event)
+        handled = handled or self._try_delegate_event(event)
+
+        return handled
+
+    def _try_consume_event(self, event: Event) -> bool:
         if event.type == pygame.QUIT:
             self.active = False
             return True
@@ -61,5 +67,5 @@ class MainWindow(IEventHandler):
 
         return False
 
-    def try_delegate_event(self, event: Event) -> bool:
+    def _try_delegate_event(self, event: Event) -> bool:
         return self.game_monitor.try_handle_event(event)

@@ -3,7 +3,6 @@ from abc import ABC, abstractmethod
 from typing import Iterable, Optional
 
 import pygame as pg
-from pygame.sprite import Sprite
 
 from agym.games.breakout.geom import (
     Circle,
@@ -17,14 +16,15 @@ from agym.games.breakout.geom import (
 ItemId = int
 
 
-class Item(ABC, Sprite):
+class Item(ABC):
     def __init__(
         self,
         item_id: ItemId,
         image_name: Optional[str] = None,
         rect: Optional[Rectangle] = None,
     ):
-        super(Item, self).__init__()
+        self.rect: Rectangle
+        self.image: Optional[pg.surface.Surface]
 
         if image_name is not None:
             image_path = os.path.join(
@@ -45,7 +45,7 @@ class Item(ABC, Sprite):
 
     def blit(self, screen) -> None:
         if self.image is None:
-            rect = pg.Rect(
+            rect = pg.rect.Rect(
                 (self.rect.left - 1, self.rect.top - 1),
                 (self.rect.width + 2, self.rect.height + 2),
             )
@@ -166,8 +166,8 @@ class Platform(Item):
         self.speed: float = speed
         self.velocity: Vec2 = Vec2(x=0, y=0)
 
-        self.rest_freeze_time = 0
-        self.default_freeze_time = 2
+        self.rest_freeze_time: float = 0
+        self.default_freeze_time: float = 2
 
     def fake_update(self, dt):
         fake_rect = self.rect.copy()
