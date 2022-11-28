@@ -8,17 +8,17 @@ from pygame.mixer import Sound
 
 from agym.constants import TIME_RESOLUTION
 from agym.gui import TextLabel
-from agym.protocols import IEventHandler
+from agym.protocols import IEventHandler, IGameEnvironment, IModel
 from agym.utils import TimeProfiler, format_stats, profile, register_profiler
 
 
-class GameMonitor(IEventHandler):
+class GameMonitor:
     def __init__(
         self,
         width: int,
         height: int,
-        env,
-        model,
+        env: IGameEnvironment,
+        model: IModel,
         fps_limiter,
         fps_label: TextLabel,
         profile_label: TextLabel,

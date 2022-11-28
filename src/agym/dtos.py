@@ -37,7 +37,12 @@ class Shape:
         return self.width, self.height
 
 
+@dataclass
+class Event:
+    timestamp: float
+
+
 Screen = pg.surface.Surface
 Rect = pg.rect.Rect
 Font = pg.font.Font
-Event = pg.event.Event
+PygameEvent = pg.event.Event

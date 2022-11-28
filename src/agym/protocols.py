@@ -1,6 +1,6 @@
-from typing import Protocol
+from typing import Any, List, Protocol, Tuple
 
-from .dtos import Event
+from .dtos import Event, PygameEvent
 
 
 class IUpdater(Protocol):
@@ -9,17 +9,23 @@ class IUpdater(Protocol):
 
 
 class IEventHandler(Protocol):
-    def try_handle_event(self, event: Event) -> bool:
+    def try_handle_event(self, event: PygameEvent) -> bool:
         pass
 
 
-class IModel(IEventHandler):
-    def get_action(self, state):
+class IModel(IEventHandler, Protocol):
+    def get_action(self, state) -> int:
         pass
 
 
-class IGameEnvironment(IUpdater):
-    def step(self, state, action):
+class IGameEnvironment(IEventHandler, Protocol):
+    def step(self, action: Any, dt: float) -> Tuple[Any, bool]:
+        pass
+
+    def reset(self) -> None:
+        pass
+
+    def pop_events(self) -> List[Event]:
         pass
 
     def blit(self, screen) -> None:

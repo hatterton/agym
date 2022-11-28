@@ -1,142 +1,7 @@
 import pygame
-from dependency_injector.containers import DeclarativeContainer
-from dependency_injector.providers import Configuration, Factory
-from dependency_injector.providers import List as pList
-from dependency_injector.providers import Singleton
 
-from agym.audio_handler import AudioHandler
-from agym.dtos import Color, Shift
-from agym.game_monitor import GameMonitor
-from agym.games import BreakoutEnv, ManualBreakoutModel
-from agym.games.breakout import (
-    CollisionDetector,
-    KDTreeCollisionDetectionEngine,
-    NaiveCollisionDetectionEngine,
-)
-from agym.games.breakout.levels import (
-    DefaultLevelBuilder,
-    PerformanceLevelBuilder,
-)
-from agym.gui import TextLabel
-from agym.main_window import MainWindow
-from agym.protocols import IGameEnvironment
-from agym.settings import Settings
-from agym.updaters import (
-    ComposeUpdater,
-    FPSUpdater,
-    LimitedUpdater,
-    ProfileUpdater,
-)
-from agym.utils import FPSLimiter, TimeProfiler, register_profiler
-
-
-class Application(DeclarativeContainer):
-    config = Configuration()
-
-    fps_limiter = Singleton(
-        FPSLimiter,
-        max_fps=config.max_fps,
-        history_size=1000,
-    )
-    time_profiler = Singleton(
-        TimeProfiler,
-        window_size=10000,
-        log_self=False,
-    )
-
-    fps_label = Singleton(
-        TextLabel,
-        shift=Shift(x=10, y=10),
-        font_size=12,
-        foreground_color=Color(230, 230, 130),
-        text="fps",
-    )
-    profile_label = Singleton(
-        TextLabel,
-        shift=Shift(x=120, y=10),
-        font_size=12,
-        foreground_color=Color(180, 130, 180),
-        text="profiling",
-    )
-
-    fps_updater = Singleton(
-        FPSUpdater,
-        label=fps_label,
-        fps_limiter=fps_limiter,
-    )
-    profile_updater = Singleton(
-        ProfileUpdater,
-        label=profile_label,
-        profiler=time_profiler,
-    )
-    compose_updater = Singleton(
-        ComposeUpdater,
-        updaters=pList(
-            fps_updater,
-            profile_updater,
-        ),
-    )
-    log_updater = Singleton(
-        LimitedUpdater,
-        updater=compose_updater,
-        ups=config.log_fps,
-    )
-
-    level_builder = Singleton(
-        DefaultLevelBuilder,
-        # PerformanceLevelBuilder,
-        env_width=config.env_width,
-        env_height=config.env_height,
-        ball_speed=config.ball_speed,
-        platform_speed=config.platform_speed,
-    )
-
-    collision_detector_engine = Singleton(
-        # NaiveCollisionDetectionEngine,
-        KDTreeCollisionDetectionEngine,
-    )
-    collision_detector = Singleton(
-        CollisionDetector,
-        engine=collision_detector_engine,
-    )
-
-    breakout = Singleton(
-        BreakoutEnv,
-        env_width=config.env_width,
-        env_height=config.env_height,
-        collision_detector=collision_detector,
-        level_builder=level_builder,
-    )
-
-    model = Singleton(
-        ManualBreakoutModel,
-    )
-
-    audio_handler = Singleton(
-        AudioHandler,
-    )
-
-    game_monitor = Singleton(
-        GameMonitor,
-        width=config.window_screen_width,
-        height=config.window_screen_width,
-        fps_limiter=fps_limiter,
-        fps_label=fps_label,
-        profile_label=profile_label,
-        log_updater=log_updater,
-        audio_handler=audio_handler,
-        env=breakout,
-        model=model,
-        time_profiler=time_profiler,
-        tps=config.tps,
-    )
-
-    main_window = Singleton(
-        MainWindow,
-        width=config.window_screen_width,
-        height=config.window_screen_height,
-        game_monitor=game_monitor,
-    )
+from .di import Application
+from .settings import Settings
 
 
 def create_app() -> Application:
@@ -145,11 +10,10 @@ def create_app() -> Application:
 
     settings = Settings()
 
-    app = Application()
-    app.config.from_pydantic(settings)
+    app = Application(settings)
 
     return app
 
 
 def run_app(application: Application) -> None:
-    application.main_window().run()
+    application.windows.main.run()
