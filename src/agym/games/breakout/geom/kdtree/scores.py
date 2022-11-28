@@ -1,6 +1,7 @@
-
 def get_score(l: int, m: int, r: int, alpha: float = 0.5) -> float:
-    return alpha * get_load_score(l, m, r) + (1 - alpha) * get_gini_score(l, m, r)
+    return alpha * get_load_score(l, m, r) + (1 - alpha) * get_gini_score(
+        l, m, r
+    )
 
 
 def get_gini_score(l: int, m: int, r: int) -> float:
@@ -8,7 +9,7 @@ def get_gini_score(l: int, m: int, r: int) -> float:
     # if n == 0:
     #     return 1.
 
-    score =  4 * l * r / n**2
+    score = 4 * l * r / n**2
 
     return score
 

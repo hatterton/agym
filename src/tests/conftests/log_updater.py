@@ -1,10 +1,10 @@
 import pytest
 
 from agym.updaters import (
-    FPSUpdater,
-    ProfileUpdater,
     ComposeUpdater,
+    FPSUpdater,
     LimitedUpdater,
+    ProfileUpdater,
 )
 
 
@@ -40,4 +40,3 @@ def log_updater(config, compose_updater):
         updater=compose_updater,
         ups=config.log_fps,
     )
-

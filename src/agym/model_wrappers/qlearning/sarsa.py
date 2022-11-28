@@ -1,19 +1,20 @@
 import numpy as np
-import torch, torch.nn as nn
+import torch
+import torch.nn as nn
 
-from agym.model_wrappers.qlearning.replay_buffer import (
-    ReplayBuffer,
-)
-from agym.model_wrappers import (
-    IModelWrapper,
-)
-from agym.models import (
-    IQValuesModel,
-)
+from agym.model_wrappers import IModelWrapper
+from agym.model_wrappers.qlearning.replay_buffer import ReplayBuffer
+from agym.models import IQValuesModel
+
 
 class SarsaWrapper(IModelWrapper):
-    def __init__(self, model: IQValuesModel,
-                 n_actions: int, eps: float = 0.1, gamma: float = 0.99):
+    def __init__(
+        self,
+        model: IQValuesModel,
+        n_actions: int,
+        eps: float = 0.1,
+        gamma: float = 0.99,
+    ):
         self.model = model
         self.n_actions = n_actions
         self.eps = eps
@@ -51,11 +52,11 @@ class SarsaWrapper(IModelWrapper):
 
     def post_action(self, next_state, reward: int, is_done: bool) -> None:
         self.replay_buffer.add(
-            self.last_state, self.last_action, reward, next_state, is_done)
+            self.last_state, self.last_action, reward, next_state, is_done
+        )
 
         if is_done or not is_done:
-            optimizer = torch.optim.Adam(
-                self.model.parameters(), lr=0.01)
+            optimizer = torch.optim.Adam(self.model.parameters(), lr=0.01)
 
             print("Buffer size:", len(self.replay_buffer._storage))
 
@@ -74,13 +75,15 @@ class SarsaWrapper(IModelWrapper):
             if self.avg_loss == 0:
                 self.avg_loss = np.mean(losses)
             else:
-                self.avg_loss = (self.avg_loss * self.ma +
-                                 np.mean(losses) * (1 - self.ma))
+                self.avg_loss = self.avg_loss * self.ma + np.mean(losses) * (
+                    1 - self.ma
+                )
             print("Moving average loss:", round(self.avg_loss, 2))
             print()
 
-    def td_loss(self, states, actions, rewards,
-               next_states, is_done) -> torch.Tensor:
+    def td_loss(
+        self, states, actions, rewards, next_states, is_done
+    ) -> torch.Tensor:
         states = torch.from_numpy(states)
         actions = torch.from_numpy(actions[:, None])
         rewards = torch.from_numpy(rewards.astype("float32")[:, None])
@@ -89,27 +92,29 @@ class SarsaWrapper(IModelWrapper):
 
         predicted_qvalues = self.model.get_t_qvalues(states)
         predicted_qvalues_for_actions = torch.gather(
-            predicted_qvalues, dim=1, index=actions)
+            predicted_qvalues, dim=1, index=actions
+        )
 
         predicted_next_qvalues = self.model.get_t_qvalues(next_states)
         predicted_next_svalues = torch.max(
-            predicted_next_qvalues, dim=1, keepdim=True)[0]
+            predicted_next_qvalues, dim=1, keepdim=True
+        )[0]
 
         avg_random_next_svalues = torch.mean(
-            predicted_next_qvalues, dim=1, keepdim=True)
-        target_qvalues_for_actions = (
-            rewards + self.gamma * (
-                (1 - self.eps) * predicted_next_svalues +
-                self.eps * avg_random_next_svalues)
+            predicted_next_qvalues, dim=1, keepdim=True
+        )
+        target_qvalues_for_actions = rewards + self.gamma * (
+            (1 - self.eps) * predicted_next_svalues
+            + self.eps * avg_random_next_svalues
         )
         target_qvalues_for_actions = (
-            is_done * rewards + 
-            (1 - is_done) * target_qvalues_for_actions
+            is_done * rewards + (1 - is_done) * target_qvalues_for_actions
         )
 
-        diff = (predicted_qvalues_for_actions -
-                target_qvalues_for_actions.detach())
-        loss = torch.mean(diff ** 2)
+        diff = (
+            predicted_qvalues_for_actions - target_qvalues_for_actions.detach()
+        )
+        loss = torch.mean(diff**2)
 
         return loss
 
@@ -118,4 +123,3 @@ class SarsaWrapper(IModelWrapper):
 
     def get_model(self):
         return self.model
-

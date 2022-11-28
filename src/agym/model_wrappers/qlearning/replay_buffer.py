@@ -1,7 +1,9 @@
 # This code is shamelessly stolen from https://github.com/openai/baselines/blob/master/baselines/deepq/replay_buffer.py
-import numpy as np
 import random
 from itertools import chain
+
+import numpy as np
+
 
 class ReplayBuffer(object):
     def __init__(self, size):
@@ -21,11 +23,11 @@ class ReplayBuffer(object):
             self._order.append(self._next_idx)
             self._next_idx = (self._next_idx + 1) % self._maxsize
         else:
-            new_id = random.randint(0, self._maxsize-1)
+            new_id = random.randint(0, self._maxsize - 1)
             self._order.append(new_id)
             self._storage[new_id] = data
             if len(self._order) > 2 * self._maxsize:
-                self._order = self._order[-self._maxsize:]
+                self._order = self._order[-self._maxsize :]
 
     def _extract_batch(self, idxes):
         states, actions, rewards, next_states, dones = [], [], [], [], []
@@ -41,9 +43,11 @@ class ReplayBuffer(object):
             dones.append(done)
 
         return (
-            np.stack(states, axis=0), np.array(actions),
-            np.array(rewards), np.stack(next_states, axis=0),
-            np.array(dones)
+            np.stack(states, axis=0),
+            np.array(actions),
+            np.array(rewards),
+            np.stack(next_states, axis=0),
+            np.array(dones),
         )
 
     def sample(self, batch_size):
@@ -54,10 +58,10 @@ class ReplayBuffer(object):
         order_size = len(self._order)
 
         lower_bound = max(0, order_size - last_size)
-        last_idxes = [self._order[i] 
-                      for i in range(lower_bound, order_size)]
-        random_idxes = [random.randint(0, storage_size-1)
-                        for _ in range(random_size)]
+        last_idxes = [self._order[i] for i in range(lower_bound, order_size)]
+        random_idxes = [
+            random.randint(0, storage_size - 1) for _ in range(random_size)
+        ]
 
         idxes = chain(last_idxes, random_idxes)
         batch = self._extract_batch(idxes)

@@ -1,18 +1,12 @@
+from typing import Tuple
+
 import pygame
 from pygame.event import Event
 
-from agym.models import (
-    IModel,
-)
-
+from agym.games.breakout.env import BreakoutAction
 from agym.interfaces import IEventHandler
-from agym.games.breakout.env import (
-    BreakoutAction,
-)
+from agym.models import IModel
 
-from typing import (
-    Tuple,
-)
 
 class ManualBreakoutModel(IModel, IEventHandler):
     def __init__(self):

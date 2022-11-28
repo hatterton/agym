@@ -1,5 +1,5 @@
-from typing import TypeVar, Generic, List
 from dataclasses import dataclass
+from typing import Generic, List, TypeVar
 
 T = float
 
@@ -10,10 +10,10 @@ class Vec2:
     y: T
 
     def norm(self) -> T:
-        return (self.x ** 2 + self.y ** 2) ** 0.5
+        return (self.x**2 + self.y**2) ** 0.5
 
     def norm2(self) -> T:
-        return self.x ** 2 + self.y ** 2
+        return self.x**2 + self.y**2
 
     def normal(self) -> "Vec2":
         return Vec2(x=-self.y, y=self.x)
@@ -83,4 +83,3 @@ class Vec2:
 
 
 Point = Vec2
-

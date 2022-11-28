@@ -1,41 +1,43 @@
-import os
-import pygame
 import enum
+import os
 
-from pygame.event import Event
-from pygame.mixer import Sound
 # import torch
 from time import sleep
+
+import pygame
+from pygame.event import Event
+from pygame.mixer import Sound
+
+from agym.constants import TIME_RESOLUTION
+from agym.games import IGameEnviroment
+from agym.gui import TextLabel
 
 # from agym.gui import Menu
 # from agym.config import Config
 # from agym.models import (
 #     IModel,
-    # ConvQValuesModel,
+# ConvQValuesModel,
 # )
 from agym.interfaces import IEventHandler
-from agym.model_wrappers import (
-    # IModelWrapper,
-    EmptyWrapper,
-    # SarsaWrapper,
-)
-from agym.games import (
-    IGameEnviroment,
-)
-from agym.gui import (
-    TextLabel,
-)
-from agym.utils import (
-    profile,
-    register_profiler,
-    format_stats,
-    TimeProfiler,
-)
-from agym.constants import TIME_RESOLUTION
+from agym.model_wrappers import EmptyWrapper  # IModelWrapper,; SarsaWrapper,
+from agym.utils import TimeProfiler, format_stats, profile, register_profiler
 
 
 class GameMonitor(IEventHandler):
-    def __init__(self, width: int, height: int, env, model, fps_limiter, fps_label: TextLabel, profile_label: TextLabel, log_updater, audio_handler, time_profiler: TimeProfiler, tps: int):
+    def __init__(
+        self,
+        width: int,
+        height: int,
+        env,
+        model,
+        fps_limiter,
+        fps_label: TextLabel,
+        profile_label: TextLabel,
+        log_updater,
+        audio_handler,
+        time_profiler: TimeProfiler,
+        tps: int,
+    ):
         self.screen = pygame.Surface((width, height))
 
         self.model = model

@@ -1,5 +1,5 @@
 from collections import deque
-from typing import TypeVar, Generic, Iterator
+from typing import Generic, Iterator, TypeVar
 
 T = TypeVar("T")
 

@@ -1,12 +1,9 @@
-from typing import List, Iterable
 from dataclasses import dataclass
 from itertools import combinations
 from statistics import mean
+from typing import Iterable, List
 
-from ..basic import (
-    Point,
-    Segment,
-)
+from ..basic import Point, Segment
 from .rectangle import Rectangle
 
 
@@ -38,6 +35,6 @@ class Triangle:
         return Rectangle(
             left=left,
             top=top,
-            width=right-left,
-            height=bottom-top,
+            width=right - left,
+            height=bottom - top,
         )

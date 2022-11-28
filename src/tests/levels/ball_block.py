@@ -1,16 +1,12 @@
-import pytest
 import math
 from typing import List, Tuple
 
-from agym.games.breakout import (
-    ItemManager,
-    BreakoutAction,
-)
+import pytest
+
+from agym.games.breakout import BreakoutAction, ItemManager
 from agym.games.breakout.geom import Point, Vec2
-from .dtos import (
-    LevelTestCase,
-    PI,
-)
+
+from .dtos import PI, LevelTestCase
 
 
 @pytest.fixture
@@ -30,7 +26,7 @@ def ball_block_collision_levels(
 def ball_block_collision_level(item_manager: ItemManager) -> LevelTestCase:
     ball = item_manager.create_ball(
         radius=10,
-        speed=2.,
+        speed=2.0,
     )
     ball.rect.center = Point(x=100, y=60)
     ball.thrown = True
@@ -47,12 +43,14 @@ def ball_block_collision_level(item_manager: ItemManager) -> LevelTestCase:
 
 
 @pytest.fixture
-def ball_corner_block_collision_level(item_manager: ItemManager) -> LevelTestCase:
+def ball_corner_block_collision_level(
+    item_manager: ItemManager,
+) -> LevelTestCase:
     ball = item_manager.create_ball(
         radius=10,
-        speed=2.,
+        speed=2.0,
     )
-    ball.rect.center = Point(x=100 + math.sin(PI/8) * 10, y=160)
+    ball.rect.center = Point(x=100 + math.sin(PI / 8) * 10, y=160)
     ball.thrown = True
     ball.velocity = Vec2(x=0, y=-1)
 
@@ -67,10 +65,12 @@ def ball_corner_block_collision_level(item_manager: ItemManager) -> LevelTestCas
 
 
 @pytest.fixture
-def ball_between_blocks_collision_level(item_manager: ItemManager) -> LevelTestCase:
+def ball_between_blocks_collision_level(
+    item_manager: ItemManager,
+) -> LevelTestCase:
     ball = item_manager.create_ball(
         radius=10,
-        speed=2.,
+        speed=2.0,
     )
     ball.rect.center = Point(x=100, y=100)
     ball.thrown = True

@@ -1,7 +1,4 @@
-from agym.containers import (
-    create_app,
-    run_app,
-)
+from agym.containers import create_app, run_app
 
 
 def main():

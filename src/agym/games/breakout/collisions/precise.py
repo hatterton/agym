@@ -1,15 +1,13 @@
 from typing import Optional
-from agym.games.breakout.items import (
-    Ball,
-)
-from .dtos import (
-    CollisionBallBall,
-)
+
+from agym.games.breakout.dtos import Ball, CollisionBallBall
 
 EPS = 1e-4
 
 
-def calculate_ball_ball_colls(ball1: Ball, ball2: Ball, dt: float) -> Optional[CollisionBallBall]:
+def calculate_ball_ball_colls(
+    ball1: Ball, ball2: Ball, dt: float
+) -> Optional[CollisionBallBall]:
     radius = ball1.radius
     s1, f1 = ball1.fake_update(dt)
     s2, f2 = ball2.fake_update(dt)

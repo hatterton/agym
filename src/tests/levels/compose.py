@@ -2,14 +2,12 @@ from typing import List
 
 import pytest
 
-from .platform_wall import *
+from .ball_ball import *
 from .ball_block import *
 from .ball_platform import *
 from .ball_wall import *
-from .ball_ball import *
-
 from .dtos import LevelTestCase
-
+from .platform_wall import *
 
 
 @pytest.fixture

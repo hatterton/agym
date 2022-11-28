@@ -1,7 +1,6 @@
 # outdated
-from agym.model_wrappers.abstract import (
-    IModelWrapper,
-)
+from agym.model_wrappers.abstract import IModelWrapper
+
 # from agym.model_wrappers.qlearning import (
 #     SarsaWrapper,
 #     ReplayBuffer,

@@ -1,13 +1,7 @@
 import pytest
 
-from agym.games.breakout import (
-    BreakoutEnv,
-    BreakoutAction,
-    CollisionEvent,
-)
-from agym.games.breakout.collisions import (
-    CollisionBallWall,
-)
+from agym.games.breakout import BreakoutAction, BreakoutEnv, CollisionEvent
+from agym.games.breakout.dtos import CollisionBallWall
 
 
 @pytest.mark.breakout
@@ -36,7 +30,6 @@ class TestCollisionsBallWall:
         assert breakout.balls[0].velocity[0] > 0
         assert breakout.balls[0].velocity[1] < 0
 
-
     def test_ball_vertical_wall_right_collision_type(
         self,
         breakout: BreakoutEnv,
@@ -58,7 +51,6 @@ class TestCollisionsBallWall:
         assert breakout.balls[0].velocity[0] < 0
         assert breakout.balls[0].velocity[1] < 0
 
-
     def test_ball_vertical_wall_top_collision_type(
         self,
         breakout: BreakoutEnv,
@@ -79,4 +71,3 @@ class TestCollisionsBallWall:
         assert isinstance(event.collision, CollisionBallWall)
         assert breakout.balls[0].velocity[0] > 0
         assert breakout.balls[0].velocity[1] > 0
-

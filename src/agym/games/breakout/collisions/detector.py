@@ -1,21 +1,16 @@
-from typing import (
-    Iterable,
-    List,
-    Dict,
-)
+from typing import Dict, Iterable, List
 
-from agym.games.breakout.protocols import ICollisionDetectorEngine
-from agym.games.breakout.collisions import Collision
-from agym.games.breakout.state import GameState
 from agym.games.breakout.constants import EPS
-from agym.games.breakout.items import (
-    ItemId,
-    Item,
+from agym.games.breakout.dtos import (
     Ball,
     Block,
+    Collision,
+    Item,
+    ItemId,
     Platform,
 )
-
+from agym.games.breakout.protocols import ICollisionDetectorEngine
+from agym.games.breakout.state import GameState
 from agym.utils import profile
 
 
@@ -24,27 +19,35 @@ class CollisionDetector:
         self._engine = engine
 
     @profile("calc_colls", "env_step")
-    def get_step_collisions(self, state: GameState, dt: float) -> List[Collision]:
+    def get_step_collisions(
+        self, state: GameState, dt: float
+    ) -> List[Collision]:
         return list(self._generate_step_collisions(state, dt))
 
-    def _generate_step_collisions(self, state: GameState, dt: float) -> Iterable[Collision]:
+    def _generate_step_collisions(
+        self, state: GameState, dt: float
+    ) -> Iterable[Collision]:
         return self._engine.generate_step_collisions(state, dt)
 
     @profile("calc_time", "env_step")
-    def get_time_before_collision(self, state: GameState, max_dt: float) -> float:
+    def get_time_before_collision(
+        self, state: GameState, max_dt: float
+    ) -> float:
         if any(self._generate_step_collisions(state, EPS)):
-            return 0.
+            return 0.0
 
         return self._get_time_before_collision(state, max_dt)
 
-    def _get_time_before_collision(self, state: GameState, max_dt: float) -> float:
+    def _get_time_before_collision(
+        self, state: GameState, max_dt: float
+    ) -> float:
         colls = self._engine.generate_step_collisions(state, max_dt)
         if not any(colls):
             return max_dt
 
         state = self._build_collided_state(state, colls)
 
-        min_dt = 0.
+        min_dt = 0.0
         while max_dt - min_dt > EPS:
             mid_dt = (max_dt + min_dt) / 2
 
@@ -58,7 +61,9 @@ class CollisionDetector:
 
         return min_dt
 
-    def _build_collided_state(self, state: GameState, colls: Iterable[Collision]) -> GameState:
+    def _build_collided_state(
+        self, state: GameState, colls: Iterable[Collision]
+    ) -> GameState:
         index = self._build_index(state)
         substate = state.duplicate_empty()
 

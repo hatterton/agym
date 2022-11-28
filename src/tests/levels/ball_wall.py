@@ -1,19 +1,11 @@
-import pytest
 from typing import List, Tuple
 
-from agym.games.breakout import (
-    ItemManager,
-    BreakoutAction,
-)
-from agym.games.breakout.geom import (
-    Point,
-    Vec2,
-    Rectangle,
-)
-from .dtos import (
-    LevelTestCase,
-    PI,
-)
+import pytest
+
+from agym.games.breakout import BreakoutAction, ItemManager
+from agym.games.breakout.geom import Point, Rectangle, Vec2
+
+from .dtos import PI, LevelTestCase
 
 
 @pytest.fixture
@@ -32,21 +24,23 @@ def ball_wall_collision_levels(
 
 
 @pytest.fixture
-def ball_vertical_wall_left_collision_level(item_manager: ItemManager, env_height) -> LevelTestCase:
+def ball_vertical_wall_left_collision_level(
+    item_manager: ItemManager, env_height
+) -> LevelTestCase:
     ball = item_manager.create_ball(
         radius=10,
-        speed=2.,
+        speed=2.0,
     )
     ball.rect.center = Point(x=60, y=200)
     ball.thrown = True
-    r2 = 2 ** 0.5
+    r2 = 2**0.5
     ball.velocity = Vec2(x=-r2 / 2, y=-r2 / 2)
 
     item_manager.create_wall(
         rect=Rectangle(
-            left=-1.,
+            left=-1.0,
             top=0,
-            width=1.,
+            width=1.0,
             height=env_height,
         ),
     )
@@ -59,21 +53,23 @@ def ball_vertical_wall_left_collision_level(item_manager: ItemManager, env_heigh
 
 
 @pytest.fixture
-def ball_vertical_wall_right_collision_level(item_manager: ItemManager, env_width, env_height) -> LevelTestCase:
+def ball_vertical_wall_right_collision_level(
+    item_manager: ItemManager, env_width, env_height
+) -> LevelTestCase:
     ball = item_manager.create_ball(
         radius=10,
-        speed=2.,
+        speed=2.0,
     )
     ball.rect.center = Point(x=390, y=200)
     ball.thrown = True
-    r2 = 2 ** 0.5
+    r2 = 2**0.5
     ball.velocity = Vec2(x=r2 / 2, y=-r2 / 2)
 
     item_manager.create_wall(
         rect=Rectangle(
             left=env_width,
             top=0,
-            width=1.,
+            width=1.0,
             height=env_height,
         ),
     )
@@ -86,19 +82,21 @@ def ball_vertical_wall_right_collision_level(item_manager: ItemManager, env_widt
 
 
 @pytest.fixture
-def ball_vertical_wall_top_collision_level(item_manager: ItemManager, env_width) -> LevelTestCase:
+def ball_vertical_wall_top_collision_level(
+    item_manager: ItemManager, env_width
+) -> LevelTestCase:
     ball = item_manager.create_ball(
         radius=10,
-        speed=2.,
+        speed=2.0,
     )
     ball.rect.center = Point(x=100, y=60)
     ball.thrown = True
-    r2 = 2 ** 0.5
+    r2 = 2**0.5
     ball.velocity = Vec2(x=r2 / 2, y=-r2 / 2)
 
     item_manager.create_wall(
         rect=Rectangle(
-            left=0.,
+            left=0.0,
             top=-1,
             width=env_width,
             height=1.0,
@@ -112,31 +110,32 @@ def ball_vertical_wall_top_collision_level(item_manager: ItemManager, env_width)
     )
 
 
-
 @pytest.fixture
-def ball_corner_wall_collision_level(item_manager: ItemManager, env_width, env_height) -> LevelTestCase:
+def ball_corner_wall_collision_level(
+    item_manager: ItemManager, env_width, env_height
+) -> LevelTestCase:
     ball = item_manager.create_ball(
         radius=10,
-        speed=2.,
+        speed=2.0,
     )
     ball.rect.center = Point(x=400, y=50)
     ball.thrown = True
-    r2 = 2 ** 0.5
+    r2 = 2**0.5
     ball.velocity = Vec2(x=r2 / 2, y=-r2 / 2)
 
     item_manager.create_wall(
         rect=Rectangle(
-            left=0.,
-            top=-1.,
+            left=0.0,
+            top=-1.0,
             width=env_width,
-            height=1.,
+            height=1.0,
         ),
     )
     item_manager.create_wall(
         rect=Rectangle(
             left=env_width,
             top=0,
-            width=1.,
+            width=1.0,
             height=env_height,
         ),
     )
@@ -146,4 +145,3 @@ def ball_corner_wall_collision_level(item_manager: ItemManager, env_width, env_h
         BreakoutAction.NOTHING,
         60,
     )
-

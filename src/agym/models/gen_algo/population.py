@@ -1,12 +1,15 @@
-﻿import agym.param
+﻿import math
 import random
 import shelve
-import math
+
 import numpy as np
+
+import agym.param
 from agym.models.individual import Individual
 from agym.models.model import Model
 
 infinity = 10**9
+
 
 class Population:
     def __init__(self, arg):
@@ -29,8 +32,11 @@ class Population:
         sol_id = 0 if not self.cur_bot_id else 1
         for i in range(len(self.population)):
             if i == self.cur_bot_id:
-                if self.population[i].fitness/self.cur_live_bot > self.population[sol_id].fitness:
-                   sol_id = i
+                if (
+                    self.population[i].fitness / self.cur_live_bot
+                    > self.population[sol_id].fitness
+                ):
+                    sol_id = i
             elif self.population[i].fitness > self.population[sol_id].fitness:
                 sol_id = i
         return self.population[sol_id]
@@ -39,21 +45,34 @@ class Population:
         cur_tail = 1
         for i in range(len(self.population)):
             mdl = self.population[i]
-            n = max(0, int(math.ceil(cur_tail * agym.param.max_population * agym.param.magic_value)))
+            n = max(
+                0,
+                int(
+                    math.ceil(
+                        cur_tail
+                        * agym.param.max_population
+                        * agym.param.magic_value
+                    )
+                ),
+            )
 
             for i in range(n):
-                rnd_id = random.randint(0, len(self.population)-1)
-                self.population.append(mdl.crossover(self.population[rnd_id], arg))
+                rnd_id = random.randint(0, len(self.population) - 1)
+                self.population.append(
+                    mdl.crossover(self.population[rnd_id], arg)
+                )
 
-            cur_tail *= (1 - agym.param.magic_value)
+            cur_tail *= 1 - agym.param.magic_value
 
     def selection(self):
         self.sort_population()
-        self.population = self.population[:agym.param.max_population]
+        self.population = self.population[: agym.param.max_population]
 
     def mutation(self, arg):
         for i in range(len(self.population)):
-            if random.random() < agym.param.mut_chance:                      # Ещё одно значение для настройки
+            if (
+                random.random() < agym.param.mut_chance
+            ):  # Ещё одно значение для настройки
                 self.population.append(self.population[i].mutation(arg))
 
     def sort_population(self):
@@ -67,13 +86,17 @@ class Population:
             self.cur_live_bot += 1
             return
 
-        print(self.cur_bot_id, 'бот изучен с резом -', self.population[self.cur_bot_id].fitness)
-        for i in range(self.cur_bot_id+1, len(self.population)):
+        print(
+            self.cur_bot_id,
+            "бот изучен с резом -",
+            self.population[self.cur_bot_id].fitness,
+        )
+        for i in range(self.cur_bot_id + 1, len(self.population)):
             self.cur_bot_id = i
             self.population[i].fitness = 0
             return
 
-        print('Эпоха', self.epoch)
+        print("Эпоха", self.epoch)
         print("Best result = ", self.get_best().fitness)
         self.epoch += 1
         self.selection()
@@ -94,22 +117,31 @@ class Population:
 
     def end_game(self, arg):
         bot = self.population[self.cur_bot_id]
-        differ = sum(np.sum((self.sum_population[i] - bot.body[i])**2) for i in range(2))
-        if (self.epoch//self.shift_between_era) % 2 == 1:
+        differ = sum(
+            np.sum((self.sum_population[i] - bot.body[i]) ** 2)
+            for i in range(2)
+        )
+        if (self.epoch // self.shift_between_era) % 2 == 1:
             # + Отличие от других
 
             print(differ)
-            #print(bot.apm)
-            #self.population[self.cur_bot_id].fitness += min(arg.stats.count - bot.apm*agym.param.apm_scale + differ*agym.param.differ_scale,
+            # print(bot.apm)
+            # self.population[self.cur_bot_id].fitness += min(arg.stats.count - bot.apm*agym.param.apm_scale + differ*agym.param.differ_scale,
             #                                               self.population[self.cur_bot_id].fitness)
-            self.population[self.cur_bot_id].fitness += arg.stats.count - bot.apm*agym.param.apm_scale + differ*agym.param.differ_scale
+            self.population[self.cur_bot_id].fitness += (
+                arg.stats.count
+                - bot.apm * agym.param.apm_scale
+                + differ * agym.param.differ_scale
+            )
         else:
             # Без отличия от других
-            #print(bot.apm)
+            # print(bot.apm)
             print(differ)
-            #self.population[self.cur_bot_id].fitness = min(arg.stats.count - bot.apm*agym.param.apm_scale,
+            # self.population[self.cur_bot_id].fitness = min(arg.stats.count - bot.apm*agym.param.apm_scale,
             #                                               self.population[self.cur_bot_id].fitness)
-            self.population[self.cur_bot_id].fitness += arg.stats.count - bot.apm*agym.param.apm_scale
+            self.population[self.cur_bot_id].fitness += (
+                arg.stats.count - bot.apm * agym.param.apm_scale
+            )
         bot.apm = 0
 
         self.next_model(arg)
@@ -118,22 +150,22 @@ class Population:
         self.population[self.cur_bot_id].move(arg)
 
     def load_prev_session(self, arg):
-        stats_db = shelve.open('db/population_db')
+        stats_db = shelve.open("db/population_db")
 
-        self.population = stats_db.get('population', self.population)
-        self.cur_bot_id = stats_db.get('cur_bot_id', 0)
-        self.cur_live_bot = stats_db.get('cur_live_bot', 0)
-        self.epoch = stats_db.get('epoch', 0)
+        self.population = stats_db.get("population", self.population)
+        self.cur_bot_id = stats_db.get("cur_bot_id", 0)
+        self.cur_live_bot = stats_db.get("cur_live_bot", 0)
+        self.epoch = stats_db.get("epoch", 0)
         self.count_sum(arg)
 
         stats_db.close()
 
     def save_cur_session(self, arg):
-        stats_db = shelve.open('db/population_db')
+        stats_db = shelve.open("db/population_db")
 
-        stats_db['population'] = self.population
-        stats_db['cur_bot_id'] = self.cur_bot_id
-        stats_db['cur_live_bot'] = self.cur_live_bot
-        stats_db['epoch'] = self.epoch
+        stats_db["population"] = self.population
+        stats_db["cur_bot_id"] = self.cur_bot_id
+        stats_db["cur_live_bot"] = self.cur_live_bot
+        stats_db["epoch"] = self.epoch
 
         stats_db.close()

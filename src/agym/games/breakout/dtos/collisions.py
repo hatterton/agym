@@ -1,16 +1,9 @@
-from typing import (
-    Iterable,
-)
 from dataclasses import dataclass
+from typing import Iterable
 
 from agym.games.breakout.geom import Point
-from agym.games.breakout.items import (
-    ItemId,
-    Ball,
-    Block,
-    Platform,
-    Wall,
-)
+
+from .items import Ball, Block, ItemId, Platform, Wall
 
 
 @dataclass

@@ -1,10 +1,6 @@
 import pytest
 
-from agym.games.breakout.geom import (
-    Circle,
-    Point,
-    is_intersected,
-)
+from agym.games.breakout.geom import Circle, Point, is_intersected
 
 
 @pytest.mark.geom
@@ -45,4 +41,3 @@ class TestIntersectionsCircleCircle:
             radius=1,
         )
         assert not is_intersected(c1, c2)
-

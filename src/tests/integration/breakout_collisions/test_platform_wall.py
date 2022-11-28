@@ -1,17 +1,8 @@
 import pytest
 
-from agym.games.breakout import (
-    BreakoutEnv,
-    BreakoutAction,
-    CollisionEvent,
-)
-from agym.games.breakout.collisions import (
-    CollisionPlatformWall,
-)
-from tests.math_utils import (
-    almost_equal_vec,
-    almost_equal_float,
-)
+from agym.games.breakout import BreakoutAction, BreakoutEnv, CollisionEvent
+from agym.games.breakout.dtos import CollisionPlatformWall
+from tests.math_utils import almost_equal_float, almost_equal_vec
 
 
 @pytest.mark.breakout
@@ -37,8 +28,9 @@ class TestCollisionsPlatformWall:
         event = events[0]
         assert isinstance(event, CollisionEvent)
         assert isinstance(event.collision, CollisionPlatformWall)
-        assert almost_equal_float(event.collision.platform.rect.left, 0, eps=1e-3)
-
+        assert almost_equal_float(
+            event.collision.platform.rect.left, 0, eps=1e-3
+        )
 
     def test_platform_right_wall_collision_type(
         self,
@@ -58,4 +50,6 @@ class TestCollisionsPlatformWall:
         event = events[0]
         assert isinstance(event, CollisionEvent)
         assert isinstance(event.collision, CollisionPlatformWall)
-        assert almost_equal_float(event.collision.platform.rect.right, breakout.env_width, eps=1e-3)
+        assert almost_equal_float(
+            event.collision.platform.rect.right, breakout.env_width, eps=1e-3
+        )

@@ -1,11 +1,9 @@
 from .audio import *
-from .labels import *
+from .breakout import *
 from .fps import *
 from .game_monitor import *
-from .main_window import *
+from .labels import *
 from .log_updater import *
-from .timing import *
-
+from .main_window import *
 from .pygame import *
-
-from .breakout import *
+from .timing import *

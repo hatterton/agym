@@ -1,7 +1,7 @@
 from typing import List
 
-from agym.utils import TimeProfiler, Stat, profile
 from agym.gui import TextLabel
+from agym.utils import Stat, TimeProfiler, profile
 
 
 class ProfileUpdater:
@@ -16,7 +16,9 @@ class ProfileUpdater:
         stats = self.profiler.get_stats()
         stats = sorted(stats, key=lambda x: x.title)
         # stats = sorted(stats, key=lambda x: x.parent_relative if x.parent_relative else 0., reverse=True)
-        stats = sorted(stats, key=lambda x: x.parent_title if x.parent_title else "")
+        stats = sorted(
+            stats, key=lambda x: x.parent_title if x.parent_title else ""
+        )
         self.label.text = self._format_stats(stats)
 
     def _format_stats(self, stats: List[Stat]) -> str:

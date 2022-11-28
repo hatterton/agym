@@ -1,19 +1,9 @@
-
 import random
-from typing import Optional, List
+from typing import List, Optional
 
-from agym.games.breakout.state import (
-    GameState,
-)
-from agym.games.breakout.items import (
-    Platform,
-    Ball,
-    Block,
-    Wall,
-)
-from agym.games.breakout.geom import (
-    Rectangle,
-)
+from agym.games.breakout.dtos import Ball, Block, Platform, Wall
+from agym.games.breakout.geom import Rectangle
+from agym.games.breakout.state import GameState
 
 
 class ItemManager:
@@ -75,7 +65,14 @@ class ItemManager:
 
         return platform
 
-    def create_ball(self, radius: float, speed: float, thrown: bool = False, top: Optional[float] = None, left: Optional[float] = None) -> Ball:
+    def create_ball(
+        self,
+        radius: float,
+        speed: float,
+        thrown: bool = False,
+        top: Optional[float] = None,
+        left: Optional[float] = None,
+    ) -> Ball:
         image_name = "ball_aparture 20x20.png"
 
         ball = Ball(
@@ -95,4 +92,3 @@ class ItemManager:
         self._state.balls.append(ball)
 
         return ball
-

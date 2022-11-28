@@ -2,8 +2,8 @@ from typing import Tuple
 
 from pydantic import BaseSettings
 
-
 Color = Tuple[int, int, int]
+
 
 class Settings(BaseSettings):
     window_screen_width: int = 600
@@ -30,4 +30,3 @@ class Settings(BaseSettings):
     tps: int = 20
     max_fps: int = 1000
     log_fps: float = 2
-

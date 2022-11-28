@@ -1,11 +1,8 @@
 import pytest
 
-from agym.main_window import (
-    MainWindow,
-)
-from tests.gui.game_model import DummyModel
-
 from agym.games.breakout import BreakoutEnv
+from agym.main_window import MainWindow
+from tests.gui.game_model import DummyModel
 
 
 @pytest.fixture
@@ -25,4 +22,3 @@ def env(config, collision_detector, level_builder):
 @pytest.fixture
 def game_model() -> DummyModel:
     return DummyModel()
-

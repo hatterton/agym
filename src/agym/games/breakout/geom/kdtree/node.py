@@ -1,22 +1,10 @@
 from dataclasses import dataclass, field
-from typing import (
-    List,
-    Set,
-    Collection,
-    Iterable,
-    Iterator,
-    Tuple,
-    Optional,
-)
 from functools import cached_property
+from typing import Collection, Iterable, Iterator, List, Optional, Set, Tuple
 
+from ..intersecting import IntersectionStrict, get_intersection
 from ..shapes import Rectangle
-from .record import (
-    Record,
-    ClassId,
-    ItemId,
-)
-from ..intersecting import get_intersection, IntersectionStrict
+from .record import ClassId, ItemId, Record
 
 
 @dataclass
@@ -41,13 +29,14 @@ class TreeNode:
 
     @property
     def is_leaf(self) -> bool:
-        return (
-            self.left is None and
-            self.right is None and
-            self.middle is None
-        )
+        return self.left is None and self.right is None and self.middle is None
 
-    def generate_intersecting(self, record: Record, pairs: Collection[Tuple[ClassId, ClassId]], collided: Set[Tuple[ItemId, ItemId]]) -> Iterable[Tuple[Tuple[ItemId, ItemId], IntersectionStrict]]:
+    def generate_intersecting(
+        self,
+        record: Record,
+        pairs: Collection[Tuple[ClassId, ClassId]],
+        collided: Set[Tuple[ItemId, ItemId]],
+    ) -> Iterable[Tuple[Tuple[ItemId, ItemId], IntersectionStrict]]:
         if not self.bounding_box.is_intersected(record.bounding_box):
             return []
 
@@ -114,4 +103,3 @@ class TreeNode:
 
         if self.right is not None:
             yield from self.right
-

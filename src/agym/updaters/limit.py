@@ -1,9 +1,9 @@
 from pygame.time import get_ticks
 
-from agym.utils import TimeProfiler, format_stats
+from agym.constants import TIME_RESOLUTION
 from agym.gui import TextLabel
 from agym.protocols import IUpdater
-from agym.constants import TIME_RESOLUTION
+from agym.utils import TimeProfiler, format_stats
 
 
 class LimitedUpdater:
@@ -24,4 +24,3 @@ class LimitedUpdater:
         duration = t - self.last_update
 
         return self.max_ups * duration > TIME_RESOLUTION
-

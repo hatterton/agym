@@ -1,8 +1,6 @@
 import pytest
 
-from agym.games.breakout import (
-    BreakoutEnv,
-)
+from agym.games.breakout import BreakoutEnv
 
 
 @pytest.fixture

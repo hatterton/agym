@@ -1,8 +1,8 @@
 import pygame
 from pygame.event import Event
 
-from agym.interfaces import IEventHandler
 from agym.game_monitor import GameMonitor
+from agym.interfaces import IEventHandler
 
 
 class MainWindow(IEventHandler):
@@ -49,14 +49,13 @@ class MainWindow(IEventHandler):
         pygame.display.flip()
 
     def try_consume_event(self, event: Event) -> bool:
-        if (event.type == pygame.QUIT):
+        if event.type == pygame.QUIT:
             self.active = False
             return True
 
-        if (event.type == pygame.KEYDOWN and (
-            event.key == pygame.K_q or
-            event.key == pygame.K_ESCAPE
-        )):
+        if event.type == pygame.KEYDOWN and (
+            event.key == pygame.K_q or event.key == pygame.K_ESCAPE
+        ):
             self.active = False
             return True
 

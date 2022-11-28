@@ -2,23 +2,21 @@ import math
 import random
 from typing import List, Optional
 
-from .item_manager import ItemManager
-
-from agym.games.breakout.items import (
-    Ball,
-    Block,
-    Platform,
-    Wall,
-)
-from agym.games.breakout.geom import (
-    Vec2,
-    Rectangle,
-)
+from agym.games.breakout.dtos import Ball, Block, Platform, Wall
+from agym.games.breakout.geom import Rectangle, Vec2
 from agym.games.breakout.state import GameState
+
+from .item_manager import ItemManager
 
 
 class PerformanceLevelBuilder:
-    def __init__(self, env_width: int, env_height: int, ball_speed: float = 20, platform_speed: float = 15) -> None:
+    def __init__(
+        self,
+        env_width: int,
+        env_height: int,
+        ball_speed: float = 20,
+        platform_speed: float = 15,
+    ) -> None:
         self.item_manager = ItemManager()
 
         self.env_width = env_width
@@ -52,25 +50,25 @@ class PerformanceLevelBuilder:
         return [
             self.item_manager.create_wall(
                 rect=Rectangle(
-                    left=-1.,
-                    top=0.,
-                    width=1.,
+                    left=-1.0,
+                    top=0.0,
+                    width=1.0,
                     height=self.env_height,
                 ),
             ),
             self.item_manager.create_wall(
                 rect=Rectangle(
-                    left=0.,
-                    top=-1.,
+                    left=0.0,
+                    top=-1.0,
                     width=self.env_width,
-                    height=1.,
+                    height=1.0,
                 ),
             ),
             self.item_manager.create_wall(
                 rect=Rectangle(
                     left=self.env_width,
-                    top=0.,
-                    width=1.,
+                    top=0.0,
+                    width=1.0,
                     height=self.env_height,
                 ),
             ),
@@ -85,17 +83,15 @@ class PerformanceLevelBuilder:
     ):
         balls = []
         velocities = [
-            [i / (i**2 + j**2)**0.5, j / (i**2 + j**2)**0.5]
+            [i / (i**2 + j**2) ** 0.5, j / (i**2 + j**2) ** 0.5]
             for i in range(-10, 10)
             for j in range(-10, 10)
             if i != 0 or j != 0
         ]
 
-        side_shift = (
-            self.env_width -
-            shift * 2 -
-            n_balls * radius * 2
-        ) // max(1, n_balls - 1)
+        side_shift = (self.env_width - shift * 2 - n_balls * radius * 2) // max(
+            1, n_balls - 1
+        )
 
         for i in range(n_balls):
             ball = self.item_manager.create_ball(
@@ -125,26 +121,27 @@ class PerformanceLevelBuilder:
         image_name_template = "block_{} 60x20.png"
         colors = ["blue", "yellow", "red"]
 
-        n_cols = math.floor(
-            (self.env_width - block_width) /
-            (block_width + horisontal_shift)
-        ) + 1
+        n_cols = (
+            math.floor(
+                (self.env_width - block_width)
+                / (block_width + horisontal_shift)
+            )
+            + 1
+        )
         side_shift = (
-            self.env_width -
-            n_cols * block_width -
-            (n_cols - 1) * horisontal_shift
+            self.env_width
+            - n_cols * block_width
+            - (n_cols - 1) * horisontal_shift
         ) // 2
 
         blocks = []
         for i in range(n_rows):
             for j in range(n_cols):
-                if i not in [0, n_rows -1] and j not in [0, n_cols -1]:
+                if i not in [0, n_rows - 1] and j not in [0, n_cols - 1]:
                     continue
 
-                top = (top_shift + i * block_height +
-                       i * vertical_shift)
-                left = (side_shift + j * block_width +
-                        j * horisontal_shift)
+                top = top_shift + i * block_height + i * vertical_shift
+                left = side_shift + j * block_width + j * horisontal_shift
                 block = self.item_manager.create_block(
                     top=top,
                     left=left,
@@ -157,4 +154,3 @@ class PerformanceLevelBuilder:
     def _center_platform(self, platform: Platform) -> None:
         platform.rect.centerx = self.env_width // 2
         platform.rect.bottom = self.env_height - 10
-

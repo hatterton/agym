@@ -4,7 +4,17 @@ from agym.game_monitor import GameMonitor
 
 
 @pytest.fixture
-def game_monitor(config, fps_limiter, fps_label, profile_label, log_updater, audio_handler, env, game_model, time_profiler):
+def game_monitor(
+    config,
+    fps_limiter,
+    fps_label,
+    profile_label,
+    log_updater,
+    audio_handler,
+    env,
+    game_model,
+    time_profiler,
+):
     return GameMonitor(
         width=config.window_screen_width,
         height=config.window_screen_width,
@@ -18,4 +28,3 @@ def game_monitor(config, fps_limiter, fps_label, profile_label, log_updater, aud
         time_profiler=time_profiler,
         tps=config.tps,
     )
-

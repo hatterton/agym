@@ -7,4 +7,3 @@ class SupportsBoundingBox(Protocol):
     @property
     def bounding_box(self) -> Rectangle:
         pass
-

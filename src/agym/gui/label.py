@@ -1,10 +1,19 @@
 from typing import Tuple
+
 import pygame
 
 Color = Tuple[int, int, int]
 
+
 class TextLabel:
-    def __init__(self, x: int, y: int, font_size: int = 20, color: Color = (230, 230, 130), text: str = ""):
+    def __init__(
+        self,
+        x: int,
+        y: int,
+        font_size: int = 20,
+        color: Color = (230, 230, 130),
+        text: str = "",
+    ):
         self.shift = (x, y)
 
         self.color = color

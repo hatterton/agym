@@ -1,19 +1,11 @@
-import pytest
 from typing import List, Tuple
 
-from agym.games.breakout import (
-    ItemManager,
-    BreakoutAction,
-)
-from agym.games.breakout.geom import (
-    Point,
-    Vec2,
-    Rectangle,
-)
-from .dtos import (
-    LevelTestCase,
-    PI,
-)
+import pytest
+
+from agym.games.breakout import BreakoutAction, ItemManager
+from agym.games.breakout.geom import Point, Rectangle, Vec2
+
+from .dtos import PI, LevelTestCase
 
 
 @pytest.fixture
@@ -28,7 +20,9 @@ def platform_wall_collision_levels(
 
 
 @pytest.fixture
-def platform_left_wall_collision_level(item_manager: ItemManager, env_height) -> LevelTestCase:
+def platform_left_wall_collision_level(
+    item_manager: ItemManager, env_height
+) -> LevelTestCase:
     platform = item_manager.create_platform(speed=5)
     platform.rect.center = Point(x=150, y=330)
     platform.rect.left = 70
@@ -36,9 +30,9 @@ def platform_left_wall_collision_level(item_manager: ItemManager, env_height) ->
 
     item_manager.create_wall(
         rect=Rectangle(
-            left=-1.,
-            top=0.,
-            width=1.,
+            left=-1.0,
+            top=0.0,
+            width=1.0,
             height=env_height,
         ),
     )
@@ -51,7 +45,9 @@ def platform_left_wall_collision_level(item_manager: ItemManager, env_height) ->
 
 
 @pytest.fixture
-def platform_right_wall_collision_level(item_manager: ItemManager, env_width, env_height) -> LevelTestCase:
+def platform_right_wall_collision_level(
+    item_manager: ItemManager, env_width, env_height
+) -> LevelTestCase:
     platform = item_manager.create_platform(speed=5)
     platform.rect.center = Point(x=150, y=330)
     platform.rect.right = 380
@@ -60,8 +56,8 @@ def platform_right_wall_collision_level(item_manager: ItemManager, env_width, en
     item_manager.create_wall(
         rect=Rectangle(
             left=env_width,
-            top=0.,
-            width=1.,
+            top=0.0,
+            width=1.0,
             height=env_height,
         ),
     )
@@ -71,4 +67,3 @@ def platform_right_wall_collision_level(item_manager: ItemManager, env_width, en
         BreakoutAction.RIGHT,
         60,
     )
-

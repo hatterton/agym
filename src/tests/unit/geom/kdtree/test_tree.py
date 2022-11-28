@@ -1,19 +1,21 @@
 import pytest
 
+from agym.games.breakout.geom import Rectangle
 from agym.games.breakout.geom.kdtree import KDTree
 from agym.games.breakout.geom.kdtree.node import TreeNode
 from agym.games.breakout.geom.kdtree.record import Record
-from agym.games.breakout.geom import Rectangle
 
 from .tree_utils import get_depth, traveres
 
 
-def build_record(left: float, top: float, right: float, bottom: float) -> Record:
+def build_record(
+    left: float, top: float, right: float, bottom: float
+) -> Record:
     shape = Rectangle(
         left=left,
         top=top,
-        width=right-left,
-        height=bottom-top,
+        width=right - left,
+        height=bottom - top,
     )
 
     return Record(

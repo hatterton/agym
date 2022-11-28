@@ -3,10 +3,10 @@ from typing import Optional
 
 from pygame.time import Clock
 
-from agym.utils.queue import Queue
-from agym.utils.math import get_n_max
-from agym.utils.timemanager import profile
 from agym.constants import TIME_RESOLUTION
+from agym.utils.math import get_n_max
+from agym.utils.queue import Queue
+from agym.utils.timemanager import profile
 
 
 class FPSLimiter:
@@ -31,7 +31,7 @@ class FPSLimiter:
     @profile("get_fps", "game_update")
     def get_fps(self, percentile: Optional[float] = None) -> float:
         if len(self.ticks) == 0:
-            return 0.
+            return 0.0
 
         ticks = list(self.ticks)
 
@@ -39,7 +39,7 @@ class FPSLimiter:
         if percentile is None:
             ptick = mean(ticks)
         else:
-            assert 0. <= percentile < 1.
+            assert 0.0 <= percentile < 1.0
 
             idx = max(1, int(percentile * len(ticks)))
             ptick = mean(get_n_max(ticks, n=idx))
@@ -53,4 +53,3 @@ class FPSLimiter:
         self._add_tick(tick)
 
         return tick
-

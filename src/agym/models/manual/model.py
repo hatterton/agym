@@ -1,7 +1,3 @@
-from agym.models import (
-    IModel,
-)
-from typing import (
-    Tuple,
-)
+from typing import Tuple
 
+from agym.models import IModel

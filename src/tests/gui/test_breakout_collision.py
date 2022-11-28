@@ -1,13 +1,9 @@
-import pytest
 from threading import Thread, Timer
 
-from agym.main_window import (
-    MainWindow,
-)
-from agym.games.breakout import (
-    BreakoutEnv,
-)
+import pytest
 
+from agym.games.breakout import BreakoutEnv
+from agym.main_window import MainWindow
 from tests.gui.game_model import DummyModel
 
 

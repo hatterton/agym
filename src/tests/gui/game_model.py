@@ -1,12 +1,8 @@
 from pygame.event import Event
 
-from agym.models import (
-    IModel,
-)
-from agym.games.breakout import (
-    BreakoutAction,
-)
+from agym.games.breakout import BreakoutAction
 from agym.interfaces import IEventHandler
+from agym.models import IModel
 
 
 class DummyModel(IModel, IEventHandler):

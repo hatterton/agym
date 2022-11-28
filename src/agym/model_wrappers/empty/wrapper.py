@@ -1,12 +1,9 @@
 from pygame.event import Event
 
-from agym.models import (
-    IModel,
-)
 from agym.interfaces import IEventHandler
-from agym.model_wrappers import (
-    IModelWrapper,
-)
+from agym.model_wrappers import IModelWrapper
+from agym.models import IModel
+
 
 class EmptyWrapper(IModelWrapper, IEventHandler):
     def __init__(self, model: IModel):

@@ -5,11 +5,7 @@ from agym.games.breakout.geom import (
     Segment,
     get_intersection_segment_segment,
 )
-
-from tests.math_utils import (
-    almost_equal_point,
-    almost_equal_float,
-)
+from tests.math_utils import almost_equal_float, almost_equal_point
 
 
 @pytest.mark.geom
@@ -62,4 +58,3 @@ class TestIntersectionsSegmentSegment:
         )
         assert get_intersection_segment_segment(seg1, seg2) is None
         assert get_intersection_segment_segment(seg2, seg1) is None
-

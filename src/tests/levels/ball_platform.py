@@ -1,19 +1,11 @@
-import pytest
 from typing import List, Tuple
 
-from agym.games.breakout import (
-    ItemManager,
-    BreakoutAction,
-)
-from agym.games.breakout.geom import (
-    Point,
-    Vec2,
-    Rectangle,
-)
-from .dtos import (
-    LevelTestCase,
-    PI,
-)
+import pytest
+
+from agym.games.breakout import BreakoutAction, ItemManager
+from agym.games.breakout.geom import Point, Rectangle, Vec2
+
+from .dtos import PI, LevelTestCase
 
 
 @pytest.fixture
@@ -33,7 +25,7 @@ def ball_platform_collision_levels(
 def ball_platform_collision_level(item_manager: ItemManager) -> LevelTestCase:
     ball = item_manager.create_ball(
         radius=10,
-        speed=2.,
+        speed=2.0,
     )
     ball.rect.center = Point(x=300, y=250)
     ball.thrown = True
@@ -50,24 +42,26 @@ def ball_platform_collision_level(item_manager: ItemManager) -> LevelTestCase:
 
 
 @pytest.fixture
-def ball_platform_side_collision_level(item_manager: ItemManager, env_height) -> LevelTestCase:
+def ball_platform_side_collision_level(
+    item_manager: ItemManager, env_height
+) -> LevelTestCase:
     ball = item_manager.create_ball(
         radius=10,
-        speed=2.,
+        speed=2.0,
     )
     ball.rect.center = Point(x=20, y=327)
     ball.thrown = True
     ball.velocity = Vec2(x=1, y=0)
 
-    platform = item_manager.create_platform(speed=1.)
+    platform = item_manager.create_platform(speed=1.0)
     platform.rect.center = Point(x=140, y=330)
     platform.velocity = Vec2(x=-1, y=0)
 
     item_manager.create_wall(
         rect=Rectangle(
-            left=-1.,
+            left=-1.0,
             top=0,
-            width=1.,
+            width=1.0,
             height=env_height,
         ),
     )
@@ -80,7 +74,9 @@ def ball_platform_side_collision_level(item_manager: ItemManager, env_height) ->
 
 
 @pytest.fixture
-def ball_platform_race_collision_level(item_manager: ItemManager) -> LevelTestCase:
+def ball_platform_race_collision_level(
+    item_manager: ItemManager,
+) -> LevelTestCase:
     ball = item_manager.create_ball(
         radius=10,
         speed=2.1,
@@ -89,7 +85,7 @@ def ball_platform_race_collision_level(item_manager: ItemManager) -> LevelTestCa
     ball.thrown = True
     ball.velocity = Vec2(x=1, y=0)
 
-    platform = item_manager.create_platform(speed=2.)
+    platform = item_manager.create_platform(speed=2.0)
     platform.rect.center = Point(x=100, y=330)
 
     return (

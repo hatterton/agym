@@ -1,5 +1,5 @@
-from typing import List
 from heapq import heapify, heappop
+from typing import List
 
 
 def get_n_min(arr: List[float], n: int) -> List[float]:

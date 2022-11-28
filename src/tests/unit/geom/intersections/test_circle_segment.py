@@ -6,11 +6,7 @@ from agym.games.breakout.geom import (
     Segment,
     get_intersection_circle_segment,
 )
-
-from tests.math_utils import (
-    almost_equal_point,
-    almost_equal_float,
-)
+from tests.math_utils import almost_equal_float, almost_equal_point
 
 
 @pytest.mark.geom
@@ -56,7 +52,6 @@ class TestIntersectionsCircleSegment:
         assert ip is not None
         assert almost_equal_point(ip, ep)
 
-
     def test_circle_vertical_segment_intersection(self):
         s = Segment(
             begin=Point(x=0, y=0),
@@ -87,7 +82,6 @@ class TestIntersectionsCircleSegment:
         ep = Point(x=0, y=2.5)
         assert ip is not None
         assert almost_equal_point(ip, ep)
-
 
     def test_circle_horisontal_segment_intersection(self):
         s = Segment(
