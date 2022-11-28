@@ -80,7 +80,7 @@ class PerformanceLevelBuilder:
         self,
         n_balls: int,
         radius: int,
-        ball_speed: int,
+        ball_speed: float,
         shift: int = 100,
     ):
         balls = []
@@ -105,7 +105,6 @@ class PerformanceLevelBuilder:
             )
             ball.rect.centery = self.env_height / 2
             ball.rect.left = (side_shift + radius * 2) * i + shift
-            # print(ball.rect.centerx)
             velocity = random.choice(velocities).copy()
             ball.velocity = Vec2.from_list(velocity)
 

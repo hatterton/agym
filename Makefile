@@ -20,11 +20,10 @@ tests: | tests-unit tests-integration
 
 .PHONY: tests-custom
 tests-custom:
-	cd src && poetry run python -m pytest -m "collisions and ball and platform" -xsv tests
-	# cd src && poetry run python -m pytest -m "geom" -xsv tests
+	cd src && poetry run python -m pytest -m "kdtree and tree" -xsv tests
 
 .PHONY: env
-env:
+shell:
 	cd src && poetry shell
 
 .PHONY: clean
