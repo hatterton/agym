@@ -5,7 +5,7 @@ from typing import Collection, Iterable, List, Set, Tuple
 
 from ..intersecting import IntersectionStrict, get_intersection
 from ..shapes import Rectangle
-from .node import TreeNode
+from .node import CollidablePair, IntersactionInfo, IntersactionPair, TreeNode
 from .record import ClassId, ItemId, Record
 from .scores import get_score
 
@@ -26,9 +26,9 @@ class KDTree:
     def __init__(
         self,
         records: List[Record],
-        collidable_pairs: Collection[Tuple[ClassId, ClassId]],
+        collidable_pairs: Collection[CollidablePair],
         alpha: float = 0.5,
-        max_depth: int = 5,
+        max_depth: int = -1,
         num_records_stop: int = 1,
     ) -> None:
         self._collidable_pairs = collidable_pairs
@@ -98,7 +98,7 @@ class KDTree:
         horizontals: List[RecordInfo],
         depth: int,
     ) -> TreeNode:
-        if depth >= self._max_depth or len(ids) <= self._num_records_stop:
+        if depth == self._max_depth or len(ids) <= self._num_records_stop:
             return TreeNode(items=[records[idx] for idx in ids])
 
         vscores = self._calculate_bound_scores(
@@ -207,46 +207,21 @@ class KDTree:
 
     def generate_colliding_items(
         self,
-    ) -> Iterable[Tuple[Tuple[ItemId, ItemId], IntersectionStrict]]:
-        yield from self._naive_generate_colliding_items(self._records)
-        return
-
-        collided: Set[Tuple[ItemId, ItemId]] = set()
+    ) -> Iterable[IntersactionInfo]:
+        # yield from self._naive_generate_colliding_items(self._records)
+        # return
 
         yield from self._generate_colliding_items(
             node=self.root,
-            collided=collided,
         )
 
     def _generate_colliding_items(
-        self, node: TreeNode, collided: Set[Tuple[ItemId, ItemId]]
-    ) -> Iterable[Tuple[Tuple[ItemId, ItemId], IntersectionStrict]]:
-        for record in node.items:
-            yield from node.generate_intersecting(
-                record=record,
-                pairs=self._collidable_pairs,
-                collided=collided,
-            )
-
-        if node.middle is not None:
-            for record in node.middle:
-                yield from node.generate_intersecting(
-                    record=record,
-                    pairs=self._collidable_pairs,
-                    collided=collided,
-                )
-
-        if node.left is not None:
-            yield from self._generate_colliding_items(
-                node=node.left,
-                collided=collided,
-            )
-
-        if node.right is not None:
-            yield from self._generate_colliding_items(
-                node=node.right,
-                collided=collided,
-            )
+        self,
+        node: TreeNode,
+    ) -> Iterable[IntersactionInfo]:
+        yield from node.generate_intersections(
+            collidable_pairs=self._collidable_pairs,
+        )
 
     def _naive_generate_colliding_items(
         self, records: List[Record]
