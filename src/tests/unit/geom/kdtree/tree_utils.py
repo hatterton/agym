@@ -1,6 +1,31 @@
 from typing import Iterable, Optional
 
+from agym.games.breakout.geom import Rectangle
 from agym.games.breakout.geom.kdtree.node import TreeNode
+from agym.games.breakout.geom.kdtree.record import Record
+
+
+def build_record(
+    left: float,
+    top: float,
+    right: float,
+    bottom: float,
+    item_id: int = 1,
+    class_id: int = 1,
+) -> Record:
+    shape = Rectangle(
+        left=left,
+        top=top,
+        width=right - left,
+        height=bottom - top,
+    )
+
+    return Record(
+        item_id=item_id,
+        class_id=class_id,
+        shape=shape,
+        bounding_box=shape.bounding_box,
+    )
 
 
 def get_depth(node: Optional[TreeNode]) -> int:

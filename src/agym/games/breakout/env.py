@@ -42,7 +42,7 @@ class BreakoutEnv:
         env_height: int,
         collision_detector: ICollisionDetector,
         level_builder: ILevelBuilder,
-        checking_gameover: bool = True,
+        checking_gameover: bool = False,
         eps: float = 1e-3,
     ):
         self.env_width = env_width

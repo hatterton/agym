@@ -4,25 +4,7 @@ from agym.games.breakout.geom import Rectangle
 from agym.games.breakout.geom.kdtree.node import TreeNode
 from agym.games.breakout.geom.kdtree.record import Record
 
-from .tree_utils import get_depth, traveres
-
-
-def build_record(
-    left: float, top: float, right: float, bottom: float
-) -> Record:
-    shape = Rectangle(
-        left=left,
-        top=top,
-        width=right - left,
-        height=bottom - top,
-    )
-
-    return Record(
-        item_id=1,
-        class_id=1,
-        shape=shape,
-        bounding_box=shape.bounding_box,
-    )
+from .tree_utils import build_record, get_depth, traveres
 
 
 def rect_contains(outer: Rectangle, inner: Rectangle) -> bool:

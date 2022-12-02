@@ -77,6 +77,8 @@ class KDTreeCollisionDetectionEngine:
             records=records,
             alpha=0.5,
             collidable_pairs=self._collidable_pairs,
+            max_depth=10,
+            num_records_stop=1,
         )
 
         for (item_id1, item_id2), point in tree.generate_colliding_items():

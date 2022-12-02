@@ -1,8 +1,13 @@
 import pytest
 
-from agym.games.breakout import BreakoutEnv
+from agym.games.breakout import BreakoutEnv, KDTreeCollisionDetectionEngine
 from agym.main_window import MainWindow
 from tests.gui.game_model import DummyModel
+
+
+@pytest.fixture
+def collision_engine():
+    return KDTreeCollisionDetectionEngine()
 
 
 @pytest.fixture

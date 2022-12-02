@@ -53,8 +53,8 @@ class TestCollisionsBallBall:
         assert isinstance(event, CollisionEvent)
         assert isinstance(event.collision, CollisionBallBall)
 
-        ball1 = event.collision.ball1
-        ball2 = event.collision.ball2
+        ball1 = breakout.balls[0]
+        ball2 = breakout.balls[1]
         assert almost_equal_vec(ball1.velocity, Vec2(x=1, y=0))
         assert almost_equal_vec(ball2.velocity, Vec2(x=0, y=-1))
         assert almost_equal_float(ball1.speed, ball2.speed)

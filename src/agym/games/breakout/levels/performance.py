@@ -30,18 +30,9 @@ class PerformanceLevelBuilder:
         balls = self._make_balls(
             n_balls=6,
             radius=10,
-            ball_speed=self.ball_speed,
-            # ball_speed=2,
+            # ball_speed=self.ball_speed,
+            ball_speed=2,
             shift=100,
-        )
-
-        platform = self.item_manager.create_platform(
-            speed=self.platform_speed,
-        )
-        self._center_platform(platform)
-
-        blocks = self._make_target_wall(
-            n_rows=6,
         )
 
         return self.item_manager.extract_state()
@@ -70,6 +61,14 @@ class PerformanceLevelBuilder:
                     top=0.0,
                     width=1.0,
                     height=self.env_height,
+                ),
+            ),
+            self.item_manager.create_wall(
+                rect=Rectangle(
+                    left=0.0,
+                    top=self.env_height,
+                    width=self.env_width,
+                    height=1.0,
                 ),
             ),
         ]
@@ -150,7 +149,3 @@ class PerformanceLevelBuilder:
                 blocks.append(block)
 
         return blocks
-
-    def _center_platform(self, platform: Platform) -> None:
-        platform.rect.centerx = self.env_width // 2
-        platform.rect.bottom = self.env_height - 10
