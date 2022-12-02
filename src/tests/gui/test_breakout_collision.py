@@ -1,48 +1,58 @@
-from threading import Thread, Timer
-
 import pytest
 
-from agym.games.breakout import BreakoutEnv
+from agym.games.breakout import BreakoutEnv, KDTreeCollisionDetectionEngine
 from agym.main_window import MainWindow
-from tests.gui.game_model import DummyModel
+
+from .game_model import DummyModel
+from .gui_test_runner import GUITestRunner
 
 
 @pytest.fixture
-def breakout(env):
-    return env
+def collision_engine():
+    return KDTreeCollisionDetectionEngine()
 
 
-def run_gui_test(main_window: MainWindow, t: float) -> None:
-    t1 = Thread(target=main_window.run)
-    t2 = Timer(t, main_window.deactivate)
+@pytest.fixture
+def breakout(config, collision_detector, level_builder):
+    breakout = BreakoutEnv(
+        env_width=config.env_width,
+        env_height=config.env_height,
+        level_builder=level_builder,
+        collision_detector=collision_detector,
+        checking_gameover=False,
+    )
+    breakout.reset()
 
-    t1.start()
-    t2.start()
-
-    t1.join()
-    t2.cancel()
+    return breakout
 
 
-TICKS_PER_SECOND = 20
+@pytest.fixture
+def env(breakout):
+    return breakout
+
+
+@pytest.fixture
+def game_model() -> DummyModel:
+    return DummyModel()
+
+
+@pytest.fixture
+def test_runner(
+    main_window: MainWindow,
+    breakout: BreakoutEnv,
+    game_model: DummyModel,
+):
+    return GUITestRunner(
+        window=main_window,
+        env=breakout,
+        model=game_model,
+    )
 
 
 @pytest.mark.gui
 @pytest.mark.breakout
 def test_gui(
-    main_window: MainWindow,
-    breakout: BreakoutEnv,
-    game_model: DummyModel,
+    test_runner,
     all_levels,
 ):
-    for test_case in all_levels:
-        level, action, ticks = test_case
-
-        breakout.reset()
-        breakout.import_state(level)
-
-        game_model.set_action(action)
-
-        run_gui_test(
-            main_window=main_window,
-            t=ticks / TICKS_PER_SECOND,
-        )
+    test_runner.run(all_levels)

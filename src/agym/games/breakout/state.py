@@ -1,3 +1,4 @@
+from copy import copy
 from dataclasses import dataclass, field
 from typing import Iterable, List
 
@@ -25,3 +26,24 @@ class GameState:
         yield from self.blocks
         yield from self.platforms
         yield from self.walls
+
+    def copy(self) -> "GameState":
+        balls = [copy(ball) for ball in self.balls]
+        blocks = [copy(block) for block in self.blocks]
+        platforms = [copy(platform) for platform in self.platforms]
+        walls = [copy(wall) for wall in self.walls]
+
+        for old_p, new_p in zip(self.platforms, platforms):
+            new_p.rect = old_p.rect.copy()
+            new_p.velocity = old_p.velocity.copy()
+
+        for old_b, new_b in zip(self.balls, balls):
+            new_b.rect = old_b.rect.copy()
+            new_b.velocity = old_b.velocity.copy()
+
+        return GameState(
+            balls=balls,
+            blocks=blocks,
+            platforms=platforms,
+            walls=walls,
+        )
