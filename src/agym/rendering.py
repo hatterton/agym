@@ -2,16 +2,16 @@ from typing import Optional
 
 import pygame as pg
 
-from agym.dtos import Color, Font, Rect, Screen, Shift
+from agym.dtos import Color, PygameFont, PygameRect, PygameScreen, Shift
 
 
 def render_text(
-    font: Font,
+    font: PygameFont,
     text: str,
     foreground_color: Color,
     background_color: Optional[Color] = None,
     alpha: Optional[int] = None,
-) -> Screen:
+) -> PygameScreen:
     image_lines = []
     for textline in text.split("\n"):
         image_line = render_line(
@@ -49,12 +49,12 @@ def render_text(
 
 
 def render_line(
-    font: Font,
+    font: PygameFont,
     line: str,
     foreground_color: Color,
     background_color: Optional[Color] = None,
     alpha: Optional[int] = None,
-) -> Screen:
+) -> PygameScreen:
     fg_color = foreground_color.to_tuple()
     if background_color is None:
         bg_color = None
@@ -69,12 +69,14 @@ def render_line(
     return surface
 
 
-def blit_screen(parent: Screen, child: Screen, shift: Shift) -> None:
+def blit_screen(
+    parent: PygameScreen, child: PygameScreen, shift: Shift
+) -> None:
     parent.blit(child, shift.to_tuple())
 
 
 def fill_screen(
-    screen: Screen, color: Color, rect: Optional[Rect] = None
+    screen: PygameScreen, color: Color, rect: Optional[PygameRect] = None
 ) -> None:
     if rect is None:
         screen.fill(color.to_tuple())

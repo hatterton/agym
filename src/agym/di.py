@@ -1,5 +1,5 @@
 from agym.audio_handler import AudioHandler
-from agym.dtos import Color, Shift
+from agym.dtos import Color, Shift, Size
 from agym.game_monitor import GameMonitor
 from agym.games import BreakoutEnv, ManualBreakoutModel
 from agym.games.breakout import (
@@ -13,6 +13,7 @@ from agym.games.breakout.levels import (
     PerformanceLevelBuilder,
 )
 from agym.gui import TextLabel
+from agym.gui.render_kits import PygameRenderKit
 from agym.main_window import MainWindow
 from agym.protocols import IGameEnvironment, IModel
 from agym.settings import Settings
@@ -23,6 +24,11 @@ from agym.updaters import (
     ProfileUpdater,
 )
 from agym.utils import FPSLimiter, TimeProfiler, register_profiler
+
+
+class RenderKits:
+    def __init__(self):
+        self.kit = PygameRenderKit()
 
 
 class TimeContainer:
@@ -135,17 +141,25 @@ class GameMonitorContainer:
 
 class Windows:
     def __init__(
-        self, game_monitor_container: GameMonitorContainer, config: Settings
+        self,
+        game_monitor_container: GameMonitorContainer,
+        render_kits: RenderKits,
+        config: Settings,
     ):
         self.main = MainWindow(
-            width=config.window_screen_width,
-            height=config.window_screen_height,
+            window_size=Size(
+                width=config.window_screen_width,
+                height=config.window_screen_height,
+            ),
+            render_kit=render_kits.kit,
             game_monitor=game_monitor_container.game_monitor,
         )
 
 
 class Application:
     def __init__(self, config: Settings):
+        self.render_kits = RenderKits()
+
         self.time_container = TimeContainer(config=config)
         self.labels = Labels(config=config)
         self.updaters = Updaters(
@@ -164,5 +178,7 @@ class Application:
             config=config,
         )
         self.windows = Windows(
-            game_monitor_container=self.game_monitor_container, config=config
+            game_monitor_container=self.game_monitor_container,
+            config=config,
+            render_kits=self.render_kits,
         )
