@@ -6,4 +6,5 @@ from .labels import *
 from .log_updater import *
 from .main_window import *
 from .pygame import *
+from .render_kit import *
 from .timing import *
