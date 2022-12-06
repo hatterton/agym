@@ -13,9 +13,10 @@ from agym.games.breakout.levels import (
     PerformanceLevelBuilder,
 )
 from agym.gui import TextLabel
-from agym.gui.render_kits import PygameRenderKit
+from agym.gui.render_kits import PygameRenderKitEngine, RenderKit
 from agym.main_window import MainWindow
 from agym.protocols import IGameEnvironment, IModel
+from agym.renderers import EnvRenderer, GameMonitorRenderer, KDTreeRenderer
 from agym.settings import Settings
 from agym.updaters import (
     ComposeUpdater,
@@ -28,7 +29,9 @@ from agym.utils import FPSLimiter, TimeProfiler, register_profiler
 
 class RenderKits:
     def __init__(self):
-        self.kit = PygameRenderKit()
+        self.pygame_render_kit_engine = PygameRenderKitEngine()
+
+        self.kit = RenderKit(engine=self.pygame_render_kit_engine)
 
 
 class TimeContainer:
@@ -44,19 +47,21 @@ class TimeContainer:
 
 
 class Labels:
-    def __init__(self, config: Settings):
+    def __init__(self, render_kits: RenderKits, config: Settings):
+        kit = render_kits.kit
+
         self.fps_label = TextLabel(
-            shift=Shift(x=10, y=10),
-            font_size=12,
+            render_kit=kit,
+            font=kit.create_font("Hack", 12),
             foreground_color=Color(230, 230, 130),
-            text="fps",
+            text="",
         )
 
         self.profile_label = TextLabel(
-            shift=Shift(x=120, y=10),
-            font_size=12,
+            render_kit=kit,
+            font=kit.create_font("Hack", 12),
             foreground_color=Color(180, 130, 180),
-            text="profiling",
+            text="",
         )
 
 
@@ -134,8 +139,35 @@ class GameMonitorContainer:
             audio_handler=env_container.audio_handler,
             env=env_container.env,
             model=env_container.model,
-            time_profiler=time_container.time_profiler,
             tps=config.tps,
+        )
+
+
+class Renderers:
+    def __init__(
+        self,
+        game_monitor_container: GameMonitorContainer,
+        env_container: EnvContainer,
+        render_kits: RenderKits,
+        config: Settings,
+        labels: Labels,
+    ):
+        self.env_renderer = EnvRenderer(
+            screen_size=Size(width=config.env_width, height=config.env_height),
+            env=env_container.env,
+            render_kit=render_kits.kit,
+            image_dir=config.image_dir,
+        )
+
+        self.game_monitor = GameMonitorRenderer(
+            fps_label=labels.fps_label,
+            profile_label=labels.profile_label,
+            screen_size=Size(
+                width=config.window_screen_width,
+                height=config.window_screen_height,
+            ),
+            env_renderer=self.env_renderer,
+            render_kit=render_kits.kit,
         )
 
 
@@ -144,6 +176,7 @@ class Windows:
         self,
         game_monitor_container: GameMonitorContainer,
         render_kits: RenderKits,
+        renderers: Renderers,
         config: Settings,
     ):
         self.main = MainWindow(
@@ -153,6 +186,7 @@ class Windows:
             ),
             render_kit=render_kits.kit,
             game_monitor=game_monitor_container.game_monitor,
+            game_monitor_renderer=renderers.game_monitor,
         )
 
 
@@ -161,7 +195,7 @@ class Application:
         self.render_kits = RenderKits()
 
         self.time_container = TimeContainer(config=config)
-        self.labels = Labels(config=config)
+        self.labels = Labels(render_kits=self.render_kits, config=config)
         self.updaters = Updaters(
             time_container=self.time_container,
             labels=self.labels,
@@ -177,8 +211,18 @@ class Application:
             updaters=self.updaters,
             config=config,
         )
+
+        self.renderers = Renderers(
+            game_monitor_container=self.game_monitor_container,
+            env_container=self.env_container,
+            labels=self.labels,
+            render_kits=self.render_kits,
+            config=config,
+        )
+
         self.windows = Windows(
             game_monitor_container=self.game_monitor_container,
             config=config,
             render_kits=self.render_kits,
+            renderers=self.renderers,
         )

@@ -3,8 +3,8 @@ from pygame.event import Event
 
 from agym.dtos import Color, Shift, Size
 from agym.game_monitor import GameMonitor
-from agym.gui.render_kits.pygame import PygameScreen
 from agym.protocols import IEventHandler, IRenderKit
+from agym.renderers import GameMonitorRenderer
 
 
 class MainWindow:
@@ -13,16 +13,15 @@ class MainWindow:
         window_size: Size,
         render_kit: IRenderKit,
         game_monitor: GameMonitor,
+        game_monitor_renderer: GameMonitorRenderer,
     ):
         pygame.display.set_caption("Arcanoid")
 
         self._render_kit = render_kit
         self.screen = self._render_kit.create_display(window_size)
-        self.game_monitor = game_monitor
 
-        self.gm_screen_rect = game_monitor.screen.get_rect()
-        self.gm_screen_rect.centerx = window_size.width // 2
-        self.gm_screen_rect.bottom = window_size.height
+        self.game_monitor = game_monitor
+        self._game_monitor_renderer = game_monitor_renderer
 
         self.active: bool
 
@@ -51,8 +50,7 @@ class MainWindow:
     def blit(self) -> None:
         self.screen.fill(Color(255, 255, 255))
 
-        self.game_monitor.blit()
-        gm_screen = PygameScreen(self.game_monitor.screen)
+        gm_screen = self._game_monitor_renderer.render()
 
         self.screen.blit(gm_screen, Shift(0, 0))
 

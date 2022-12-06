@@ -2,14 +2,14 @@ from typing import Optional
 
 import pygame as pg
 
-from agym.dtos import Color, Shift, Size
-from agym.protocols import IRenderKit
+from agym.dtos import Color, Rect, Shift, Size
+from agym.protocols import IRenderKitEngine, IScreen
 
 from .font import PygameFont
 from .screen import PygameScreen
 
 
-class PygameRenderKit(IRenderKit):
+class PygameRenderKitEngine(IRenderKitEngine):
     def create_display(
         self,
         size: Size,
@@ -65,3 +65,20 @@ class PygameRenderKit(IRenderKit):
         screen = PygameScreen(image)
 
         return screen
+
+    def draw_rect(
+        self,
+        screen: IScreen,
+        rect: Rect,
+        color: Color,
+        width: int = 0,
+    ) -> None:
+        if not isinstance(screen, PygameScreen):
+            raise NotImplementedError
+
+        pg.draw.rect(
+            screen._screen,
+            color.to_tuple(),
+            (rect.shift.to_tuple(), rect.size.to_tuple()),
+            width,
+        )

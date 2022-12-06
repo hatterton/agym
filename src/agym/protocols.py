@@ -1,25 +1,10 @@
 from typing import Any, List, Optional, Protocol, Tuple
 
-from .dtos import (
-    Color,
-    Event,
-    PygameEvent,
-    PygameFont,
-    PygameRect,
-    PygameScreen,
-    Rect,
-    Shift,
-    Size,
-)
+from .dtos import Color, Event, PygameEvent, Rect, Shift, Size
 
 
 class IUpdater(Protocol):
     def update(self) -> None:
-        pass
-
-
-class IRenderer(Protocol):
-    def render(self) -> PygameScreen:
         pass
 
 
@@ -43,13 +28,14 @@ class IGameEnvironment(IEventHandler, Protocol):
     def pop_events(self) -> List[Event]:
         pass
 
-    def blit(self, screen) -> None:
-        pass
-
 
 class IScreen(Protocol):
     @property
     def size(self) -> Size:
+        pass
+
+    @property
+    def rect(self) -> Rect:
         pass
 
     @property
@@ -63,7 +49,7 @@ class IScreen(Protocol):
     def fill(self, color: Color, rect: Optional[Rect] = None) -> None:
         pass
 
-    def blit(self, screen, shift: Shift) -> None:
+    def blit(self, screen: "IScreen", shift: Shift) -> None:
         pass
 
 
@@ -81,7 +67,7 @@ class IFont(Protocol):
         pass
 
 
-class IRenderKit(Protocol):
+class IRenderKitEngine(Protocol):
     def create_display(
         self,
         size: Size,
@@ -118,4 +104,30 @@ class IRenderKit(Protocol):
         self,
         path: str,
     ) -> IScreen:
+        pass
+
+    def draw_rect(
+        self,
+        screen: IScreen,
+        rect: Rect,
+        color: Color,
+        width: int = 0,
+    ) -> None:
+        pass
+
+
+class IRenderKit(IRenderKitEngine, Protocol):
+    def render_text(
+        self,
+        text: str,
+        font: IFont,
+        foreground_color: Color,
+        background_color: Optional[Color],
+        alpha: Optional[int],
+    ) -> IScreen:
+        pass
+
+
+class IRenderer(Protocol):
+    def render(self) -> IScreen:
         pass

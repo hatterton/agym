@@ -30,36 +30,40 @@ class ItemManager:
 
     def create_wall(self, rect: Rectangle) -> Wall:
         wall = Wall(
+            id=self._tick(),
             rect=rect,
-            item_id=self._tick(),
         )
         self._state.walls.append(wall)
 
         return wall
 
     def create_block(self, top: int, left: int, health: int = 1) -> Block:
-        image_name_template = "block_{} 60x20.png"
-        colors = ["blue", "yellow", "red"]
-        image_name = image_name_template.format(random.choice(colors))
-
         block = Block(
-            image_name=image_name,
-            top=top,
-            left=left,
+            id=self._tick(),
+            rect=Rectangle(
+                left=left,
+                top=top,
+                width=60,
+                height=20,
+            ),
             health=health,
-            item_id=self._tick(),
         )
         self._state.blocks.append(block)
 
         return block
 
     def create_platform(self, speed: float) -> Platform:
-        image_name = "platform 120x20.png"
+        rect = Rectangle(
+            left=0,
+            top=0,
+            width=120,
+            height=20,
+        )
 
         platform = Platform(
-            image_name=image_name,
+            id=self._tick(),
+            rect=rect,
             speed=speed,
-            item_id=self._tick(),
         )
         self._state.platforms.append(platform)
 
@@ -73,14 +77,19 @@ class ItemManager:
         top: Optional[float] = None,
         left: Optional[float] = None,
     ) -> Ball:
-        image_name = "ball_aparture 20x20.png"
+        rect = Rectangle(
+            left=0,
+            top=0,
+            width=20,
+            height=20,
+        )
 
         ball = Ball(
-            image_name=image_name,
+            id=self._tick(),
+            rect=rect,
             radius=radius,
-            speed=speed,
             thrown=thrown,
-            item_id=self._tick(),
+            speed=speed,
         )
 
         if top is not None:

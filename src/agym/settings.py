@@ -20,6 +20,8 @@ class Settings(BaseSettings):
     bg_color: Color = (130, 130, 130)
     ga_bg_color: Color = (130, 160, 230)
 
+    image_dir: str = "agym/static/images/breakout"
+
     game_speed: float = 1
     platform_speed: float = 10
     ball_speed: float = 15

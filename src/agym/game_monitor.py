@@ -9,7 +9,7 @@ from pygame.mixer import Sound
 from agym.constants import TIME_RESOLUTION
 from agym.gui import TextLabel
 from agym.protocols import IEventHandler, IGameEnvironment, IModel
-from agym.utils import TimeProfiler, format_stats, profile, register_profiler
+from agym.utils import profile
 
 
 class GameMonitor:
@@ -24,11 +24,8 @@ class GameMonitor:
         profile_label: TextLabel,
         log_updater,
         audio_handler,
-        time_profiler: TimeProfiler,
         tps: int,
     ):
-        self.screen = pygame.Surface((width, height))
-
         self.model = model
         self.env = env
         self.fps_limiter = fps_limiter
@@ -40,8 +37,6 @@ class GameMonitor:
 
         self.audio_handler = audio_handler
         # self.run_playing_music()
-
-        self.profiler = time_profiler
 
         self.tps = tps
 
@@ -73,11 +68,3 @@ class GameMonitor:
             self.env.reset()
 
         self.log_updater.update()
-
-    @profile("game_blit")
-    def blit(self) -> None:
-        self.screen.fill((0, 0, 0))
-        self.env.blit(self.screen)
-
-        self.fps_label.blit(self.screen)
-        self.profile_label.blit(self.screen)
