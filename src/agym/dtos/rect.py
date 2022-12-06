@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from .shift import Shift
 from .size import Size
@@ -6,8 +6,8 @@ from .size import Size
 
 @dataclass
 class Rect:
-    shift: Shift
     size: Size
+    shift: Shift = field(default_factory=lambda: Shift(x=0, y=0))
 
     def __init__(self, left: int, top: int, width: int, height: int) -> None:
         self.shift = Shift(x=left, y=top)
@@ -75,19 +75,19 @@ class Rect:
     # sizes
     @property
     def width(self) -> int:
-        return self.width
+        return self.size.width
 
     @width.setter
     def width(self, value: int) -> None:
-        self.width = value
+        self.size.width = value
 
     @property
     def height(self) -> int:
-        return self.height
+        return self.size.height
 
     @height.setter
     def height(self, value: int) -> None:
-        self.height = value
+        self.size.height = value
 
     # center
     @property

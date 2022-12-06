@@ -1,40 +1,35 @@
-from typing import Optional, Tuple
+from typing import Optional
 
-import pygame as pg
-
-from agym.dtos import Color, Shift
-from agym.rendering import blit_screen, render_text
+from agym.dtos import Color, Size
+from agym.protocols import IFont, IRenderer, IRenderKit, IScreen
 
 
-class TextLabel:
+class TextLabel(IRenderer):
     def __init__(
         self,
-        shift: Shift,
-        # font_path: str,
-        font_size: int = 20,
+        render_kit: IRenderKit,
+        font: IFont,
         foreground_color: Color = Color(30, 30, 30),
         background_color: Optional[Color] = None,
         alpha: Optional[int] = None,
         text: str = "",
     ):
-        self._shift = shift
+        self._render_kit = render_kit
 
+        self._font = font
         self._foreground_color = foreground_color
         self._background_color = background_color
         self._alpha = alpha
 
-        # self._font = pg.font.Font(font_path, font_size)
-        self._font = pg.font.SysFont("Hack", font_size)
-
         self.text = text
 
-    def blit(self, screen: pg.surface.Surface) -> None:
-        text_screen = render_text(
-            font=self._font,
+    def render(self) -> IScreen:
+        screen = self._render_kit.render_text(
             text=self.text,
+            font=self._font,
             foreground_color=self._foreground_color,
             background_color=self._background_color,
             alpha=self._alpha,
         )
 
-        blit_screen(screen, text_screen, self._shift)
+        return screen

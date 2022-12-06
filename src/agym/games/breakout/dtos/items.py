@@ -1,5 +1,5 @@
 import os
-from abc import ABC, abstractmethod
+from dataclasses import dataclass, field
 from typing import Iterable, Optional
 
 import pygame as pg
@@ -16,65 +16,37 @@ from agym.games.breakout.geom import (
 ItemId = int
 
 
-class Item(ABC):
-    def __init__(
-        self,
-        item_id: ItemId,
-        image_name: Optional[str] = None,
-        rect: Optional[Rectangle] = None,
-    ):
-        self.rect: Rectangle
-        self.image: Optional[pg.surface.Surface]
+@dataclass
+class Item:
+    id: ItemId
+    rect: Rectangle
 
-        if image_name is not None:
-            image_path = os.path.join(
-                "agym/static/images/breakout",
-                image_name,
-            )
-            self.image = pg.image.load(image_path)
-            self.rect = Rectangle.from_rect(self.image.get_rect())
-
-        elif rect is not None:
-            self.image = None
-            self.rect = rect
-
-        else:
-            raise ValueError("Invalid item initialization")
-
-        self.id = item_id
-
-    def blit(self, screen) -> None:
-        if self.image is None:
-            rect = pg.rect.Rect(
-                (self.rect.left - 1, self.rect.top - 1),
-                (self.rect.width + 2, self.rect.height + 2),
-            )
-            pg.draw.rect(screen, (150, 50, 50), rect)
-
-        else:
-            rect = self.image.get_rect().move(self.rect.left, self.rect.top)
-            screen.blit(self.image, rect)
-
-    @abstractmethod
     def get_ghost_trace(self, dt: float) -> Iterable[Shape]:
-        raise NotImplemented
+        return [
+            Triangle(
+                points=[
+                    Point(x=self.rect.left, y=self.rect.top),
+                    Point(x=self.rect.right, y=self.rect.top),
+                    Point(x=self.rect.left, y=self.rect.bottom),
+                ]
+            ),
+            Triangle(
+                points=[
+                    Point(x=self.rect.right, y=self.rect.bottom),
+                    Point(x=self.rect.right, y=self.rect.top),
+                    Point(x=self.rect.left, y=self.rect.bottom),
+                ]
+            ),
+        ]
 
 
+@dataclass
 class Ball(Item):
-    def __init__(
-        self, image_name, radius, speed, thrown: bool, item_id: ItemId
-    ):
-        super().__init__(
-            item_id=item_id,
-            image_name=image_name,
-        )
+    radius: float
 
-        self.radius = radius
-        self.color_cirle = pg.Color(0, 0, 0)
-
-        self.thrown = thrown
-        self.velocity: Vec2 = Vec2(x=0, y=0)
-        self.speed = speed
+    thrown: bool
+    speed: float
+    velocity: Vec2 = field(default_factory=lambda: Vec2(x=0, y=0))
 
     def fake_update(self, dt):
         fake_rect = self.rect.copy()
@@ -123,51 +95,18 @@ class Ball(Item):
         ]
 
 
+@dataclass
 class Block(Item):
-    def __init__(
-        self, image_name: str, top: int, left: int, health: int, item_id: ItemId
-    ):
-        super().__init__(
-            item_id=item_id,
-            image_name=image_name,
-        )
-
-        self.rect.top = top
-        self.rect.left = left
-
-        self.health = health
-
-    def get_ghost_trace(self, dt: float) -> Iterable[Shape]:
-        return [
-            Triangle(
-                points=[
-                    Point(x=self.rect.left, y=self.rect.top),
-                    Point(x=self.rect.right, y=self.rect.top),
-                    Point(x=self.rect.left, y=self.rect.bottom),
-                ]
-            ),
-            Triangle(
-                points=[
-                    Point(x=self.rect.right, y=self.rect.bottom),
-                    Point(x=self.rect.right, y=self.rect.top),
-                    Point(x=self.rect.left, y=self.rect.bottom),
-                ]
-            ),
-        ]
+    health: int
 
 
+@dataclass
 class Platform(Item):
-    def __init__(self, image_name: str, speed: float, item_id: ItemId):
-        super().__init__(
-            item_id=item_id,
-            image_name=image_name,
-        )
+    speed: float
+    velocity: Vec2 = field(default_factory=lambda: Vec2(x=0, y=0))
 
-        self.speed: float = speed
-        self.velocity: Vec2 = Vec2(x=0, y=0)
-
-        self.rest_freeze_time: float = 0
-        self.default_freeze_time: float = 2
+    rest_freeze_time: float = 0.0
+    default_freeze_time: float = 2.0
 
     def fake_update(self, dt):
         fake_rect = self.rect.copy()
@@ -211,27 +150,6 @@ class Platform(Item):
         ]
 
 
+@dataclass
 class Wall(Item):
-    def __init__(self, rect: Rectangle, item_id: ItemId):
-        super().__init__(
-            item_id=item_id,
-            rect=rect,
-        )
-
-    def get_ghost_trace(self, dt: float) -> Iterable[Shape]:
-        return [
-            Triangle(
-                points=[
-                    Point(x=self.rect.left, y=self.rect.top),
-                    Point(x=self.rect.right, y=self.rect.top),
-                    Point(x=self.rect.left, y=self.rect.bottom),
-                ]
-            ),
-            Triangle(
-                points=[
-                    Point(x=self.rect.right, y=self.rect.bottom),
-                    Point(x=self.rect.right, y=self.rect.top),
-                    Point(x=self.rect.left, y=self.rect.bottom),
-                ]
-            ),
-        ]
+    pass

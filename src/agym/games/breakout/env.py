@@ -55,8 +55,6 @@ class BreakoutEnv:
             height=self.env_height,
         )
 
-        self.screen = pygame.Surface((env_width, env_height))
-
         self.checking_gameover = checking_gameover
         self.eps = eps
 
@@ -296,28 +294,6 @@ class BreakoutEnv:
                 ball.velocity = velocity
 
                 ball.rect.bottom -= 1
-
-    def blit(self, screen) -> None:
-        screen_rect = screen.get_rect()
-        self_screen_rect = self.screen.get_rect()
-        self_screen_rect.bottom = screen_rect.bottom
-        self_screen_rect.centerx = screen_rect.centerx
-
-        self.screen.fill((30, 20, 10))
-
-        for platform in self.platforms:
-            platform.blit(self.screen)
-
-        for ball in self.balls:
-            ball.blit(self.screen)
-
-        for block in self.blocks:
-            block.blit(self.screen)
-
-        for wall in self.walls:
-            wall.blit(self.screen)
-
-        screen.blit(self.screen, self_screen_rect)
 
     def try_event(self, event) -> bool:
         if event.type == pygame.KEYDOWN:

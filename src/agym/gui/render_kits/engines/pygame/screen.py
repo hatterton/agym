@@ -16,6 +16,10 @@ class PygameScreen(IScreen):
         return Size(width=rect.width, height=rect.height)
 
     @property
+    def rect(self) -> Rect:
+        return Rect.from_shift_size(shift=Shift(x=0, y=0), size=self.size)
+
+    @property
     def alpha(self) -> int:
         value = self._screen.get_alpha()
 
@@ -36,5 +40,8 @@ class PygameScreen(IScreen):
 
         self._screen.fill(color.to_tuple(), pygame_rect)
 
-    def blit(self, screen: "PygameScreen", shift: Shift) -> None:
+    def blit(self, screen: IScreen, shift: Shift) -> None:
+        if not isinstance(screen, PygameScreen):
+            raise NotImplementedError
+
         self._screen.blit(screen._screen, shift.to_tuple())
