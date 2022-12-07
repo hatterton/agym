@@ -2,7 +2,7 @@ import os
 from enum import Enum, auto
 from typing import Dict
 
-from agym.dtos import Color, Rect, Size
+from agym.dtos import Color, Rect, Shift, Size
 from agym.game_monitor import GameMonitor
 from agym.games import BreakoutEnv
 from agym.games.breakout.dtos import Ball, Block, Platform, Wall
@@ -30,6 +30,8 @@ class EnvRenderer(IRenderer):
 
         self._render_kit = render_kit
         self._screen_size = screen_size
+
+        self._block_font = self._render_kit.create_font("Hack", 18)
 
         self._item2image: Dict[ItemType, IScreen] = dict()
         self._load_images(image_dir)
@@ -84,9 +86,46 @@ class EnvRenderer(IRenderer):
 
     def _render_block_on(self, screen: IScreen, block: Block) -> None:
         rect = self._convert_rectangle_to_rect(block.rect)
-        image = self._item2image[ItemType.BLOCK_RED]
 
-        screen.blit(image, rect.shift)
+        if block.health < 5:
+            primary_image = self._item2image[ItemType.BLOCK_RED]
+            secondary_image = self._item2image[ItemType.BLOCK_YELLOW]
+            alpha = int((block.health - 1) / 5 * 255)
+
+        elif block.health >= 5 and block.health < 10:
+            primary_image = self._item2image[ItemType.BLOCK_YELLOW]
+            secondary_image = self._item2image[ItemType.BLOCK_BLUE]
+            alpha = int((block.health - 5) / 5 * 255)
+
+        else:
+            primary_image = self._item2image[ItemType.BLOCK_BLUE]
+            secondary_image = self._item2image[ItemType.BLOCK_BLUE]
+            alpha = 0
+
+        block_screen = self._render_kit.create_screen(primary_image.size)
+        secondary_block_screen = self._render_kit.create_screen(
+            primary_image.size
+        )
+
+        health_screen = self._block_font.render(
+            text=str(block.health),
+            foreground_color=Color(20, 20, 20),
+            background_color=Color(200, 100, 100, 50),
+            # foreground_color=Color(200, 200, 200),
+            # background_color=Color(20, 20, 20, 100),
+        )
+        health_rect = health_screen.rect
+        health_rect.center = block_screen.rect.center
+
+        block_screen.blit(primary_image, Shift(0, 0))
+
+        secondary_block_screen.blit(secondary_image, Shift(0, 0))
+        secondary_block_screen.alpha = alpha
+        block_screen.blit(secondary_block_screen, Shift(0, 0))
+
+        block_screen.blit(health_screen, health_rect.shift)
+
+        screen.blit(block_screen, rect.shift)
 
     def _render_platform_on(self, screen: IScreen, platform: Platform) -> None:
         rect = self._convert_rectangle_to_rect(platform.rect)

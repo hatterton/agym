@@ -76,9 +76,6 @@ class DefaultLevelBuilder:
         top_shift: int = 50,
         between_shift: int = 5,
     ) -> List[Block]:
-        image_name_template = "block_{} 60x20.png"
-        colors = ["blue", "yellow", "red"]
-
         n_cols = math.floor(
             (self.env_width - between_shift) / (block_width + between_shift)
         )
@@ -91,7 +88,9 @@ class DefaultLevelBuilder:
             for j in range(n_cols):
                 top = top_shift + i * block_height + (i - 1) * between_shift
                 left = side_shift + j * block_width + (j - 1) * between_shift
-                block = self.item_manager.create_block(top=top, left=left)
+                block = self.item_manager.create_block(
+                    top=top, left=left, health=1 + (n_rows - i - 1) * 1 + j
+                )
                 blocks.append(block)
 
         return blocks

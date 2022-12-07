@@ -16,17 +16,24 @@ class PygameFont(IFont):
         self,
         text: str,
         foreground_color: Color,
-        background_color: Optional[Color],
-        alpha: Optional[int],
+        background_color: Optional[Color] = None,
+        alpha: Optional[int] = None,
     ) -> PygameScreen:
         fg_color = foreground_color.to_tuple()
-        if background_color is None:
-            bg_color = None
-        else:
-            bg_color = background_color.to_tuple()
 
-        pg_screen = self._font.render(text, True, fg_color, bg_color)
+        pg_text_screen = self._font.render(text, True, fg_color)
+        text_screen = PygameScreen(pg_text_screen)
+        text_screen.alpha = foreground_color.alpha
+
+        pg_screen = pg.surface.Surface(
+            text_screen.size.to_tuple()
+        ).convert_alpha()
         screen = PygameScreen(pg_screen)
+
+        if background_color is not None:
+            screen.fill(background_color)
+
+        screen.blit(text_screen, Shift(0, 0))
 
         return screen
 
