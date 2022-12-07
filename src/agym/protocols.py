@@ -58,8 +58,8 @@ class IFont(Protocol):
         self,
         text: str,
         foreground_color: Color,
-        background_color: Optional[Color],
-        alpha: Optional[int],
+        background_color: Optional[Color] = None,
+        alpha: Optional[int] = None,
     ) -> IScreen:
         pass
 
@@ -122,8 +122,8 @@ class IRenderKit(IRenderKitEngine, Protocol):
         text: str,
         font: IFont,
         foreground_color: Color,
-        background_color: Optional[Color],
-        alpha: Optional[int],
+        background_color: Optional[Color] = None,
+        alpha: Optional[int] = None,
     ) -> IScreen:
         pass
 

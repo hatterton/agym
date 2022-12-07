@@ -117,9 +117,6 @@ class PerformanceLevelBuilder:
         vertical_shift: int = 19,
         health: int = 100,
     ) -> List[Block]:
-        image_name_template = "block_{} 60x20.png"
-        colors = ["blue", "yellow", "red"]
-
         n_cols = (
             math.floor(
                 (self.env_width - block_width)

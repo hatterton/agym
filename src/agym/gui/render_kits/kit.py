@@ -54,8 +54,8 @@ class RenderKit(IRenderKit):
         text: str,
         font: IFont,
         foreground_color: Color,
-        background_color: Optional[Color],
-        alpha: Optional[int],
+        background_color: Optional[Color] = None,
+        alpha: Optional[int] = None,
     ) -> IScreen:
         textline_screens = []
         for textline in text.split("\n"):
