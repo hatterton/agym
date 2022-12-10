@@ -102,3 +102,35 @@ class RenderKit(IRenderKit):
             color=color,
             width=width,
         )
+
+    def draw_line(
+        self,
+        screen: IScreen,
+        start: Shift,
+        finish: Shift,
+        color: Color,
+        width: int = 1,
+    ) -> None:
+        self._engine.draw_line(
+            screen=screen,
+            start=start,
+            finish=finish,
+            color=color,
+            width=width,
+        )
+
+    def draw_circle(
+        self,
+        screen: IScreen,
+        center: Shift,
+        radius: int,
+        color: Color,
+        width: int = 0,
+    ) -> None:
+        self._engine.draw_circle(
+            screen=screen,
+            center=center,
+            radius=radius,
+            color=color,
+            width=width,
+        )

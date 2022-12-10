@@ -1,7 +1,11 @@
 import pytest
 
 from agym.games.breakout.geom.kdtree import KDTree
-from agym.games.breakout.geom.kdtree.node import TreeNode
+from agym.games.breakout.geom.kdtree.node import (
+    LeafTreeNode,
+    SplitTreeNode,
+    TreeNode,
+)
 
 from .tree_utils import build_record, get_depth, traveres
 
@@ -19,10 +23,9 @@ class TestTreeBuilding:
 
         tree = KDTree(
             records=[r],
-            collidable_pairs={},
         )
 
-        assert len(list(tree.root)) == 1
+        assert len(list(tree.root.generate_items())) == 1
         assert get_depth(tree.root) == 1
         for node in traveres(tree.root):
             assert len(node.items) <= 1
@@ -43,10 +46,9 @@ class TestTreeBuilding:
 
         tree = KDTree(
             records=[r1, r2],
-            collidable_pairs={},
         )
 
-        assert len(list(tree.root)) == 2
+        assert len(list(tree.root.generate_items())) == 2
         assert get_depth(tree.root) == 2
         for node in traveres(tree.root):
             assert len(node.items) <= 1
@@ -67,10 +69,9 @@ class TestTreeBuilding:
 
         tree = KDTree(
             records=[r1, r2],
-            collidable_pairs={},
         )
 
-        assert len(list(tree.root)) == 2
+        assert len(list(tree.root.generate_items())) == 2
         assert get_depth(tree.root) == 2
         for node in traveres(tree.root):
             assert len(node.items) <= 1
@@ -97,13 +98,12 @@ class TestTreeBuilding:
 
         tree = KDTree(
             records=[r1, r2, r3],
-            collidable_pairs={},
         )
 
-        assert len(list(tree.root)) == 3
+        assert len(list(tree.root.generate_items())) == 3
         assert get_depth(tree.root) == 3
         for node in traveres(tree.root):
-            assert len(node.items) <= 1
+            assert len(node.items) == 1
 
     def test_build_two_nodes_nonseparable(self):
         r1 = build_record(
@@ -121,10 +121,9 @@ class TestTreeBuilding:
 
         tree = KDTree(
             records=[r1, r2],
-            collidable_pairs={},
         )
 
-        assert len(list(tree.root)) == 2
+        assert len(list(tree.root.generate_items())) == 2
         assert get_depth(tree.root) == 2
         for node in traveres(tree.root):
             assert len(node.items) <= 1
@@ -145,11 +144,10 @@ class TestTreeBuilding:
 
         tree = KDTree(
             records=[r1, r2],
-            collidable_pairs={},
             max_depth=5,
         )
 
-        assert len(list(tree.root)) == 2
+        assert len(list(tree.root.generate_items())) == 2
         # TODO strange behaviour
         assert get_depth(tree.root) == 2
         # for node in traveres(tree.root):
@@ -169,14 +167,13 @@ class TestTreeBuilding:
 
         tree = KDTree(
             records=rs,
-            collidable_pairs={},
             max_depth=20,
         )
 
-        assert len(list(tree.root)) == 2**10
+        assert len(list(tree.root.generate_items())) == 2**10
         assert get_depth(tree.root) == 11
         for node in traveres(tree.root):
-            assert len(node.items) <= 1
+            assert len(node.items) == 1
 
     def test_build_many_nodes_separable_max_depth(self):
         rs = [
@@ -192,11 +189,10 @@ class TestTreeBuilding:
 
         tree = KDTree(
             records=rs,
-            collidable_pairs={},
             max_depth=5,
         )
 
-        assert len(list(tree.root)) == 2**10
+        assert len(list(tree.root.generate_items())) == 2**10
         assert get_depth(tree.root) == 6
 
     def test_build_many_nodes_separable_num_records_to_stop(self):
@@ -213,11 +209,10 @@ class TestTreeBuilding:
 
         tree = KDTree(
             records=rs,
-            collidable_pairs={},
             num_records_stop=2**6,
         )
 
-        assert len(list(tree.root)) == 2**10
+        assert len(list(tree.root.generate_items())) == 2**10
         assert get_depth(tree.root) == 5
         for node in traveres(tree.root):
-            assert len(node.items) in [0, 2**6]
+            assert len(node.items) == 2**6

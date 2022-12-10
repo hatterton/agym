@@ -32,10 +32,9 @@ class TestTree:
 
         tree = KDTree(
             records=rs,
-            collidable_pairs=collidable_pairs,
         )
 
-        intesections = list(tree.generate_colliding_items())
+        intesections = list(tree.generate_colliding_items(collidable_pairs))
         assert len(intesections) == 1
 
     def test_intersecting_two_nodes__the_same_item_id__negative(self):
@@ -60,10 +59,9 @@ class TestTree:
 
         tree = KDTree(
             records=rs,
-            collidable_pairs=collidable_pairs,
         )
 
-        intesections = list(tree.generate_colliding_items())
+        intesections = list(tree.generate_colliding_items(collidable_pairs))
         assert len(intesections) == 0
 
     def test_intersecting_two_nodes__non_colladable_class_id__negative(self):
@@ -88,10 +86,9 @@ class TestTree:
 
         tree = KDTree(
             records=rs,
-            collidable_pairs=collidable_pairs,
         )
 
-        intesections = list(tree.generate_colliding_items())
+        intesections = list(tree.generate_colliding_items(collidable_pairs))
         assert len(intesections) == 0
 
     def test_intersecting_two_nodes__seperable_rectangles__negative(self):
@@ -116,10 +113,9 @@ class TestTree:
 
         tree = KDTree(
             records=rs,
-            collidable_pairs=collidable_pairs,
         )
 
-        intesections = list(tree.generate_colliding_items())
+        intesections = list(tree.generate_colliding_items(collidable_pairs))
         assert len(intesections) == 0
 
     def test_intersecting_two_nodes__not_intersecting_shapes__negative(self):
@@ -149,10 +145,9 @@ class TestTree:
 
         tree = KDTree(
             records=rs,
-            collidable_pairs=collidable_pairs,
         )
 
-        intesections = list(tree.generate_colliding_items())
+        intesections = list(tree.generate_colliding_items(collidable_pairs))
         assert len(intesections) == 0
 
     def test_intersecting_nums__none(self):
@@ -172,9 +167,9 @@ class TestTree:
 
         tree = KDTree(
             records=rs,
-            collidable_pairs=collidable_pairs,
         )
-        intesections = list(tree.generate_colliding_items())
+
+        intesections = list(tree.generate_colliding_items(collidable_pairs))
         assert len(intesections) == 0
 
     def test_intersecting_nums__one(self):
@@ -202,9 +197,9 @@ class TestTree:
 
         tree = KDTree(
             records=rs + [r],
-            collidable_pairs=collidable_pairs,
         )
-        intesections = list(tree.generate_colliding_items())
+
+        intesections = list(tree.generate_colliding_items(collidable_pairs))
         assert len(intesections) == 1
 
     def test_intersecting_nums_full(self):
@@ -232,10 +227,9 @@ class TestTree:
 
         tree = KDTree(
             records=rs + [r],
-            collidable_pairs=collidable_pairs,
         )
 
-        intesections = list(tree.generate_colliding_items())
+        intesections = list(tree.generate_colliding_items(collidable_pairs))
         assert len(intesections) == 100
 
     def test_intersecting_nums__part(self):
@@ -263,7 +257,7 @@ class TestTree:
 
         tree = KDTree(
             records=rs + [r],
-            collidable_pairs=collidable_pairs,
         )
-        intesections = list(tree.generate_colliding_items())
+
+        intesections = list(tree.generate_colliding_items(collidable_pairs))
         assert len(intesections) == 32

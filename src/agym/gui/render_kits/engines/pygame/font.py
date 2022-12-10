@@ -32,6 +32,8 @@ class PygameFont(IFont):
 
         if background_color is not None:
             screen.fill(background_color)
+        else:
+            screen.fill(Color(0, 0, 0, 0))
 
         screen.blit(text_screen, Shift(0, 0))
 

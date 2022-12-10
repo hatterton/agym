@@ -11,6 +11,18 @@ from .intersecting import (
     get_intersection_triangle_triangle,
     is_intersected,
 )
-from .kdtree import ClassId, ItemId, KDTree, Record
+from .kdtree import (
+    ClassId,
+    CollidablePair,
+    IntersactionInfo,
+    ItemId,
+    KDTree,
+    LeafTreeNode,
+    ParentRelativeType,
+    Record,
+    SplitTreeNode,
+    TreeNode,
+    TreeNodeType,
+)
 from .protocols import SupportsBoundingBox
 from .shapes import Circle, Rectangle, Shape, Triangle
