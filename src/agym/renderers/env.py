@@ -3,11 +3,12 @@ from enum import Enum, auto
 from typing import Dict
 
 from agym.dtos import Color, Rect, Shift, Size
-from agym.game_monitor import GameMonitor
 from agym.games import BreakoutEnv
-from agym.games.breakout.dtos import Ball, Block, Platform, Wall
+from agym.games.breakout.dtos import Ball, Block, Item, Platform, Wall
 from agym.games.breakout.geom import Rectangle
 from agym.protocols import IRenderer, IRenderKit, IScreen
+
+from .kdtree import KDTreeRenderer
 
 
 class ItemType(Enum):
@@ -24,9 +25,11 @@ class EnvRenderer(IRenderer):
         screen_size: Size,
         image_dir: str,
         env: BreakoutEnv,
+        kdtree_renderer: IRenderer,
         render_kit: IRenderKit,
     ):
         self._env = env
+        self._kdtree_renderer = kdtree_renderer
 
         self._render_kit = render_kit
         self._screen_size = screen_size
@@ -75,6 +78,9 @@ class EnvRenderer(IRenderer):
 
         for wall in state.walls:
             self._render_wall_on(screen, wall)
+
+        kdtree_screen = self._kdtree_renderer.render()
+        screen.blit(kdtree_screen, Shift(0, 0))
 
         return screen
 
@@ -135,10 +141,6 @@ class EnvRenderer(IRenderer):
 
     def _render_wall_on(self, screen: IScreen, wall: Wall) -> None:
         rect = self._convert_rectangle_to_rect(wall.rect)
-        rect.left -= 1
-        rect.width += 2
-        rect.top -= 1
-        rect.height += 2
 
         self._render_kit.draw_rect(
             screen=screen,

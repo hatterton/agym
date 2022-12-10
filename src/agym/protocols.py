@@ -115,6 +115,26 @@ class IRenderKitEngine(Protocol):
     ) -> None:
         pass
 
+    def draw_line(
+        self,
+        screen: IScreen,
+        start: Shift,
+        finish: Shift,
+        color: Color,
+        width: int = 1,
+    ) -> None:
+        pass
+
+    def draw_circle(
+        self,
+        screen: IScreen,
+        center: Shift,
+        radius: int,
+        color: Color,
+        width: int = 0,
+    ) -> None:
+        pass
+
 
 class IRenderKit(IRenderKitEngine, Protocol):
     def render_text(

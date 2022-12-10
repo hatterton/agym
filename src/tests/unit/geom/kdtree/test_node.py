@@ -1,7 +1,13 @@
 import pytest
 
 from agym.games.breakout.geom import Rectangle
-from agym.games.breakout.geom.kdtree.node import TreeNode
+from agym.games.breakout.geom.kdtree.node import (
+    LeafTreeNode,
+    ParentRelativeType,
+    SplitTreeNode,
+    TreeNode,
+    TreeNodeType,
+)
 from agym.games.breakout.geom.kdtree.record import Record
 
 from .tree_utils import build_record, get_depth, traveres
@@ -33,7 +39,9 @@ class TestTreeNode:
             bottom=15,
         )
 
-        node = TreeNode(
+        node = LeafTreeNode(
+            type=TreeNodeType.LEAF,
+            parent_relative=ParentRelativeType.ROOT,
             items=[r1, r2],
         )
 
@@ -48,20 +56,34 @@ class TestTreeNode:
             bottom=10,
         )
 
-        node = TreeNode(
-            left=TreeNode(
-                left=TreeNode(
+        node = SplitTreeNode(
+            type=TreeNodeType.HORISONTAL,
+            parent_relative=ParentRelativeType.ROOT,
+            threashold=0.0,
+            left=SplitTreeNode(
+                type=TreeNodeType.HORISONTAL,
+                parent_relative=ParentRelativeType.LEFT,
+                threashold=0.0,
+                left=LeafTreeNode(
+                    type=TreeNodeType.LEAF,
+                    parent_relative=ParentRelativeType.LEFT,
                     items=[r],
                 ),
                 middle=None,
-                right=TreeNode(
+                right=LeafTreeNode(
+                    type=TreeNodeType.LEAF,
+                    parent_relative=ParentRelativeType.RIGHT,
                     items=[r],
                 ),
             ),
-            middle=TreeNode(
+            middle=LeafTreeNode(
+                type=TreeNodeType.LEAF,
+                parent_relative=ParentRelativeType.MIDDLE,
                 items=[r, r],
             ),
-            right=TreeNode(
+            right=LeafTreeNode(
+                type=TreeNodeType.LEAF,
+                parent_relative=ParentRelativeType.RIGHT,
                 items=[r],
             ),
         )
@@ -76,25 +98,39 @@ class TestTreeNode:
             bottom=10,
         )
 
-        node = TreeNode(
-            left=TreeNode(
-                left=TreeNode(
+        node: TreeNode = SplitTreeNode(
+            type=TreeNodeType.LEAF,
+            parent_relative=ParentRelativeType.MIDDLE,
+            threashold=0.0,
+            left=SplitTreeNode(
+                type=TreeNodeType.LEAF,
+                parent_relative=ParentRelativeType.MIDDLE,
+                threashold=0.0,
+                left=LeafTreeNode(
+                    type=TreeNodeType.LEAF,
+                    parent_relative=ParentRelativeType.LEFT,
                     items=[r],
                 ),
                 middle=None,
-                right=TreeNode(
+                right=LeafTreeNode(
+                    type=TreeNodeType.LEAF,
+                    parent_relative=ParentRelativeType.RIGHT,
                     items=[r],
                 ),
             ),
-            middle=TreeNode(
+            middle=LeafTreeNode(
+                type=TreeNodeType.LEAF,
+                parent_relative=ParentRelativeType.MIDDLE,
                 items=[r, r],
             ),
-            right=TreeNode(
+            right=LeafTreeNode(
+                type=TreeNodeType.LEAF,
+                parent_relative=ParentRelativeType.RIGHT,
                 items=[r],
             ),
         )
 
-        expected_items = [1, 0, 1, 0, 2, 1]
+        expected_items = [1, 1, 2, 1]
         nodes = list(traveres(node))
         assert len(expected_items) == len(nodes)
 
@@ -109,23 +145,37 @@ class TestTreeNode:
             bottom=10,
         )
 
-        node = TreeNode(
-            left=TreeNode(
-                left=TreeNode(
+        node: TreeNode = SplitTreeNode(
+            type=TreeNodeType.LEAF,
+            parent_relative=ParentRelativeType.MIDDLE,
+            threashold=0.0,
+            left=SplitTreeNode(
+                type=TreeNodeType.LEAF,
+                parent_relative=ParentRelativeType.MIDDLE,
+                threashold=0.0,
+                left=LeafTreeNode(
+                    type=TreeNodeType.LEAF,
+                    parent_relative=ParentRelativeType.LEFT,
                     items=[r],
                 ),
                 middle=None,
-                right=TreeNode(
+                right=LeafTreeNode(
+                    type=TreeNodeType.LEAF,
+                    parent_relative=ParentRelativeType.RIGHT,
                     items=[r],
                 ),
             ),
-            middle=TreeNode(
+            middle=LeafTreeNode(
+                type=TreeNodeType.LEAF,
+                parent_relative=ParentRelativeType.MIDDLE,
                 items=[r, r],
             ),
-            right=TreeNode(
+            right=LeafTreeNode(
+                type=TreeNodeType.LEAF,
+                parent_relative=ParentRelativeType.RIGHT,
                 items=[r],
             ),
         )
 
-        items = list(node)
+        items = list(node.generate_items())
         assert len(items) == 5

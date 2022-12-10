@@ -41,40 +41,52 @@ class DefaultLevelBuilder:
         return self.item_manager.extract_state()
 
     def _make_walls(self) -> List[Wall]:
+        shift = 5.0
+        left = shift
+        top = shift
+        right = self.env_width - shift
+        bottom = self.env_width - shift
+
+        width = right - left
+        height = bottom - top
+
+        wall_width = 3.0
+
+        left_wall = Rectangle(
+            left=left,
+            top=top,
+            width=wall_width,
+            height=height,
+        )
+
+        top_wall = Rectangle(
+            left=left,
+            top=top,
+            width=width,
+            height=wall_width,
+        )
+
+        right_wall = Rectangle(
+            left=left,
+            top=top,
+            width=wall_width,
+            height=height,
+        )
+        right_wall.right = right
+
         return [
-            self.item_manager.create_wall(
-                rect=Rectangle(
-                    left=-1.0,
-                    top=0.0,
-                    width=1.0,
-                    height=self.env_height,
-                ),
-            ),
-            self.item_manager.create_wall(
-                rect=Rectangle(
-                    left=0.0,
-                    top=-1.0,
-                    width=self.env_width,
-                    height=1.0,
-                ),
-            ),
-            self.item_manager.create_wall(
-                rect=Rectangle(
-                    left=self.env_width,
-                    top=0.0,
-                    width=1.0,
-                    height=self.env_height,
-                ),
-            ),
+            self.item_manager.create_wall(left_wall),
+            self.item_manager.create_wall(top_wall),
+            self.item_manager.create_wall(right_wall),
         ]
 
     def _make_target_wall(
         self,
-        n_rows: int = 4,
+        n_rows: int = 2,
         block_width: int = 60,
         block_height: int = 20,
-        top_shift: int = 50,
-        between_shift: int = 5,
+        top_shift: int = 100,
+        between_shift: int = 30,
     ) -> List[Block]:
         n_cols = math.floor(
             (self.env_width - between_shift) / (block_width + between_shift)

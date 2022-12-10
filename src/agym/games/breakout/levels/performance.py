@@ -28,49 +28,61 @@ class PerformanceLevelBuilder:
         walls = self._make_walls()
 
         balls = self._make_balls(
-            n_balls=6,
+            n_balls=10,
             radius=10,
-            # ball_speed=self.ball_speed,
-            ball_speed=2,
+            ball_speed=self.ball_speed,
             shift=100,
         )
 
         return self.item_manager.extract_state()
 
     def _make_walls(self) -> List[Wall]:
+        shift = 5.0
+        left = shift
+        top = shift
+        right = self.env_width - shift
+        bottom = self.env_width - shift
+
+        width = right - left
+        height = bottom - top
+
+        wall_width = 3.0
+
+        left_wall = Rectangle(
+            left=left,
+            top=top,
+            width=wall_width,
+            height=height,
+        )
+
+        top_wall = Rectangle(
+            left=left,
+            top=top,
+            width=width,
+            height=wall_width,
+        )
+
+        right_wall = Rectangle(
+            left=left,
+            top=top,
+            width=wall_width,
+            height=height,
+        )
+        right_wall.right = right
+
+        bottom_wall = Rectangle(
+            left=left,
+            top=top,
+            width=width,
+            height=wall_width,
+        )
+        bottom_wall.bottom = bottom
+
         return [
-            self.item_manager.create_wall(
-                rect=Rectangle(
-                    left=-1.0,
-                    top=0.0,
-                    width=1.0,
-                    height=self.env_height,
-                ),
-            ),
-            self.item_manager.create_wall(
-                rect=Rectangle(
-                    left=0.0,
-                    top=-1.0,
-                    width=self.env_width,
-                    height=1.0,
-                ),
-            ),
-            self.item_manager.create_wall(
-                rect=Rectangle(
-                    left=self.env_width,
-                    top=0.0,
-                    width=1.0,
-                    height=self.env_height,
-                ),
-            ),
-            self.item_manager.create_wall(
-                rect=Rectangle(
-                    left=0.0,
-                    top=self.env_height,
-                    width=self.env_width,
-                    height=1.0,
-                ),
-            ),
+            self.item_manager.create_wall(left_wall),
+            self.item_manager.create_wall(top_wall),
+            self.item_manager.create_wall(right_wall),
+            self.item_manager.create_wall(bottom_wall),
         ]
 
     def _make_balls(

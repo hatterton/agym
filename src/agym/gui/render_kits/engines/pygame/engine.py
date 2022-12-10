@@ -34,6 +34,8 @@ class PygameRenderKitEngine(IRenderKitEngine):
 
         if background_color is not None:
             screen.fill(background_color)
+        else:
+            screen.fill(Color(0, 0, 0, 0))
 
         return screen
 
@@ -80,5 +82,43 @@ class PygameRenderKitEngine(IRenderKitEngine):
             screen._screen,
             color.to_tuple(),
             (rect.shift.to_tuple(), rect.size.to_tuple()),
+            width,
+        )
+
+    def draw_line(
+        self,
+        screen: IScreen,
+        start: Shift,
+        finish: Shift,
+        color: Color,
+        width: int = 1,
+    ) -> None:
+        if not isinstance(screen, PygameScreen):
+            raise NotImplementedError
+
+        pg.draw.line(
+            screen._screen,
+            color.to_tuple(),
+            start.to_tuple(),
+            finish.to_tuple(),
+            width,
+        )
+
+    def draw_circle(
+        self,
+        screen: IScreen,
+        center: Shift,
+        radius: int,
+        color: Color,
+        width: int = 0,
+    ) -> None:
+        if not isinstance(screen, PygameScreen):
+            raise NotImplementedError
+
+        pg.draw.circle(
+            screen._screen,
+            color.to_tuple(),
+            center.to_tuple(),
+            radius,
             width,
         )

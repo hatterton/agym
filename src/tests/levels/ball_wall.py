@@ -61,6 +61,8 @@ def ball_vertical_wall_right_collision_level(
         speed=2.0,
     )
     ball.rect.center = Point(x=390, y=200)
+    ball.rect.right = env_width - 60
+
     ball.thrown = True
     r2 = 2**0.5
     ball.velocity = Vec2(x=r2 / 2, y=-r2 / 2)

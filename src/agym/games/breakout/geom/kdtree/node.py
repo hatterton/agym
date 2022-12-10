@@ -1,4 +1,6 @@
+from abc import ABC, abstractmethod, abstractproperty
 from dataclasses import dataclass, field
+from enum import Enum, auto
 from functools import cached_property
 from typing import (
     Collection,
@@ -20,40 +22,34 @@ CollidablePair = Tuple[ClassId, ClassId]
 IntersactionInfo = Tuple[IntersactionPair, IntersectionStrict]
 
 
+class TreeNodeType(Enum):
+    LEAF = auto()
+    VERTICAL = auto()
+    HORISONTAL = auto()
+
+
+class ParentRelativeType(Enum):
+    ROOT = auto()
+    LEFT = auto()
+    RIGHT = auto()
+    MIDDLE = auto()
+
+
 @dataclass
-class TreeNode:
-    left: "Optional[TreeNode]" = None
-    right: "Optional[TreeNode]" = None
-    middle: "Optional[TreeNode]" = None
+class TreeNode(ABC):
+    type: TreeNodeType
+    parent_relative: ParentRelativeType
 
-    items: List[Record] = field(default_factory=list)
-
-    @cached_property
+    @abstractproperty
     def bounding_box(self) -> Rectangle:
-        bboxes: List[Rectangle]
-        if self.items:
-            bboxes = [item.bounding_box for item in self.items]
-
-        else:
-            subnodes = [self.left, self.middle, self.right]
-            bboxes = [
-                node.bounding_box for node in subnodes if node is not None
-            ]
-
-        bbox_iter = iter(bboxes)
-        bbox = next(bbox_iter)
-
-        for b in bbox_iter:
-            bbox = bbox.union(b)
-
-        return bbox
+        pass
 
     @property
     def is_leaf(self) -> bool:
-        return self.left is None and self.right is None and self.middle is None
+        return self.type == TreeNodeType.LEAF
 
     @staticmethod
-    def generate_intersections_robust(
+    def _generate_intersactions_robust(
         node: "Optional[TreeNode]",
         collidable_pairs: Collection[Tuple[ClassId, ClassId]],
         collided: Optional[Set[IntersactionPair]] = None,
@@ -79,75 +75,16 @@ class TreeNode:
             collided=collided,
         )
 
+    @abstractmethod
     def _generate_intersections(
         self,
         collidable_pairs: Collection[CollidablePair],
         collided: Set[IntersactionPair],
     ) -> Iterable[IntersactionInfo]:
-        if self.items:
-            yield from self._generate_self_intersactions(
-                collidable_pairs=collidable_pairs,
-                collided=collided,
-            )
-
-        else:
-            yield from self._generate_subnodes_intersections(
-                collidable_pairs=collidable_pairs,
-                collided=collided,
-            )
-
-    def _generate_self_intersactions(
-        self,
-        collidable_pairs: Collection[CollidablePair],
-        collided: Set[IntersactionPair],
-    ) -> Iterable[IntersactionInfo]:
-        for record in self.items:
-            yield from self._generate_record_self_intersections(
-                record=record,
-                collidable_pairs=collidable_pairs,
-                collided=collided,
-            )
-
-    def _generate_subnodes_intersections(
-        self,
-        collidable_pairs: Collection[CollidablePair],
-        collided: Set[IntersactionPair],
-    ) -> Iterable[IntersactionInfo]:
-        for record in self.generate_items_robust(self.middle):
-            yield from self.generate_record_intersections_robust(
-                node=self.left,
-                record=record,
-                collidable_pairs=collidable_pairs,
-                collided=collided,
-            )
-
-            yield from self.generate_record_intersections_robust(
-                node=self.right,
-                record=record,
-                collidable_pairs=collidable_pairs,
-                collided=collided,
-            )
-
-        yield from self.generate_intersections_robust(
-            node=self.left,
-            collidable_pairs=collidable_pairs,
-            collided=collided,
-        )
-
-        yield from self.generate_intersections_robust(
-            node=self.middle,
-            collidable_pairs=collidable_pairs,
-            collided=collided,
-        )
-
-        yield from self.generate_intersections_robust(
-            node=self.right,
-            collidable_pairs=collidable_pairs,
-            collided=collided,
-        )
+        pass
 
     @staticmethod
-    def generate_record_intersections_robust(
+    def _generate_record_intersections_robust(
         node: "Optional[TreeNode]",
         record: Record,
         collidable_pairs: Collection[CollidablePair],
@@ -171,36 +108,90 @@ class TreeNode:
         if collided is None:
             collided = set()
 
+        if not self.bounding_box.is_intersected(record.bounding_box):
+            return
+
         yield from self._generate_record_intersections(
             record=record,
             collidable_pairs=collidable_pairs,
             collided=collided,
         )
 
+    @abstractmethod
     def _generate_record_intersections(
         self,
         record: Record,
         collidable_pairs: Collection[CollidablePair],
         collided: Set[IntersactionPair],
     ) -> Iterable[IntersactionInfo]:
-        if not self.bounding_box.is_intersected(record.bounding_box):
+        pass
+
+    @staticmethod
+    def _generate_items_robust(
+        node: "Optional[TreeNode]",
+    ) -> Iterable[Record]:
+        if node is None:
             return
 
-        if self.items:
-            yield from self._generate_record_self_intersections(
+        yield from node.generate_items()
+
+    def generate_items(self) -> Iterator[Record]:
+        yield from self._generate_items()
+
+    @abstractmethod
+    def _generate_items(self) -> Iterator[Record]:
+        pass
+
+    @staticmethod
+    def _traverse_subnodes_robust(
+        node: "Optional[TreeNode]",
+    ) -> "Iterable[TreeNode]":
+        if node is None:
+            return
+
+        yield from node.traverse_subnodes()
+
+    def traverse_subnodes(
+        self,
+    ) -> "Iterable[TreeNode]":
+        yield from self._traverse_subnodes()
+
+    @abstractmethod
+    def _traverse_subnodes(
+        self,
+    ) -> "Iterable[TreeNode]":
+        pass
+
+
+@dataclass
+class LeafTreeNode(TreeNode):
+    items: List[Record] = field(default_factory=list)
+
+    @cached_property
+    def bounding_box(self) -> Rectangle:
+        bboxes = [item.bounding_box for item in self.items]
+
+        bbox_iter = iter(bboxes)
+        bbox = next(bbox_iter)
+
+        for b in bbox_iter:
+            bbox = bbox.union(b)
+
+        return bbox
+
+    def _generate_intersections(
+        self,
+        collidable_pairs: Collection[CollidablePair],
+        collided: Set[IntersactionPair],
+    ) -> Iterable[IntersactionInfo]:
+        for record in self.items:
+            yield from self._generate_record_intersections(
                 record=record,
                 collidable_pairs=collidable_pairs,
                 collided=collided,
             )
 
-        else:
-            yield from self._generate_record_subnodes_intersections(
-                record=record,
-                collidable_pairs=collidable_pairs,
-                collided=collided,
-            )
-
-    def _generate_record_self_intersections(
+    def _generate_record_intersections(
         self,
         record: Record,
         collidable_pairs: Collection[CollidablePair],
@@ -237,47 +228,111 @@ class TreeNode:
 
             yield (idx1, idx2), intersection
 
-    def _generate_record_subnodes_intersections(
+    def _generate_items(self) -> Iterator[Record]:
+        yield from self.items
+
+    def _traverse_subnodes(
+        self,
+    ) -> "Iterable[TreeNode]":
+        yield self
+
+
+@dataclass
+class SplitTreeNode(TreeNode):
+    threashold: float
+
+    left: "Optional[TreeNode]" = None
+    right: "Optional[TreeNode]" = None
+    middle: "Optional[TreeNode]" = None
+
+    @cached_property
+    def bounding_box(self) -> Rectangle:
+        subnodes = [self.left, self.middle, self.right]
+        bboxes = [node.bounding_box for node in subnodes if node is not None]
+
+        bbox_iter = iter(bboxes)
+        bbox = next(bbox_iter)
+
+        for b in bbox_iter:
+            bbox = bbox.union(b)
+
+        return bbox
+
+    def _generate_intersections(
+        self,
+        collidable_pairs: Collection[CollidablePair],
+        collided: Set[IntersactionPair],
+    ) -> Iterable[IntersactionInfo]:
+        for record in self._generate_items_robust(self.middle):
+            yield from self._generate_record_intersections_robust(
+                node=self.left,
+                record=record,
+                collidable_pairs=collidable_pairs,
+                collided=collided,
+            )
+
+            yield from self._generate_record_intersections_robust(
+                node=self.right,
+                record=record,
+                collidable_pairs=collidable_pairs,
+                collided=collided,
+            )
+
+        yield from self._generate_intersactions_robust(
+            node=self.left,
+            collidable_pairs=collidable_pairs,
+            collided=collided,
+        )
+
+        yield from self._generate_intersactions_robust(
+            node=self.middle,
+            collidable_pairs=collidable_pairs,
+            collided=collided,
+        )
+
+        yield from self._generate_intersactions_robust(
+            node=self.right,
+            collidable_pairs=collidable_pairs,
+            collided=collided,
+        )
+
+    def _generate_record_intersections(
         self,
         record: Record,
         collidable_pairs: Collection[CollidablePair],
         collided: Set[IntersactionPair],
     ) -> Iterable[IntersactionInfo]:
-        yield from self.generate_record_intersections_robust(
+        yield from self._generate_record_intersections_robust(
             node=self.left,
             record=record,
             collidable_pairs=collidable_pairs,
             collided=collided,
         )
 
-        yield from self.generate_record_intersections_robust(
+        yield from self._generate_record_intersections_robust(
             node=self.middle,
             record=record,
             collidable_pairs=collidable_pairs,
             collided=collided,
         )
 
-        yield from self.generate_record_intersections_robust(
+        yield from self._generate_record_intersections_robust(
             node=self.right,
             record=record,
             collidable_pairs=collidable_pairs,
             collided=collided,
         )
 
-    @staticmethod
-    def generate_items_robust(
-        node: "Optional[TreeNode]",
-    ) -> Iterable[Record]:
-        if node is None:
-            return
+    def _generate_items(self) -> Iterator[Record]:
+        yield from self._generate_items_robust(self.left)
+        yield from self._generate_items_robust(self.middle)
+        yield from self._generate_items_robust(self.right)
 
-        yield from node
+    def _traverse_subnodes(
+        self,
+    ) -> "Iterable[TreeNode]":
+        yield self
 
-    def __iter__(self) -> Iterator[Record]:
-        if self.items:
-            yield from self.items
-
-        else:
-            yield from self.generate_items_robust(self.left)
-            yield from self.generate_items_robust(self.middle)
-            yield from self.generate_items_robust(self.right)
+        yield from self._traverse_subnodes_robust(self.left)
+        yield from self._traverse_subnodes_robust(self.middle)
+        yield from self._traverse_subnodes_robust(self.right)

@@ -6,11 +6,11 @@ Color = Tuple[int, int, int]
 
 
 class Settings(BaseSettings):
-    window_screen_width: int = 600
-    window_screen_height: int = 600
+    window_screen_width: int = 700
+    window_screen_height: int = 800
 
-    env_width: int = 450
-    env_height: int = 350
+    env_width: int = 600
+    env_height: int = 600
 
     mb_width: int = 150
     mb_height: int = 60
@@ -25,9 +25,12 @@ class Settings(BaseSettings):
     game_speed: float = 1
     platform_speed: float = 10
     ball_speed: float = 15
+    # ball_speed: float = 2
     max_lives: int = 1
     default_reward: int = 10
     catch_reward: int = 250
+
+    rendering_kdtree: bool = False
 
     tps: int = 20
     max_fps: int = 1000

@@ -5,7 +5,16 @@ from typing import Collection, Iterable, List, Set, Tuple
 
 from ..intersecting import IntersectionStrict, get_intersection
 from ..shapes import Rectangle
-from .node import CollidablePair, IntersactionInfo, IntersactionPair, TreeNode
+from .node import (
+    CollidablePair,
+    IntersactionInfo,
+    IntersactionPair,
+    LeafTreeNode,
+    ParentRelativeType,
+    SplitTreeNode,
+    TreeNode,
+    TreeNodeType,
+)
 from .record import ClassId, ItemId, Record
 from .scores import get_score
 
@@ -26,13 +35,10 @@ class KDTree:
     def __init__(
         self,
         records: List[Record],
-        collidable_pairs: Collection[CollidablePair],
         alpha: float = 0.5,
         max_depth: int = -1,
         num_records_stop: int = 1,
     ) -> None:
-        self._collidable_pairs = collidable_pairs
-
         self._alpha = alpha
         self._max_depth = max_depth
         self._num_records_stop = num_records_stop
@@ -88,6 +94,7 @@ class KDTree:
             verticals=verticals,
             horizontals=horizontals,
             depth=0,
+            parent_relative=ParentRelativeType.ROOT,
         )
 
     def _build(
@@ -97,9 +104,14 @@ class KDTree:
         verticals: List[RecordInfo],
         horizontals: List[RecordInfo],
         depth: int,
+        parent_relative: ParentRelativeType,
     ) -> TreeNode:
         if depth == self._max_depth or len(ids) <= self._num_records_stop:
-            return TreeNode(items=[records[idx] for idx in ids])
+            return LeafTreeNode(
+                type=TreeNodeType.LEAF,
+                parent_relative=parent_relative,
+                items=[records[idx] for idx in ids],
+            )
 
         vscores = self._calculate_bound_scores(
             bounds=verticals,
@@ -116,9 +128,14 @@ class KDTree:
         if max_vscore > max_hscore:
             bounds = verticals
             max_idx = vscores.index(max_vscore)
+            node_type = TreeNodeType.HORISONTAL
+
         else:
             bounds = horizontals
             max_idx = hscores.index(max_hscore)
+            node_type = TreeNodeType.VERTICAL
+
+        threashold = (bounds[max_idx].bound + bounds[max_idx + 1].bound) / 2
 
         left_ids = set()
         middle_ids = set()
@@ -142,6 +159,7 @@ class KDTree:
                 verticals=[b for b in verticals if b.idx in left_ids],
                 horizontals=[b for b in horizontals if b.idx in left_ids],
                 depth=depth + 1,
+                parent_relative=ParentRelativeType.LEFT,
             )
             if left_ids
             else None
@@ -154,6 +172,7 @@ class KDTree:
                 verticals=[b for b in verticals if b.idx in middle_ids],
                 horizontals=[b for b in horizontals if b.idx in middle_ids],
                 depth=depth + 1,
+                parent_relative=ParentRelativeType.MIDDLE,
             )
             if middle_ids
             else None
@@ -166,15 +185,19 @@ class KDTree:
                 verticals=[b for b in verticals if b.idx in right_ids],
                 horizontals=[b for b in horizontals if b.idx in right_ids],
                 depth=depth + 1,
+                parent_relative=ParentRelativeType.RIGHT,
             )
             if right_ids
             else None
         )
 
-        return TreeNode(
+        return SplitTreeNode(
+            type=node_type,
+            parent_relative=parent_relative,
             left=left,
             middle=middle,
             right=right,
+            threashold=threashold,
         )
 
     def _calculate_bound_scores(
@@ -207,24 +230,33 @@ class KDTree:
 
     def generate_colliding_items(
         self,
+        collidable_pairs: Collection[CollidablePair],
     ) -> Iterable[IntersactionInfo]:
-        # yield from self._naive_generate_colliding_items(self._records)
+
+        # yield from self._naive_generate_colliding_items(
+        #     self._records,
+        #     collidable_pairs=collidable_pairs,
+        # )
         # return
 
         yield from self._generate_colliding_items(
             node=self.root,
+            collidable_pairs=collidable_pairs,
         )
 
     def _generate_colliding_items(
         self,
         node: TreeNode,
+        collidable_pairs: Collection[CollidablePair],
     ) -> Iterable[IntersactionInfo]:
         yield from node.generate_intersections(
-            collidable_pairs=self._collidable_pairs,
+            collidable_pairs=collidable_pairs,
         )
 
     def _naive_generate_colliding_items(
-        self, records: List[Record]
+        self,
+        records: List[Record],
+        collidable_pairs: Collection[CollidablePair],
     ) -> Iterable[Tuple[Tuple[ItemId, ItemId], IntersectionStrict]]:
         collided_ids = set()
 
@@ -245,7 +277,7 @@ class KDTree:
                 idx1, idx2 = idx2, idx1
                 class1, class2 = class2, class1
 
-            if (class1, class2) not in self._collidable_pairs:
+            if (class1, class2) not in collidable_pairs:
                 continue
 
             if not r1.bounding_box.is_intersected(r2.bounding_box):
@@ -258,3 +290,6 @@ class KDTree:
             collided_ids.add((idx1, idx2))
 
             yield (idx1, idx2), intersection
+
+    def traverse_nodes(self) -> Iterable[TreeNode]:
+        yield from self.root.traverse_subnodes()

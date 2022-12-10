@@ -55,6 +55,14 @@ class Ball(Item):
         return self.rect.center, fake_rect.center
 
     def get_ghost_trace(self, dt: float) -> Iterable[Shape]:
+        if dt == 0:
+            return [
+                Circle(
+                    center=self.rect.center,
+                    radius=self.radius,
+                ),
+            ]
+
         vel = self.velocity
         normal_vel = Vec2(x=vel.y, y=-vel.x)
         scaled_normal_vel = normal_vel * self.radius
@@ -121,6 +129,9 @@ class Platform(Item):
         self.rest_freeze_time = self.default_freeze_time
 
     def get_ghost_trace(self, dt: float) -> Iterable[Shape]:
+        if dt == 0:
+            return super().get_ghost_trace(dt)
+
         start_rect = self.rect.copy()
 
         dt = max(0, dt - self.rest_freeze_time)

@@ -16,7 +16,12 @@ from agym.gui import TextLabel
 from agym.gui.render_kits import PygameRenderKitEngine, RenderKit
 from agym.main_window import MainWindow
 from agym.protocols import IGameEnvironment, IModel
-from agym.renderers import EnvRenderer, GameMonitorRenderer, KDTreeRenderer
+from agym.renderers import (
+    EmptyRenderer,
+    EnvRenderer,
+    GameMonitorRenderer,
+    KDTreeRenderer,
+)
 from agym.settings import Settings
 from agym.updaters import (
     ComposeUpdater,
@@ -94,8 +99,9 @@ class Updaters:
 
 class EnvContainer:
     def __init__(self, config: Settings):
-        # self.level_builder = PerformanceLevelBuilder(
-        self.level_builder = DefaultLevelBuilder(
+
+        self.level_builder = PerformanceLevelBuilder(
+            # self.level_builder = DefaultLevelBuilder(
             env_width=config.env_width,
             env_height=config.env_height,
             ball_speed=config.ball_speed,
@@ -152,9 +158,23 @@ class Renderers:
         config: Settings,
         labels: Labels,
     ):
-        self.env_renderer = EnvRenderer(
+
+        self.empty = EmptyRenderer(
+            render_kit=render_kits.kit,
+        )
+
+        self.kdtree = KDTreeRenderer(
             screen_size=Size(width=config.env_width, height=config.env_height),
             env=env_container.env,
+            render_kit=render_kits.kit,
+        )
+
+        self.env = EnvRenderer(
+            screen_size=Size(width=config.env_width, height=config.env_height),
+            env=env_container.env,
+            kdtree_renderer=self.kdtree
+            if config.rendering_kdtree
+            else self.empty,
             render_kit=render_kits.kit,
             image_dir=config.image_dir,
         )
@@ -166,7 +186,7 @@ class Renderers:
                 width=config.window_screen_width,
                 height=config.window_screen_height,
             ),
-            env_renderer=self.env_renderer,
+            env_renderer=self.env,
             render_kit=render_kits.kit,
         )
 

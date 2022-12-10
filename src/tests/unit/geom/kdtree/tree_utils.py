@@ -1,7 +1,11 @@
 from typing import Iterable, Optional
 
 from agym.games.breakout.geom import Rectangle
-from agym.games.breakout.geom.kdtree.node import TreeNode
+from agym.games.breakout.geom.kdtree.node import (
+    LeafTreeNode,
+    SplitTreeNode,
+    TreeNode,
+)
 from agym.games.breakout.geom.kdtree.record import Record
 
 
@@ -32,21 +36,24 @@ def get_depth(node: Optional[TreeNode]) -> int:
     if node is None:
         return 0
 
-    if node.is_leaf:
-        return 1
+    if isinstance(node, SplitTreeNode):
+        l = get_depth(node.left)
+        m = get_depth(node.middle)
+        r = get_depth(node.right)
 
-    l = get_depth(node.left)
-    m = get_depth(node.middle)
-    r = get_depth(node.right)
+        return max(l, m, r) + 1
 
-    return max(l, m, r) + 1
+    return 1
 
 
-def traveres(node: Optional[TreeNode]) -> Iterable[TreeNode]:
+def traveres(node: Optional[TreeNode]) -> Iterable[LeafTreeNode]:
     if node is None:
         return
 
-    yield from traveres(node.left)
-    yield node
-    yield from traveres(node.middle)
-    yield from traveres(node.right)
+    if isinstance(node, SplitTreeNode):
+        yield from traveres(node.left)
+        yield from traveres(node.middle)
+        yield from traveres(node.right)
+
+    elif isinstance(node, LeafTreeNode):
+        yield node
