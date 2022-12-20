@@ -31,7 +31,7 @@ class Settings(BaseSettings):
 
     tps: int = 20
 
-    log_framerate: float = 1.0
+    log_framerate: float = 0.5
 
     graphics_framerate: float = 1000
-    framerate_history_size: int = 3000
+    framerate_history_size: int = 400
