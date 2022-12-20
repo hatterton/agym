@@ -9,10 +9,10 @@ from agym.updaters import (
 
 
 @pytest.fixture
-def fps_updater(fps_label, fps_limiter):
+def fps_updater(fps_label, clock):
     return FPSUpdater(
         label=fps_label,
-        fps_limiter=fps_limiter,
+        clock=clock,
     )
 
 
@@ -35,8 +35,9 @@ def compose_updater(fps_updater, profile_updater):
 
 
 @pytest.fixture
-def log_updater(config, compose_updater):
+def log_updater(config, clock, compose_updater):
     return LimitedUpdater(
         updater=compose_updater,
-        ups=config.log_fps,
+        clock=clock,
+        ups=config.log_framerate,
     )

@@ -1,4 +1,5 @@
 from agym.audio_handler import AudioHandler
+from agym.clocks import FramerateClockDecorator, PygameClock
 from agym.dtos import Color, Shift, Size
 from agym.game_monitor import GameMonitor
 from agym.games import BreakoutEnv, ManualBreakoutModel
@@ -29,7 +30,7 @@ from agym.updaters import (
     LimitedUpdater,
     ProfileUpdater,
 )
-from agym.utils import FPSLimiter, TimeProfiler, register_profiler
+from agym.utils import TimeProfiler, register_profiler
 
 
 class RenderKits:
@@ -39,12 +40,24 @@ class RenderKits:
         self.kit = RenderKit(engine=self.pygame_render_kit_engine)
 
 
+class Clocks:
+    def __init__(self, config: Settings):
+        self.pygame = PygameClock(
+            target_framerate=config.graphics_framerate,
+        )
+
+        clock = self.pygame
+
+        self.framerate_decorated = FramerateClockDecorator(
+            clock=clock,
+            history_size=config.framerate_history_size,
+        )
+
+        self.main = self.framerate_decorated
+
+
 class TimeContainer:
     def __init__(self, config: Settings):
-        self.fps_limiter = FPSLimiter(
-            max_fps=config.max_fps,
-            history_size=1000,
-        )
         self.time_profiler = TimeProfiler(
             window_size=10000,
             log_self=False,
@@ -72,11 +85,15 @@ class Labels:
 
 class Updaters:
     def __init__(
-        self, time_container: TimeContainer, labels: Labels, config: Settings
+        self,
+        time_container: TimeContainer,
+        clocks: Clocks,
+        labels: Labels,
+        config: Settings,
     ):
         self.fps_updater = FPSUpdater(
             label=labels.fps_label,
-            fps_limiter=time_container.fps_limiter,
+            clock=clocks.main,
         )
 
         self.profile_updater = ProfileUpdater(
@@ -93,15 +110,16 @@ class Updaters:
 
         self.log_updater = LimitedUpdater(
             updater=self.compose_updater,
-            ups=config.log_fps,
+            clock=clocks.main,
+            ups=config.log_framerate,
         )
 
 
 class EnvContainer:
     def __init__(self, config: Settings):
 
-        self.level_builder = PerformanceLevelBuilder(
-            # self.level_builder = DefaultLevelBuilder(
+        # self.level_builder = PerformanceLevelBuilder(
+        self.level_builder = DefaultLevelBuilder(
             env_width=config.env_width,
             env_height=config.env_height,
             ball_speed=config.ball_speed,
@@ -129,7 +147,7 @@ class EnvContainer:
 class GameMonitorContainer:
     def __init__(
         self,
-        time_container: TimeContainer,
+        clocks: Clocks,
         labels: Labels,
         env_container: EnvContainer,
         updaters: Updaters,
@@ -138,7 +156,7 @@ class GameMonitorContainer:
         self.game_monitor = GameMonitor(
             width=config.window_screen_width,
             height=config.window_screen_width,
-            fps_limiter=time_container.fps_limiter,
+            clock=clocks.main,
             fps_label=labels.fps_label,
             profile_label=labels.profile_label,
             log_updater=updaters.log_updater,
@@ -215,9 +233,11 @@ class Application:
         self.render_kits = RenderKits()
 
         self.time_container = TimeContainer(config=config)
+        self.clocks = Clocks(config=config)
         self.labels = Labels(render_kits=self.render_kits, config=config)
         self.updaters = Updaters(
             time_container=self.time_container,
+            clocks=self.clocks,
             labels=self.labels,
             config=config,
         )
@@ -225,7 +245,7 @@ class Application:
         self.env_container = EnvContainer(config=config)
 
         self.game_monitor_container = GameMonitorContainer(
-            time_container=self.time_container,
+            clocks=self.clocks,
             labels=self.labels,
             env_container=self.env_container,
             updaters=self.updaters,

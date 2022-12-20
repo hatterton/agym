@@ -1,26 +1,23 @@
-from pygame.time import get_ticks
-
-from agym.constants import TIME_RESOLUTION
 from agym.gui import TextLabel
-from agym.protocols import IUpdater
-from agym.utils import TimeProfiler, format_stats
+from agym.protocols import IClock, IUpdater
 
 
 class LimitedUpdater:
-    def __init__(self, updater: IUpdater, ups: float) -> None:
+    def __init__(self, updater: IUpdater, clock: IClock, ups: float) -> None:
         self.updater = updater
         self.max_ups = ups
+        self._clock = clock
 
-        self.last_update = get_ticks()
+        self._last_update_time = self._clock.get_global_time()
 
     def update(self) -> None:
-        t = get_ticks()
+        current_time = self._clock.get_global_time()
 
-        if self._need_update(t):
+        if self._need_update(current_time):
             self.updater.update()
-            self.last_update = t
+            self._last_update_time = current_time
 
-    def _need_update(self, t: int) -> bool:
-        duration = t - self.last_update
+    def _need_update(self, t: float) -> bool:
+        duration = t - self._last_update_time
 
-        return self.max_ups * duration > TIME_RESOLUTION
+        return self.max_ups * duration > 1.0
