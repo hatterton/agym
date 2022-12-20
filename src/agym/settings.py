@@ -26,12 +26,12 @@ class Settings(BaseSettings):
     platform_speed: float = 10
     ball_speed: float = 15
     # ball_speed: float = 2
-    max_lives: int = 1
-    default_reward: int = 10
-    catch_reward: int = 250
 
     rendering_kdtree: bool = False
 
     tps: int = 20
-    max_fps: int = 1000
-    log_fps: float = 2
+
+    log_framerate: float = 1.0
+
+    graphics_framerate: float = 1000
+    framerate_history_size: int = 3000

@@ -8,7 +8,7 @@ from pygame.mixer import Sound
 
 from agym.constants import TIME_RESOLUTION
 from agym.gui import TextLabel
-from agym.protocols import IEventHandler, IGameEnvironment, IModel
+from agym.protocols import IClock, IEventHandler, IGameEnvironment, IModel
 from agym.utils import profile
 
 
@@ -19,7 +19,7 @@ class GameMonitor:
         height: int,
         env: IGameEnvironment,
         model: IModel,
-        fps_limiter,
+        clock: IClock,
         fps_label: TextLabel,
         profile_label: TextLabel,
         log_updater,
@@ -28,7 +28,7 @@ class GameMonitor:
     ):
         self.model = model
         self.env = env
-        self.fps_limiter = fps_limiter
+        self._clock = clock
 
         self.fps_label = fps_label
         self.profile_label = profile_label
@@ -58,7 +58,7 @@ class GameMonitor:
     @profile("game_update")
     def update(self) -> None:
         action = self.model.get_action(None)
-        dt = self.fps_limiter.tick() * self.tps / TIME_RESOLUTION
+        dt = self._clock.do_frame_tick() * self.tps
         _, is_done = self.env.step(action, dt)
 
         events = self.env.pop_events()

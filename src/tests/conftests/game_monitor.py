@@ -6,7 +6,7 @@ from agym.game_monitor import GameMonitor
 @pytest.fixture
 def game_monitor_logic(
     config,
-    fps_limiter,
+    clock,
     fps_label,
     profile_label,
     log_updater,
@@ -17,7 +17,7 @@ def game_monitor_logic(
     return GameMonitor(
         width=config.window_screen_width,
         height=config.window_screen_width,
-        fps_limiter=fps_limiter,
+        clock=clock,
         fps_label=fps_label,
         profile_label=profile_label,
         log_updater=log_updater,
