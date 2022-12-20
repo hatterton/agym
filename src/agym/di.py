@@ -118,8 +118,8 @@ class Updaters:
 class EnvContainer:
     def __init__(self, config: Settings):
 
-        # self.level_builder = PerformanceLevelBuilder(
-        self.level_builder = DefaultLevelBuilder(
+        self.level_builder = PerformanceLevelBuilder(
+            # self.level_builder = DefaultLevelBuilder(
             env_width=config.env_width,
             env_height=config.env_height,
             ball_speed=config.ball_speed,
