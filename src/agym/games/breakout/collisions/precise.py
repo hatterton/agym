@@ -22,7 +22,8 @@ def calculate_ball_ball_colls(
 
     shift = a * b.norm2() + b * t
 
-    if shift.norm2() < ((2 * radius - EPS) * b.norm2()) ** 2:
+    diff = (2 * radius - EPS) * b.norm2()
+    if shift.norm2() < diff * diff:
         point = (f1 + f2) / 2
 
         return CollisionBallBall(

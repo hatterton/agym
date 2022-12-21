@@ -33,9 +33,6 @@ class CollisionDetector:
     def get_time_before_collision(
         self, state: GameState, max_dt: float
     ) -> float:
-        if any(self._generate_step_collisions(state, EPS)):
-            return 0.0
-
         return self._get_time_before_collision(state, max_dt)
 
     def _get_time_before_collision(
@@ -44,6 +41,9 @@ class CollisionDetector:
         colls = self._engine.generate_step_collisions(state, max_dt)
         if not any(colls):
             return max_dt
+
+        if any(self._generate_step_collisions(state, EPS)):
+            return 0.0
 
         state = self._build_collided_state(state, colls)
 

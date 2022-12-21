@@ -10,10 +10,10 @@ class Vec2:
     y: T
 
     def norm(self) -> T:
-        return (self.x**2 + self.y**2) ** 0.5
+        return (self.x * self.x + self.y * self.y) ** 0.5
 
     def norm2(self) -> T:
-        return self.x**2 + self.y**2
+        return self.x * self.x + self.y * self.y
 
     def normal(self) -> "Vec2":
         return Vec2(x=-self.y, y=self.x)
@@ -51,10 +51,12 @@ class Vec2:
             y=self.y * other,
         )
 
+    def __rmul__(self, other) -> "Vec2":
+        return self * other
+
     def __truediv__(self, other) -> "Vec2":
         return self * (1 / other)
 
-    # TODO for backward compatibility
     def __getitem__(self, idx: int) -> T:
         if idx == 0:
             return self.x
@@ -63,7 +65,6 @@ class Vec2:
         else:
             raise ValueError(f"Out of index: {idx}")
 
-    # TODO for backward compatibility
     def __setitem__(self, idx: int, value: T) -> None:
         if idx == 0:
             self.x = value

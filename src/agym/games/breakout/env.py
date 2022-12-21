@@ -157,7 +157,6 @@ class BreakoutEnv:
     def perform_colls(self, colls: Iterable[Collision]) -> int:
         return self._perform_colls(colls)
 
-    @profile("perf_colls", "env_step")
     def _perform_colls(self, colls: Iterable[Collision]) -> int:
         reward = 0
 

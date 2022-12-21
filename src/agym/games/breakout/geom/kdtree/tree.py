@@ -233,12 +233,6 @@ class KDTree:
         collidable_pairs: Collection[CollidablePair],
     ) -> Iterable[IntersactionInfo]:
 
-        # yield from self._naive_generate_colliding_items(
-        #     self._records,
-        #     collidable_pairs=collidable_pairs,
-        # )
-        # return
-
         yield from self._generate_colliding_items(
             node=self.root,
             collidable_pairs=collidable_pairs,
@@ -252,44 +246,6 @@ class KDTree:
         yield from node.generate_intersections(
             collidable_pairs=collidable_pairs,
         )
-
-    def _naive_generate_colliding_items(
-        self,
-        records: List[Record],
-        collidable_pairs: Collection[CollidablePair],
-    ) -> Iterable[Tuple[Tuple[ItemId, ItemId], IntersectionStrict]]:
-        collided_ids = set()
-
-        for r1, r2 in combinations(records, 2):
-            idx1 = r1.item_id
-            idx2 = r2.item_id
-
-            if idx1 == idx2:
-                continue
-
-            if (idx1, idx2) in collided_ids or (idx2, idx1) in collided_ids:
-                continue
-
-            class1 = r1.class_id
-            class2 = r2.class_id
-
-            if class1 > class2:
-                idx1, idx2 = idx2, idx1
-                class1, class2 = class2, class1
-
-            if (class1, class2) not in collidable_pairs:
-                continue
-
-            if not r1.bounding_box.is_intersected(r2.bounding_box):
-                continue
-
-            intersection = get_intersection(r1.shape, r2.shape)
-            if intersection is None:
-                continue
-
-            collided_ids.add((idx1, idx2))
-
-            yield (idx1, idx2), intersection
 
     def traverse_nodes(self) -> Iterable[TreeNode]:
         yield from self.root.traverse_subnodes()

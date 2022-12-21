@@ -1,3 +1,6 @@
 # python
 **/__pycache__
 .mypy_cache/
+
+src/agym.prof
+src/agym.svg

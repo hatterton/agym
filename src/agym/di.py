@@ -1,11 +1,20 @@
+from typing import Mapping
+
 from agym.audio_handler import AudioHandler
 from agym.clocks import FramerateClockDecorator, PygameClock
-from agym.dtos import Color, Shift, Size
+from agym.dtos import (
+    BreakoutCollisionEngine,
+    BreakoutLevelType,
+    Color,
+    Shift,
+    Size,
+)
 from agym.game_monitor import GameMonitor
 from agym.games import BreakoutEnv, ManualBreakoutModel
 from agym.games.breakout import (
     BreakoutEnv,
     CollisionDetector,
+    ICollisionDetectorEngine,
     KDTreeCollisionDetectionEngine,
     NaiveCollisionDetectionEngine,
 )
@@ -118,16 +127,34 @@ class Updaters:
 class EnvContainer:
     def __init__(self, config: Settings):
 
-        self.level_builder = PerformanceLevelBuilder(
-            # self.level_builder = DefaultLevelBuilder(
-            env_width=config.env_width,
-            env_height=config.env_height,
-            ball_speed=config.ball_speed,
-            platform_speed=config.platform_speed,
-        )
+        level_type2level_builder = {
+            BreakoutLevelType.PERFORMANCE: PerformanceLevelBuilder(
+                env_width=config.env_width,
+                env_height=config.env_height,
+                num_balls=config.breakout.num_balls,
+                ball_speed=config.breakout.ball_speed,
+            ),
+            BreakoutLevelType.DEFAULT: DefaultLevelBuilder(
+                env_width=config.env_width,
+                env_height=config.env_height,
+                ball_speed=config.breakout.ball_speed,
+                platform_speed=config.breakout.platform_speed,
+            ),
+        }
 
-        # self.collision_detector_engine = NaiveCollisionDetectionEngine()
-        self.collision_detector_engine = KDTreeCollisionDetectionEngine()
+        self.level_builder = level_type2level_builder[
+            config.breakout.level_type
+        ]
+
+        engine_type2engine: Mapping[
+            BreakoutCollisionEngine, ICollisionDetectorEngine
+        ] = {
+            BreakoutCollisionEngine.NAIVE: NaiveCollisionDetectionEngine(),
+            BreakoutCollisionEngine.KDTREE: KDTreeCollisionDetectionEngine(),
+        }
+        self.collision_detector_engine = engine_type2engine[
+            config.breakout.collision_engine
+        ]
 
         self.collision_detector = CollisionDetector(
             engine=self.collision_detector_engine,
@@ -194,7 +221,7 @@ class Renderers:
             if config.rendering_kdtree
             else self.empty,
             render_kit=render_kits.kit,
-            image_dir=config.image_dir,
+            image_dir=config.breakout.image_dir,
         )
 
         self.game_monitor = GameMonitorRenderer(
