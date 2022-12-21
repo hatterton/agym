@@ -73,8 +73,10 @@ def get_intersection_triangle_triangle(
 
 def get_intersection_circle_circle(a: Circle, b: Circle) -> Intersection:
     s = a.center - b.center
-    sd = s.x**2 + s.y**2
-    sr = (a.radius + b.radius) ** 2
+    sd = s.x * s.x + s.y * s.y
+
+    c_radius = a.radius + b.radius
+    sr = c_radius * c_radius
 
     if sd < sr:
         return (a.center + b.center) / 2
@@ -163,7 +165,8 @@ def get_intersection_circle_segment(c: Circle, s: Segment) -> Intersection:
 
     t = max(0, min(a.scalar(b), an2))
 
-    if (r * an2) ** 2 <= (a * t - b * an2).norm2():
+    r_an2 = r * an2
+    if r_an2 * r_an2 <= (a * t - b * an2).norm2():
         return None
 
     if an2 == 0.0:

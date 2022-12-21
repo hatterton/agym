@@ -229,6 +229,26 @@ class ProfilingManager:
 profiling_manager = ProfilingManager()
 
 
+@contextmanager
+def profiling(
+    self,
+    title: str,
+    start_suffix: str = "_start",
+    finish_suffix: str = "_finish",
+) -> Generator[None, None, None]:
+
+    start_event = title + start_suffix
+    finish_event = title + finish_suffix
+
+    try:
+        profiling_manager.add_event(start_event)
+
+        yield
+
+    finally:
+        profiling_manager.add_event(finish_event)
+
+
 def profile(
     title: Optional[str] = None,
     parent_title: Optional[str] = None,

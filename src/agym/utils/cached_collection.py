@@ -1,4 +1,6 @@
-from typing import Collection, Iterable, Iterator, List, TypeVar  # Generic,
+from typing import Collection, Iterable, Iterator, List, TypeVar
+
+from .timemanager import profile
 
 T = TypeVar("T")
 

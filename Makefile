@@ -9,6 +9,11 @@ run:
 	cd src && poetry run python -m agym
 
 
+.PHONY: run-profiling
+run-profiling:
+	cd src && poetry run py-spy record -o agym.svg -- python -m agym
+
+
 .PHONY: lint
 lint:
 	make mypy

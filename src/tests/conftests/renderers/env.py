@@ -11,5 +11,5 @@ def env_renderer(env, render_kit, config, empty_renderer):
         env=env,
         kdtree_renderer=empty_renderer,
         render_kit=render_kit,
-        image_dir=config.image_dir,
+        image_dir=config.breakout.image_dir,
     )

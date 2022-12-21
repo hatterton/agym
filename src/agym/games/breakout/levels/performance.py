@@ -4,44 +4,48 @@ from typing import List, Optional
 
 from agym.games.breakout.dtos import Ball, Block, Platform, Wall
 from agym.games.breakout.geom import Rectangle, Vec2
+from agym.games.breakout.protocols import ILevelBuilder
 from agym.games.breakout.state import GameState
 
 from .item_manager import ItemManager
 
 
-class PerformanceLevelBuilder:
+class PerformanceLevelBuilder(ILevelBuilder):
     def __init__(
         self,
         env_width: int,
         env_height: int,
-        ball_speed: float = 20,
-        platform_speed: float = 15,
+        num_balls: int = 10,
+        ball_radius: float = 10.0,
+        ball_speed: float = 20.0,
     ) -> None:
-        self.item_manager = ItemManager()
+        self._item_manager = ItemManager()
 
-        self.env_width = env_width
-        self.env_height = env_height
-        self.ball_speed = ball_speed
-        self.platform_speed = platform_speed
+        self._env_width = env_width
+        self._env_height = env_height
+
+        self._num_balls = num_balls
+        self._ball_radius = ball_radius
+        self._ball_speed = ball_speed
 
     def build(self) -> GameState:
         walls = self._make_walls()
 
         balls = self._make_balls(
-            n_balls=10,
-            radius=10,
-            ball_speed=self.ball_speed,
+            n_balls=self._num_balls,
+            radius=self._ball_radius,
+            ball_speed=self._ball_speed,
             shift=100,
         )
 
-        return self.item_manager.extract_state()
+        return self._item_manager.extract_state()
 
     def _make_walls(self) -> List[Wall]:
         shift = 5.0
         left = shift
         top = shift
-        right = self.env_width - shift
-        bottom = self.env_width - shift
+        right = self._env_width - shift
+        bottom = self._env_width - shift
 
         width = right - left
         height = bottom - top
@@ -79,20 +83,23 @@ class PerformanceLevelBuilder:
         bottom_wall.bottom = bottom
 
         return [
-            self.item_manager.create_wall(left_wall),
-            self.item_manager.create_wall(top_wall),
-            self.item_manager.create_wall(right_wall),
-            self.item_manager.create_wall(bottom_wall),
+            self._item_manager.create_wall(left_wall),
+            self._item_manager.create_wall(top_wall),
+            self._item_manager.create_wall(right_wall),
+            self._item_manager.create_wall(bottom_wall),
         ]
 
     def _make_balls(
         self,
         n_balls: int,
-        radius: int,
+        radius: float,
         ball_speed: float,
         shift: int = 100,
     ):
-        balls = []
+        n = 1
+        while n**2 < n_balls:
+            n += 1
+
         velocities = [
             [i / (i**2 + j**2) ** 0.5, j / (i**2 + j**2) ** 0.5]
             for i in range(-10, 10)
@@ -100,18 +107,20 @@ class PerformanceLevelBuilder:
             if i != 0 or j != 0
         ]
 
-        side_shift = (self.env_width - shift * 2 - n_balls * radius * 2) // max(
-            1, n_balls - 1
-        )
-
+        balls = []
         for i in range(n_balls):
-            ball = self.item_manager.create_ball(
+            row = i // n
+            col = i % n
+
+            ball = self._item_manager.create_ball(
                 radius=radius,
                 speed=ball_speed,
                 thrown=True,
             )
-            ball.rect.centery = self.env_height / 2
-            ball.rect.left = (side_shift + radius * 2) * i + shift
+
+            ball.rect.centerx = (col + 1) * self._env_width / (n + 1)
+            ball.rect.centery = (row + 1) * self._env_height / (n + 1)
+
             velocity = random.choice(velocities).copy()
             ball.velocity = Vec2.from_list(velocity)
 
@@ -131,13 +140,13 @@ class PerformanceLevelBuilder:
     ) -> List[Block]:
         n_cols = (
             math.floor(
-                (self.env_width - block_width)
+                (self._env_width - block_width)
                 / (block_width + horisontal_shift)
             )
             + 1
         )
         side_shift = (
-            self.env_width
+            self._env_width
             - n_cols * block_width
             - (n_cols - 1) * horisontal_shift
         ) // 2
@@ -150,7 +159,7 @@ class PerformanceLevelBuilder:
 
                 top = top_shift + i * block_height + i * vertical_shift
                 left = side_shift + j * block_width + j * horisontal_shift
-                block = self.item_manager.create_block(
+                block = self._item_manager.create_block(
                     top=top,
                     left=left,
                     health=health,

@@ -15,12 +15,19 @@ pytest = "^6.2.5"
 mypy = "^0.991"
 isort = "^5.10.1"
 black = "^22.10.0"
+py-spy = "^0.3.14"
 
 [tool.black]
 line-length = 80
 
 [tool.mypy]
 check_untyped_defs = true
+warn_unused_configs = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+
+show_column_numbers = true
+show_error_context = true
 
 [tool.isort]
 line_length = 80

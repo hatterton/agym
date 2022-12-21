@@ -29,8 +29,8 @@ def level_builder(config):
     return DefaultLevelBuilder(
         env_width=config.env_width,
         env_height=config.env_height,
-        ball_speed=config.ball_speed,
-        platform_speed=config.platform_speed,
+        ball_speed=config.breakout.ball_speed,
+        platform_speed=config.breakout.platform_speed,
     )
 
 

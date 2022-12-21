@@ -3,12 +3,13 @@ from typing import List, Optional
 
 from agym.games.breakout.dtos import Ball, Block, Platform, Wall
 from agym.games.breakout.geom import Rectangle
+from agym.games.breakout.protocols import ILevelBuilder
 from agym.games.breakout.state import GameState
 
 from .item_manager import ItemManager
 
 
-class DefaultLevelBuilder:
+class DefaultLevelBuilder(ILevelBuilder):
     def __init__(
         self,
         env_width: int,

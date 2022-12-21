@@ -164,8 +164,8 @@ class KDTreeBuilder:
         return KDTree(
             records=records,
             alpha=0.5,
-            max_depth=5,
-            num_records_stop=4,
+            max_depth=4,
+            num_records_stop=8,
         )
 
     def _convert_items_to_records(

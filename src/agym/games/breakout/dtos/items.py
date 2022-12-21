@@ -4,6 +4,7 @@ from typing import Iterable, Optional
 
 import pygame as pg
 
+from agym.games.breakout.constants import EPS
 from agym.games.breakout.geom import (
     Circle,
     Point,
@@ -45,8 +46,53 @@ class Ball(Item):
     radius: float
 
     thrown: bool
-    speed: float
-    velocity: Vec2 = field(default_factory=lambda: Vec2(x=0, y=0))
+    _velocity: Vec2
+
+    def __init__(
+        self,
+        radius: float,
+        thrown: bool,
+        speed: float,
+        *args,
+        velocity: Optional[Vec2] = None,
+        **kwargs
+    ) -> None:
+        super().__init__(*args, **kwargs)
+
+        if velocity is None:
+            velocity = Vec2(x=1.0, y=0)
+
+        self.radius = radius
+        self.thrown = thrown
+
+        self._velocity: Vec2 = velocity * speed
+
+    @property
+    def velocity(self) -> Vec2:
+        return self.direction
+
+    @velocity.setter
+    def velocity(self, value: Vec2) -> None:
+        self.direction = value
+
+    @property
+    def direction(self) -> Vec2:
+        if self.speed < EPS:
+            return Vec2(x=1, y=0)
+
+        return self._velocity / self.speed
+
+    @direction.setter
+    def direction(self, value: Vec2) -> None:
+        self._velocity = self.speed * value
+
+    @property
+    def speed(self) -> float:
+        return self._velocity.norm()
+
+    @speed.setter
+    def speed(self, value: float) -> None:
+        self._velocity = self.direction * value
 
     def fake_update(self, dt):
         fake_rect = self.rect.copy()

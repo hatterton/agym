@@ -6,10 +6,8 @@ def get_score(l: int, m: int, r: int, alpha: float = 0.5) -> float:
 
 def get_gini_score(l: int, m: int, r: int) -> float:
     n = l + m + r
-    # if n == 0:
-    #     return 1.
 
-    score = 4 * l * r / n**2
+    score = 4 * l * r / (n * n)
 
     return score
 
