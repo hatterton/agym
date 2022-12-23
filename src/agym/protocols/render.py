@@ -26,6 +26,9 @@ class IScreen(Protocol):
     def blit(self, screen: "IScreen", shift: Shift) -> None:
         pass
 
+    def resize(self, size: Size) -> "IScreen":
+        pass
+
 
 class IFont(Protocol):
     def render(

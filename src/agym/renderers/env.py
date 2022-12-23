@@ -88,7 +88,8 @@ class EnvRenderer(IRenderer):
         rect = self._convert_rectangle_to_rect(ball.rect)
         image = self._item2image[ItemType.BALL]
 
-        screen.blit(image, rect.shift)
+        ball_screen = image.resize(rect.size)
+        screen.blit(ball_screen, rect.shift)
 
     def _render_block_on(self, screen: IScreen, block: Block) -> None:
         rect = self._convert_rectangle_to_rect(block.rect)
@@ -131,13 +132,15 @@ class EnvRenderer(IRenderer):
 
         block_screen.blit(health_screen, health_rect.shift)
 
+        block_screen = block_screen.resize(rect.size)
         screen.blit(block_screen, rect.shift)
 
     def _render_platform_on(self, screen: IScreen, platform: Platform) -> None:
         rect = self._convert_rectangle_to_rect(platform.rect)
         image = self._item2image[ItemType.PLATFORM]
 
-        screen.blit(image, rect.shift)
+        platform_screen = image.resize(rect.size)
+        screen.blit(platform_screen, rect.shift)
 
     def _render_wall_on(self, screen: IScreen, wall: Wall) -> None:
         rect = self._convert_rectangle_to_rect(wall.rect)

@@ -2,7 +2,8 @@ from typing import Tuple
 
 from pydantic import BaseSettings
 
-from agym.dtos import BreakoutCollisionEngine, BreakoutLevelType
+from agym.dtos import BreakoutCollisionEngine, BreakoutLevelType, Size
+from agym.games.breakout.geom import Vec2
 
 Color = Tuple[int, int, int]
 
@@ -10,7 +11,7 @@ Color = Tuple[int, int, int]
 class BreakoutSettings(BaseSettings):
     image_dir: str = "agym/static/images/breakout"
 
-    # level_type: BreakoutLevel = BreakoutLevel.DEFAULT
+    # level_type: BreakoutLevelType = BreakoutLevelType.DEFAULT
     level_type: BreakoutLevelType = BreakoutLevelType.PERFORMANCE
 
     # collision_engine: BreakoutCollisionEngine = BreakoutCollisionEngine.NAIVE
@@ -18,11 +19,17 @@ class BreakoutSettings(BaseSettings):
 
     game_speed: float = 1
 
+    block_wall_num_rows: int = 3
+    block_size: Vec2 = Vec2(x=90, y=30)
+    block_wall_top_shift: float = 60
+    block_wall_between_shift: float = 30
+
     platform_speed: float = 10
+    platform_size: Vec2 = Vec2(x=200, y=25)
 
     num_balls: int = 10
     ball_speed: float = 15.0
-    ball_radius: float = 10.0
+    ball_radius: float = 15.0
 
 
 class Settings(BaseSettings):

@@ -45,3 +45,8 @@ class PygameScreen(IScreen):
             raise NotImplementedError
 
         self._screen.blit(screen._screen, shift.to_tuple())
+
+    def resize(self, size: Size) -> "PygameScreen":
+        pg_screen = pg.transform.scale(self._screen, size.to_tuple())
+
+        return PygameScreen(pg_screen)

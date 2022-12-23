@@ -212,8 +212,9 @@ class BreakoutEnv:
     def perform_platform_ball_coll(
         self, platform: Platform, ball: Ball, point: Point
     ) -> None:
-        velocity = point - platform.rect.center
-        velocity.x /= 2
+        p_center = platform.rect.center
+        p_center.y += platform.rect.width / 2
+        velocity = point - p_center
         velocity = velocity / velocity.norm()
 
         if ball.rect.centery > platform.rect.centery + 2:

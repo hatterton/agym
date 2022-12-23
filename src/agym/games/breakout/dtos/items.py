@@ -50,14 +50,20 @@ class Ball(Item):
 
     def __init__(
         self,
+        id: ItemId,
         radius: float,
         thrown: bool,
         speed: float,
-        *args,
         velocity: Optional[Vec2] = None,
-        **kwargs
     ) -> None:
-        super().__init__(*args, **kwargs)
+        rect = Rectangle(
+            left=0,
+            top=0,
+            width=2 * radius,
+            height=2 * radius,
+        )
+
+        super().__init__(id=id, rect=rect)
 
         if velocity is None:
             velocity = Vec2(x=1.0, y=0)

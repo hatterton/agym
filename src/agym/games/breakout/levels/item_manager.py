@@ -37,14 +37,21 @@ class ItemManager:
 
         return wall
 
-    def create_block(self, top: int, left: int, health: int = 1) -> Block:
+    def create_block(
+        self,
+        top: float,
+        left: float,
+        width: float = 60,
+        height: float = 20,
+        health: int = 1,
+    ) -> Block:
         block = Block(
             id=self._tick(),
             rect=Rectangle(
                 left=left,
                 top=top,
-                width=60,
-                height=20,
+                width=width,
+                height=height,
             ),
             health=health,
         )
@@ -52,12 +59,14 @@ class ItemManager:
 
         return block
 
-    def create_platform(self, speed: float) -> Platform:
+    def create_platform(
+        self, speed: float, width: float = 120, height: float = 20
+    ) -> Platform:
         rect = Rectangle(
             left=0,
             top=0,
-            width=120,
-            height=20,
+            width=width,
+            height=height,
         )
 
         platform = Platform(
@@ -77,16 +86,8 @@ class ItemManager:
         top: Optional[float] = None,
         left: Optional[float] = None,
     ) -> Ball:
-        rect = Rectangle(
-            left=0,
-            top=0,
-            width=20,
-            height=20,
-        )
-
         ball = Ball(
             id=self._tick(),
-            rect=rect,
             radius=radius,
             thrown=thrown,
             speed=speed,
