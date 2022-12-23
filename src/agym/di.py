@@ -133,12 +133,19 @@ class EnvContainer:
                 env_height=config.env_height,
                 num_balls=config.breakout.num_balls,
                 ball_speed=config.breakout.ball_speed,
+                ball_radius=config.breakout.ball_radius,
             ),
             BreakoutLevelType.DEFAULT: DefaultLevelBuilder(
                 env_width=config.env_width,
                 env_height=config.env_height,
                 ball_speed=config.breakout.ball_speed,
+                ball_radius=config.breakout.ball_radius,
                 platform_speed=config.breakout.platform_speed,
+                platform_size=config.breakout.platform_size,
+                block_wall_num_rows=config.breakout.block_wall_num_rows,
+                block_size=config.breakout.block_size,
+                block_wall_top_shift=config.breakout.block_wall_top_shift,
+                block_wall_between_shift=config.breakout.block_wall_between_shift,
             ),
         }
 

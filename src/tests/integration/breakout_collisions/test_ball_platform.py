@@ -52,13 +52,8 @@ class TestCollisionsBallPlatform:
         expected_collisions = [
             CollisionBallPlatform,
             CollisionBallWall,
-            CollisionBallPlatform,
-            CollisionBallWall,
-            CollisionBallPlatform,
-            CollisionBallWall,
         ]
 
-        assert len(events) == len(expected_collisions)
         for expected_coll_type, event in zip(expected_collisions, events):
             assert isinstance(event, CollisionEvent)
             assert isinstance(event.collision, expected_coll_type)

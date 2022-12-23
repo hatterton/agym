@@ -49,12 +49,12 @@ def ball_platform_side_collision_level(
         radius=10,
         speed=2.0,
     )
-    ball.rect.center = Point(x=20, y=327)
+    ball.rect.center = Point(x=11, y=327)
     ball.thrown = True
     ball.velocity = Vec2(x=1, y=0)
 
     platform = item_manager.create_platform(speed=1.0)
-    platform.rect.center = Point(x=140, y=330)
+    platform.rect.center = Point(x=90, y=330)
     platform.velocity = Vec2(x=-1, y=0)
 
     item_manager.create_wall(
@@ -69,7 +69,7 @@ def ball_platform_side_collision_level(
     return (
         item_manager.extract_state(),
         BreakoutAction.LEFT,
-        80,
+        40,
     )
 
 

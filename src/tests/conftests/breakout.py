@@ -3,7 +3,7 @@ import pytest
 from agym.games.breakout import (
     BreakoutEnv,
     CollisionDetector,
-    DefaultLevelBuilder,
+    EmptyLevelBuilder,
     KDTreeCollisionDetectionEngine,
     NaiveCollisionDetectionEngine,
 )
@@ -26,12 +26,7 @@ def collision_detector(collision_engine):
 
 @pytest.fixture
 def level_builder(config):
-    return DefaultLevelBuilder(
-        env_width=config.env_width,
-        env_height=config.env_height,
-        ball_speed=config.breakout.ball_speed,
-        platform_speed=config.breakout.platform_speed,
-    )
+    return EmptyLevelBuilder()
 
 
 @pytest.fixture
