@@ -4,14 +4,12 @@ from agym.gui import TextLabel
 from agym.protocols import IRenderer, IRenderKit, IScreen
 from agym.utils import TimeProfiler, profile
 
-from .env import EnvRenderer
-
 
 class GameMonitorRenderer(IRenderer):
     def __init__(
         self,
         screen_size: Size,
-        env_renderer: EnvRenderer,
+        env_renderer: IRenderer,
         fps_label: TextLabel,
         profile_label: TextLabel,
         render_kit: IRenderKit,

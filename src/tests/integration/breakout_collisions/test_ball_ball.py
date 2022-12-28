@@ -1,6 +1,10 @@
 import pytest
 
-from agym.games.breakout import BreakoutAction, BreakoutEnv, CollisionEvent
+from agym.games.breakout import (
+    BreakoutAction,
+    BreakoutCollisionEvent,
+    BreakoutEnv,
+)
 from agym.games.breakout.dtos import CollisionBallBall
 from agym.games.breakout.geom import Vec2
 from tests.math_utils import almost_equal_float, almost_equal_vec
@@ -19,14 +23,14 @@ class TestCollisionsBallBall:
         breakout.import_state(level)
 
         breakout.step(
-            action=action.value,
+            action=action,
             dt=ticks,
         )
 
         events = breakout.pop_events()
         assert len(events) == 1
         event = events[0]
-        assert isinstance(event, CollisionEvent)
+        assert isinstance(event, BreakoutCollisionEvent)
         assert isinstance(event.collision, CollisionBallBall)
 
         ball1 = breakout.balls[0]
@@ -43,14 +47,14 @@ class TestCollisionsBallBall:
         breakout.import_state(level)
 
         breakout.step(
-            action=action.value,
+            action=action,
             dt=ticks,
         )
 
         events = breakout.pop_events()
         assert len(events) == 1
         event = events[0]
-        assert isinstance(event, CollisionEvent)
+        assert isinstance(event, BreakoutCollisionEvent)
         assert isinstance(event.collision, CollisionBallBall)
 
         ball1 = breakout.balls[0]
@@ -68,14 +72,14 @@ class TestCollisionsBallBall:
         breakout.import_state(level)
 
         breakout.step(
-            action=action.value,
+            action=action,
             dt=ticks,
         )
 
         events = breakout.pop_events()
         assert len(events) == 1
         event = events[0]
-        assert isinstance(event, CollisionEvent)
+        assert isinstance(event, BreakoutCollisionEvent)
         assert isinstance(event.collision, CollisionBallBall)
 
         ball1 = breakout.balls[0]
@@ -92,14 +96,14 @@ class TestCollisionsBallBall:
         breakout.import_state(level)
 
         breakout.step(
-            action=action.value,
+            action=action,
             dt=ticks,
         )
 
         events = breakout.pop_events()
         assert len(events) == 3
         for event in events:
-            assert isinstance(event, CollisionEvent)
+            assert isinstance(event, BreakoutCollisionEvent)
             assert isinstance(event.collision, CollisionBallBall)
 
         ball1 = breakout.balls[0]
@@ -118,14 +122,14 @@ class TestCollisionsBallBall:
         breakout.import_state(level)
 
         breakout.step(
-            action=action.value,
+            action=action,
             dt=ticks,
         )
 
         events = breakout.pop_events()
         assert len(events) == 1
         for event in events:
-            assert isinstance(event, CollisionEvent)
+            assert isinstance(event, BreakoutCollisionEvent)
             assert isinstance(event.collision, CollisionBallBall)
 
         ball1 = breakout.balls[0]

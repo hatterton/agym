@@ -7,8 +7,9 @@ from pygame.event import Event
 from pygame.mixer import Sound
 
 from agym.constants import TIME_RESOLUTION
+from agym.games.protocols import IGameEnvironment
 from agym.gui import TextLabel
-from agym.protocols import IClock, IEventHandler, IGameEnvironment, IModel
+from agym.protocols import IClock, IEventHandler, IModel
 from agym.utils import profile
 
 
@@ -51,15 +52,17 @@ class GameMonitor:
     def try_handle_event(self, event: Event) -> bool:
         handled = False
         handled = handled or self.model.try_handle_event(event)
-        handled = handled or self.env.try_handle_event(event)
 
         return handled
 
     @profile("game_update")
     def update(self) -> None:
-        action = self.model.get_action(None)
+        state = self.env.state
+
+        action = self.model.get_action(state)
+
         dt = self._clock.do_frame_tick() * self.tps
-        _, is_done = self.env.step(action, dt)
+        is_done = self.env.step(action, dt)
 
         events = self.env.pop_events()
         self.audio_handler.handle_events(events)

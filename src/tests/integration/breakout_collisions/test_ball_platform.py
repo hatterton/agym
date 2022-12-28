@@ -1,6 +1,10 @@
 import pytest
 
-from agym.games.breakout import BreakoutAction, BreakoutEnv, CollisionEvent
+from agym.games.breakout import (
+    BreakoutAction,
+    BreakoutCollisionEvent,
+    BreakoutEnv,
+)
 from agym.games.breakout.dtos import (
     CollisionBallPlatform,
     CollisionBallWall,
@@ -24,14 +28,14 @@ class TestCollisionsBallPlatform:
         breakout.import_state(level)
 
         breakout.step(
-            action=action.value,
+            action=action,
             dt=ticks,
         )
 
         events = breakout.pop_events()
         assert len(events) == 1
         event = events[0]
-        assert isinstance(event, CollisionEvent)
+        assert isinstance(event, BreakoutCollisionEvent)
         assert isinstance(event.collision, CollisionBallPlatform)
         assert almost_equal_vec(breakout.balls[0].velocity, Vec2(x=0, y=-1))
 
@@ -44,7 +48,7 @@ class TestCollisionsBallPlatform:
         breakout.import_state(level)
 
         breakout.step(
-            action=action.value,
+            action=action,
             dt=ticks,
         )
 
@@ -55,7 +59,7 @@ class TestCollisionsBallPlatform:
         ]
 
         for expected_coll_type, event in zip(expected_collisions, events):
-            assert isinstance(event, CollisionEvent)
+            assert isinstance(event, BreakoutCollisionEvent)
             assert isinstance(event.collision, expected_coll_type)
 
     def test_ball_platform_race_collision_type(
@@ -67,12 +71,12 @@ class TestCollisionsBallPlatform:
         breakout.import_state(level)
 
         breakout.step(
-            action=action.value,
+            action=action,
             dt=ticks,
         )
 
         events = breakout.pop_events()
         assert len(events) == 1
         event = events[0]
-        assert isinstance(event, CollisionEvent)
+        assert isinstance(event, BreakoutCollisionEvent)
         assert isinstance(event.collision, CollisionBallPlatform)

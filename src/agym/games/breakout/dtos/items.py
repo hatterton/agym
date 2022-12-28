@@ -13,12 +13,13 @@ from agym.games.breakout.geom import (
     Triangle,
     Vec2,
 )
+from agym.games.protocols import IGameItem
 
 ItemId = int
 
 
 @dataclass
-class Item:
+class Item(IGameItem):
     id: ItemId
     rect: Rectangle
 

@@ -1,6 +1,10 @@
 import pytest
 
-from agym.games.breakout import BreakoutAction, BreakoutEnv, CollisionEvent
+from agym.games.breakout import (
+    BreakoutAction,
+    BreakoutCollisionEvent,
+    BreakoutEnv,
+)
 from agym.games.breakout.dtos import CollisionBallWall
 
 
@@ -18,14 +22,14 @@ class TestCollisionsBallWall:
         breakout.import_state(level)
 
         breakout.step(
-            action=action.value,
+            action=action,
             dt=ticks,
         )
 
         events = breakout.pop_events()
         assert len(events) == 1
         event = events[0]
-        assert isinstance(event, CollisionEvent)
+        assert isinstance(event, BreakoutCollisionEvent)
         assert isinstance(event.collision, CollisionBallWall)
         assert breakout.balls[0].velocity[0] > 0
         assert breakout.balls[0].velocity[1] < 0
@@ -39,14 +43,14 @@ class TestCollisionsBallWall:
         breakout.import_state(level)
 
         breakout.step(
-            action=action.value,
+            action=action,
             dt=ticks,
         )
 
         events = breakout.pop_events()
         assert len(events) == 1
         event = events[0]
-        assert isinstance(event, CollisionEvent)
+        assert isinstance(event, BreakoutCollisionEvent)
         assert isinstance(event.collision, CollisionBallWall)
         assert breakout.balls[0].velocity[0] < 0
         assert breakout.balls[0].velocity[1] < 0
@@ -60,14 +64,14 @@ class TestCollisionsBallWall:
         breakout.import_state(level)
 
         breakout.step(
-            action=action.value,
+            action=action,
             dt=ticks,
         )
 
         events = breakout.pop_events()
         assert len(events) == 1
         event = events[0]
-        assert isinstance(event, CollisionEvent)
+        assert isinstance(event, BreakoutCollisionEvent)
         assert isinstance(event.collision, CollisionBallWall)
         assert breakout.balls[0].velocity[0] > 0
         assert breakout.balls[0].velocity[1] > 0
