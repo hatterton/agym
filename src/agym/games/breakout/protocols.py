@@ -1,5 +1,7 @@
 from typing import Iterable, List, Protocol
 
+from agym.games.protocols import ILevelBuilder
+
 from .dtos import Collision
 from .state import GameState
 
@@ -23,6 +25,6 @@ class ICollisionDetectorEngine(Protocol):
         pass
 
 
-class ILevelBuilder(Protocol):
+class IBreakoutLevelBuilder(ILevelBuilder, Protocol):
     def build(self) -> GameState:
         pass

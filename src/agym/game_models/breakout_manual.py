@@ -3,7 +3,8 @@ from typing import Tuple
 import pygame
 from pygame.event import Event
 
-from agym.games.breakout.env import BreakoutAction
+from agym.games.breakout.dtos import BreakoutAction, BreakoutActionType
+from agym.games.protocols import IGameState
 
 
 class ManualBreakoutModel:
@@ -39,13 +40,18 @@ class ManualBreakoutModel:
 
         return False
 
-    def get_action(self, state) -> int:
+    def get_action(self, state: IGameState) -> BreakoutAction:
         if self.promise_throw:
             self.promise_throw = False
-            return BreakoutAction.THROW.value
-        elif self.platform_moving_right:
-            return BreakoutAction.RIGHT.value
-        elif self.platform_moving_left:
-            return BreakoutAction.LEFT.value
+            action_type = BreakoutActionType.THROW
 
-        return BreakoutAction.NOTHING.value
+        elif self.platform_moving_right:
+            action_type = BreakoutActionType.RIGHT
+
+        elif self.platform_moving_left:
+            action_type = BreakoutActionType.LEFT
+
+        else:
+            action_type = BreakoutActionType.NOTHING
+
+        return BreakoutAction(type=action_type)

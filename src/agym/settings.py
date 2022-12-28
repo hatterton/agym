@@ -9,6 +9,8 @@ Color = Tuple[int, int, int]
 
 
 class BreakoutSettings(BaseSettings):
+    num_envs: int = 3
+
     image_dir: str = "agym/static/images/breakout"
 
     # level_type: BreakoutLevelType = BreakoutLevelType.DEFAULT
@@ -27,7 +29,7 @@ class BreakoutSettings(BaseSettings):
     platform_speed: float = 10
     platform_size: Vec2 = Vec2(x=200, y=25)
 
-    num_balls: int = 10
+    num_balls: int = 4
     ball_speed: float = 15.0
     ball_radius: float = 15.0
 

@@ -2,7 +2,8 @@ from typing import List, Tuple
 
 import pytest
 
-from agym.games.breakout import BreakoutAction, ItemManager
+from agym.games.breakout import ItemManager
+from agym.games.breakout.dtos import BreakoutAction, BreakoutActionType
 from agym.games.breakout.geom import Point, Rectangle, Vec2
 
 from .dtos import PI, LevelTestCase
@@ -39,7 +40,7 @@ def platform_left_wall_collision_level(
 
     return (
         item_manager.extract_state(),
-        BreakoutAction.LEFT,
+        BreakoutAction(type=BreakoutActionType.LEFT),
         60,
     )
 
@@ -64,6 +65,6 @@ def platform_right_wall_collision_level(
 
     return (
         item_manager.extract_state(),
-        BreakoutAction.RIGHT,
+        BreakoutAction(type=BreakoutActionType.RIGHT),
         60,
     )

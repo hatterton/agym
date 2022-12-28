@@ -9,28 +9,35 @@ from agym.dtos import (
     Shift,
     Size,
 )
+from agym.game_models import ManualBreakoutModel
 from agym.game_monitor import GameMonitor
-from agym.games import BreakoutEnv, ManualBreakoutModel
 from agym.games.breakout import (
     BreakoutEnv,
     CollisionDetector,
-    ICollisionDetectorEngine,
     KDTreeCollisionDetectionEngine,
     NaiveCollisionDetectionEngine,
 )
+from agym.games.breakout.geom import Vec2
 from agym.games.breakout.levels import (
     DefaultLevelBuilder,
     PerformanceLevelBuilder,
 )
+from agym.games.breakout.protocols import (
+    IBreakoutLevelBuilder,
+    ICollisionDetectorEngine,
+)
+from agym.games.protocols import IGameEnvironment
 from agym.gui import TextLabel
 from agym.gui.render_kits import PygameRenderKitEngine, RenderKit
 from agym.main_window import MainWindow
-from agym.protocols import IGameEnvironment, IModel
+from agym.many_breakouts import ManyBreakoutsEnv
+from agym.protocols import IModel
 from agym.renderers import (
     EmptyRenderer,
     EnvRenderer,
     GameMonitorRenderer,
     KDTreeRenderer,
+    ManyBreakoutsEnvRender,
 )
 from agym.settings import Settings
 from agym.updaters import (
@@ -127,7 +134,9 @@ class Updaters:
 class EnvContainer:
     def __init__(self, config: Settings):
 
-        level_type2level_builder = {
+        level_type2level_builder: Mapping[
+            BreakoutLevelType, IBreakoutLevelBuilder
+        ] = {
             BreakoutLevelType.PERFORMANCE: PerformanceLevelBuilder(
                 env_width=config.env_width,
                 env_height=config.env_height,
@@ -167,9 +176,16 @@ class EnvContainer:
             engine=self.collision_detector_engine,
         )
 
-        self.env = BreakoutEnv(
-            env_width=config.env_width,
-            env_height=config.env_height,
+        # self.env = BreakoutEnv(
+        #     env_width=config.env_width,
+        #     env_height=config.env_height,
+        #     collision_detector=self.collision_detector,
+        #     level_builder=self.level_builder,
+        # )
+
+        self.env = ManyBreakoutsEnv(
+            n=config.breakout.num_envs,
+            env_size=Vec2(x=config.env_height, y=config.env_width),
             collision_detector=self.collision_detector,
             level_builder=self.level_builder,
         )
@@ -215,20 +231,27 @@ class Renderers:
             render_kit=render_kits.kit,
         )
 
-        self.kdtree = KDTreeRenderer(
-            screen_size=Size(width=config.env_width, height=config.env_height),
-            env=env_container.env,
-            render_kit=render_kits.kit,
-        )
+        # self.kdtree = KDTreeRenderer(
+        #     screen_size=Size(width=config.env_width, height=config.env_height),
+        #     env=env_container.env,
+        #     render_kit=render_kits.kit,
+        # )
 
-        self.env = EnvRenderer(
+        self.breakout_env = EnvRenderer(
             screen_size=Size(width=config.env_width, height=config.env_height),
-            env=env_container.env,
-            kdtree_renderer=self.kdtree
-            if config.rendering_kdtree
-            else self.empty,
+            kdtree_renderer=self.empty,
+            # kdtree_renderer=self.kdtree
+            # if config.rendering_kdtree
+            # else self.empty,
             render_kit=render_kits.kit,
             image_dir=config.breakout.image_dir,
+        )
+
+        self.env = ManyBreakoutsEnvRender(
+            screen_size=Size(width=config.env_width, height=config.env_height),
+            env=env_container.env,
+            env_render=self.breakout_env,
+            render_kit=render_kits.kit,
         )
 
         self.game_monitor = GameMonitorRenderer(

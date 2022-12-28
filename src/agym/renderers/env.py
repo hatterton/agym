@@ -1,6 +1,6 @@
 import os
 from enum import Enum, auto
-from typing import Dict
+from typing import Dict, Optional
 
 from agym.dtos import Color, Rect, Shift, Size
 from agym.games import BreakoutEnv
@@ -24,9 +24,9 @@ class EnvRenderer(IRenderer):
         self,
         screen_size: Size,
         image_dir: str,
-        env: BreakoutEnv,
         kdtree_renderer: IRenderer,
         render_kit: IRenderKit,
+        env: Optional[BreakoutEnv] = None,
     ):
         self._env = env
         self._kdtree_renderer = kdtree_renderer
@@ -60,8 +60,19 @@ class EnvRenderer(IRenderer):
             platform_path
         )
 
+    @property
+    def env(self) -> BreakoutEnv:
+        if self._env is None:
+            raise ValueError("Env to render is not set")
+
+        return self._env
+
+    @env.setter
+    def env(self, value: BreakoutEnv) -> None:
+        self._env = value
+
     def render(self) -> IScreen:
-        state = self._env.state
+        state = self.env.state
 
         screen = self._render_kit.create_screen(self._screen_size)
 
@@ -85,24 +96,24 @@ class EnvRenderer(IRenderer):
         return screen
 
     def _render_ball_on(self, screen: IScreen, ball: Ball) -> None:
-        rect = self._convert_rectangle_to_rect(ball.rect)
+        rect = self._map_rectangle_to_rect(ball.rect)
         image = self._item2image[ItemType.BALL]
 
         ball_screen = image.resize(rect.size)
         screen.blit(ball_screen, rect.shift)
 
     def _render_block_on(self, screen: IScreen, block: Block) -> None:
-        rect = self._convert_rectangle_to_rect(block.rect)
+        rect = self._map_rectangle_to_rect(block.rect)
 
         if block.health < 5:
             primary_image = self._item2image[ItemType.BLOCK_RED]
             secondary_image = self._item2image[ItemType.BLOCK_YELLOW]
-            alpha = int((block.health - 1) / 5 * 255)
+            alpha = round((block.health - 1) / 5 * 255)
 
         elif block.health >= 5 and block.health < 10:
             primary_image = self._item2image[ItemType.BLOCK_YELLOW]
             secondary_image = self._item2image[ItemType.BLOCK_BLUE]
-            alpha = int((block.health - 5) / 5 * 255)
+            alpha = round((block.health - 5) / 5 * 255)
 
         else:
             primary_image = self._item2image[ItemType.BLOCK_BLUE]
@@ -136,14 +147,14 @@ class EnvRenderer(IRenderer):
         screen.blit(block_screen, rect.shift)
 
     def _render_platform_on(self, screen: IScreen, platform: Platform) -> None:
-        rect = self._convert_rectangle_to_rect(platform.rect)
+        rect = self._map_rectangle_to_rect(platform.rect)
         image = self._item2image[ItemType.PLATFORM]
 
         platform_screen = image.resize(rect.size)
         screen.blit(platform_screen, rect.shift)
 
     def _render_wall_on(self, screen: IScreen, wall: Wall) -> None:
-        rect = self._convert_rectangle_to_rect(wall.rect)
+        rect = self._map_rectangle_to_rect(wall.rect)
 
         self._render_kit.draw_rect(
             screen=screen,
@@ -151,10 +162,18 @@ class EnvRenderer(IRenderer):
             color=Color(150, 50, 50),
         )
 
-    def _convert_rectangle_to_rect(self, rect: Rectangle) -> Rect:
+    def _map_rectangle_to_rect(self, rect: Rectangle) -> Rect:
         return Rect.from_sides(
-            left=int(rect.left),
-            top=int(rect.top),
-            right=int(rect.right),
-            bottom=int(rect.bottom),
+            left=round(
+                self._screen_size.width * rect.left / self.env.rect.width
+            ),
+            top=round(
+                self._screen_size.height * rect.top / self.env.rect.height
+            ),
+            right=round(
+                self._screen_size.width * rect.right / self.env.rect.width
+            ),
+            bottom=round(
+                self._screen_size.height * rect.bottom / self.env.rect.height
+            ),
         )

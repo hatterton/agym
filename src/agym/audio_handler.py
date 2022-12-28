@@ -2,7 +2,8 @@ from typing import List, cast
 
 from pygame.mixer import Sound
 
-from agym.games.breakout.dtos import CollisionBallBlock, CollisionEvent, Event
+from agym.games.breakout.dtos import BreakoutCollisionEvent, CollisionBallBlock
+from agym.games.protocols import IGameEvent
 
 
 class AudioHandler:
@@ -11,8 +12,8 @@ class AudioHandler:
             "agym/static/sounds/trimmed_ball_brick.wav"
         )
 
-    def handle_events(self, events: List[Event]) -> None:
+    def handle_events(self, events: List[IGameEvent]) -> None:
         for event in events:
-            if isinstance(event, CollisionEvent):
+            if isinstance(event, BreakoutCollisionEvent):
                 if isinstance(event.collision, CollisionBallBlock):
                     self.ball_brick_sound.play(maxtime=150, fade_ms=50)

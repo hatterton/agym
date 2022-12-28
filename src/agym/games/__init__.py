@@ -1,1 +1,1 @@
-from agym.games.breakout import BreakoutEnv, ManualBreakoutModel
+from agym.games.breakout import BreakoutEnv

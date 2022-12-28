@@ -10,38 +10,37 @@ from pygame.event import Event as PygameEvent
 from agym.games.breakout.dtos import (
     Ball,
     Block,
+    BreakoutAction,
+    BreakoutActionType,
+    BreakoutCollisionEvent,
+    BreakoutEvent,
     Collision,
     CollisionBallBall,
     CollisionBallBlock,
     CollisionBallPlatform,
     CollisionBallWall,
-    CollisionEvent,
     CollisionPlatformWall,
-    Event,
     Platform,
     Wall,
 )
-from agym.games.breakout.protocols import ICollisionDetector, ILevelBuilder
+from agym.games.breakout.protocols import (
+    IBreakoutLevelBuilder,
+    ICollisionDetector,
+)
+from agym.games.protocols import IGameAction, IGameEnvironment
 from agym.utils import profile
 
 from .geom import Point, Rectangle, Vec2
 from .state import GameState
 
 
-class BreakoutAction(enum.Enum):
-    NOTHING = 0
-    LEFT = 1
-    RIGHT = 2
-    THROW = 3
-
-
-class BreakoutEnv:
+class BreakoutEnv(IGameEnvironment):
     def __init__(
         self,
-        env_width: int,
-        env_height: int,
+        env_width: float,
+        env_height: float,
         collision_detector: ICollisionDetector,
-        level_builder: ILevelBuilder,
+        level_builder: IBreakoutLevelBuilder,
         checking_gameover: bool = False,
         eps: float = 1e-3,
     ):
@@ -59,7 +58,7 @@ class BreakoutEnv:
         self.eps = eps
 
         self.timestamp: float
-        self.events: List[Event]
+        self.events: List[BreakoutEvent]
 
         self.level_builder = level_builder
         self.collision_detector = collision_detector
@@ -69,21 +68,22 @@ class BreakoutEnv:
         self.blocks: List[Block]
         self.walls: List[Wall]
 
-    def pop_events(self) -> List[Event]:
+    @property
+    def rect(self) -> Rectangle:
+        return self.env_rect
+
+    def pop_events(self) -> List[BreakoutEvent]:
         events = self.events
         self.events = []
         return events
 
-    def try_handle_event(self, event: PygameEvent) -> bool:
-        return False
-
     def reset(self) -> None:
-        self.reset_level()
+        self._reset_level()
 
         self.timestamp = 0.0
         self.events = []
 
-    def reset_level(self) -> None:
+    def _reset_level(self) -> None:
         state = self.level_builder.build()
         self.import_state(state)
 
@@ -96,25 +96,25 @@ class BreakoutEnv:
     def is_done(self) -> bool:
         return False
 
-    def lose(self) -> None:
-        self.reset_level()
+    def _lose(self) -> None:
+        self._reset_level()
 
-    def win(self) -> None:
-        self.reset_level()
+    def _win(self) -> None:
+        self._reset_level()
 
     @profile("env_step", "game_update")
-    def step(self, action: int, dt: float) -> Tuple[int, bool]:
-
-        a = BreakoutAction(action)
+    def step(self, action: IGameAction, dt: float) -> bool:
+        if not isinstance(action, BreakoutAction):
+            raise ValueError("Unknown type of action")
 
         for platform in self.platforms:
-            if a == BreakoutAction.LEFT:
+            if action.type == BreakoutActionType.LEFT:
                 platform.velocity.x = -1
-            elif a == BreakoutAction.RIGHT:
+            elif action.type == BreakoutActionType.RIGHT:
                 platform.velocity.x = 1
-            elif a == BreakoutAction.THROW:
-                self.throw_ball()
-            elif a == BreakoutAction.NOTHING:
+            elif action.type == BreakoutActionType.THROW:
+                self._throw_ball()
+            elif action.type == BreakoutActionType.NOTHING:
                 platform.velocity.x = 0
 
         reward = 0
@@ -123,27 +123,27 @@ class BreakoutEnv:
             step_dt = self.collision_detector.get_time_before_collision(
                 self.state, dt
             )
-            self.real_update(step_dt)
+            self._update(step_dt)
 
             colls = self.collision_detector.get_step_collisions(
                 self.state, self.eps
             )
 
-            self.perform_colls(colls)
+            self._perform_colls(colls)
 
             dt -= step_dt
 
         # Проверки на конец игры
         if self.checking_gameover:
             if len(self.blocks) == 0:
-                self.win()
+                self._win()
 
             if not self.balls:
-                self.lose()
+                self._lose()
 
         is_done = self.is_done()
 
-        return reward, is_done
+        return is_done
 
     @property
     def state(self) -> GameState:
@@ -154,50 +154,46 @@ class BreakoutEnv:
             walls=self.walls,
         )
 
-    def perform_colls(self, colls: Iterable[Collision]) -> int:
-        return self._perform_colls(colls)
-
-    def _perform_colls(self, colls: Iterable[Collision]) -> int:
-        reward = 0
-
+    def _perform_colls(self, colls: Iterable[Collision]) -> None:
         for coll in colls:
-            self.events.append(
-                CollisionEvent(
-                    timestamp=self.timestamp,
-                    collision=coll,
-                )
+            self._perform_coll(coll)
+
+    def _perform_coll(self, coll: Collision) -> None:
+        self.events.append(
+            BreakoutCollisionEvent(
+                timestamp=self.timestamp,
+                collision=coll,
+            )
+        )
+
+        if isinstance(coll, CollisionBallWall):
+            self._perform_ball_coll(ball=coll.ball, point=coll.point)
+
+        elif isinstance(coll, CollisionBallPlatform):
+            self._perform_platform_ball_coll(
+                platform=coll.platform,
+                ball=coll.ball,
+                point=coll.point,
             )
 
-            if isinstance(coll, CollisionBallWall):
-                self.perform_ball_coll(ball=coll.ball, point=coll.point)
+        elif isinstance(coll, CollisionBallBlock):
+            self._perform_ball_coll(ball=coll.ball, point=coll.point)
 
-            elif isinstance(coll, CollisionBallPlatform):
-                self.perform_platform_ball_coll(
-                    platform=coll.platform,
-                    ball=coll.ball,
-                    point=coll.point,
-                )
+            coll.block.health -= 1
+            if coll.block.health <= 0:
+                self.blocks.remove(coll.block)
 
-            elif isinstance(coll, CollisionBallBlock):
-                self.perform_ball_coll(ball=coll.ball, point=coll.point)
+        elif isinstance(coll, CollisionPlatformWall):
+            coll.platform.velocity.x = 0
 
-                coll.block.health -= 1
-                if coll.block.health <= 0:
-                    self.blocks.remove(coll.block)
+        elif isinstance(coll, CollisionBallBall):
+            self._perform_ball_ball_coll(
+                ball1=coll.ball1,
+                ball2=coll.ball2,
+                point=coll.point,
+            )
 
-            elif isinstance(coll, CollisionPlatformWall):
-                coll.platform.velocity.x = 0
-
-            elif isinstance(coll, CollisionBallBall):
-                self.perform_ball_ball_coll(
-                    ball1=coll.ball1,
-                    ball2=coll.ball2,
-                    point=coll.point,
-                )
-
-        return reward
-
-    def perform_ball_coll(self, ball: Ball, point: Point) -> None:
+    def _perform_ball_coll(self, ball: Ball, point: Point) -> None:
         basis = point - ball.rect.center
         projection = ball.velocity.scalar(basis)
         velocity = ball.velocity - basis * 2.0 * projection / basis.norm2()
@@ -209,7 +205,7 @@ class BreakoutEnv:
 
         ball.velocity = velocity
 
-    def perform_platform_ball_coll(
+    def _perform_platform_ball_coll(
         self, platform: Platform, ball: Ball, point: Point
     ) -> None:
         p_center = platform.rect.center
@@ -224,7 +220,7 @@ class BreakoutEnv:
         platform.freeze()
         ball.velocity = velocity
 
-    def perform_ball_ball_coll(
+    def _perform_ball_ball_coll(
         self, ball1: Ball, ball2: Ball, point: Point
     ) -> None:
         velocity1 = ball1.velocity * ball1.speed
@@ -252,19 +248,19 @@ class BreakoutEnv:
         else:
             ball2.velocity = velocity2 / velocity2.norm()
 
-    def real_update(self, dt: float) -> None:
+    def _update(self, dt: float) -> None:
         self.timestamp += dt
 
-        self.update_platforms(dt)
-        self.update_balls(dt)
+        self._update_platforms(dt)
+        self._update_balls(dt)
 
-    def update_platforms(self, dt: float) -> None:
+    def _update_platforms(self, dt: float) -> None:
         for platform in self.platforms:
             fdt = max(0, dt - platform.rest_freeze_time)
             platform.rect.center += platform.velocity * platform.speed * fdt
             platform.rest_freeze_time = max(0, platform.rest_freeze_time - dt)
 
-    def update_balls(self, dt: float) -> None:
+    def _update_balls(self, dt: float) -> None:
         removed_balls = []
         for ball in self.balls:
             if ball.thrown:
@@ -283,7 +279,7 @@ class BreakoutEnv:
         for ball in removed_balls:
             self.balls.remove(ball)
 
-    def throw_ball(self) -> None:
+    def _throw_ball(self) -> None:
         for ball in self.balls:
             if not ball.thrown:
                 ball.thrown = True
@@ -294,13 +290,3 @@ class BreakoutEnv:
                 ball.velocity = velocity
 
                 ball.rect.bottom -= 1
-
-    def try_event(self, event) -> bool:
-        if event.type == pygame.KEYDOWN:
-            pass
-        elif event.type == pygame.KEYUP:
-            pass
-        else:
-            return False
-
-        return True

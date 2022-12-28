@@ -1,3 +1,4 @@
+from .action import BreakoutAction, BreakoutActionType
 from .collisions import (
     Collision,
     CollisionBallBall,
@@ -6,5 +7,5 @@ from .collisions import (
     CollisionBallWall,
     CollisionPlatformWall,
 )
-from .events import CollisionEvent, Event
+from .events import BreakoutCollisionEvent, BreakoutEvent
 from .items import Ball, Block, Item, ItemId, Platform, Wall
