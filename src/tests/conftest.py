@@ -8,14 +8,19 @@ from .levels import *
 
 @pytest.fixture
 def config():
-    return Settings()
+    config = Settings()
+
+    # config.breakout.env_size.x = 400
+    # config.breakout.env_size.y = 400
+
+    return config
 
 
 @pytest.fixture
 def env_width(config):
-    return config.env_width
+    return config.breakout.env_size.x
 
 
 @pytest.fixture
 def env_height(config):
-    return config.env_height
+    return config.breakout.env_size.y

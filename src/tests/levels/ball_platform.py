@@ -23,17 +23,21 @@ def ball_platform_collision_levels(
 
 
 @pytest.fixture
-def ball_platform_collision_level(item_manager: ItemManager) -> LevelTestCase:
+def ball_platform_collision_level(
+    item_manager: ItemManager, env_width: float, env_height: float
+) -> LevelTestCase:
+    platform = item_manager.create_platform(speed=0)
+    platform.rect.centerx = env_width / 2
+    platform.rect.bottom = env_height
+
     ball = item_manager.create_ball(
         radius=10,
         speed=2.0,
     )
-    ball.rect.center = Point(x=300, y=250)
+    ball.rect.centerx = platform.rect.centerx
+    ball.rect.bottom = platform.rect.top - 50
     ball.thrown = True
     ball.velocity = Vec2(x=0, y=1)
-
-    platform = item_manager.create_platform(speed=0)
-    platform.rect.center = Point(x=300, y=330)
 
     return (
         item_manager.extract_state(),
@@ -44,19 +48,20 @@ def ball_platform_collision_level(item_manager: ItemManager) -> LevelTestCase:
 
 @pytest.fixture
 def ball_platform_side_collision_level(
-    item_manager: ItemManager, env_height
+    item_manager: ItemManager, env_width: float, env_height: float
 ) -> LevelTestCase:
+    platform = item_manager.create_platform(speed=1.0)
+    platform.rect.left = 35
+    platform.rect.bottom = env_height
+
     ball = item_manager.create_ball(
         radius=10,
         speed=2.0,
     )
-    ball.rect.center = Point(x=11, y=327)
+    ball.rect.centery = platform.rect.centery
+    ball.rect.left = 1
     ball.thrown = True
     ball.velocity = Vec2(x=1, y=0)
-
-    platform = item_manager.create_platform(speed=1.0)
-    platform.rect.center = Point(x=90, y=330)
-    platform.velocity = Vec2(x=-1, y=0)
 
     item_manager.create_wall(
         rect=Rectangle(
@@ -76,18 +81,20 @@ def ball_platform_side_collision_level(
 
 @pytest.fixture
 def ball_platform_race_collision_level(
-    item_manager: ItemManager,
+    item_manager: ItemManager, env_width: float, env_height: float
 ) -> LevelTestCase:
+    platform = item_manager.create_platform(speed=2.0)
+    platform.rect.left = 50
+    platform.rect.bottom = env_height
+
     ball = item_manager.create_ball(
         radius=10,
         speed=2.1,
     )
-    ball.rect.center = Point(x=27, y=327)
+    ball.rect.centery = platform.rect.centery
+    ball.rect.right = platform.rect.left - 2
     ball.thrown = True
     ball.velocity = Vec2(x=1, y=0)
-
-    platform = item_manager.create_platform(speed=2.0)
-    platform.rect.center = Point(x=100, y=330)
 
     return (
         item_manager.extract_state(),

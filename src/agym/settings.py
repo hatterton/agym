@@ -9,9 +9,10 @@ Color = Tuple[int, int, int]
 
 
 class BreakoutSettings(BaseSettings):
+    env_size: Vec2 = Vec2(x=400, y=400)
     num_envs: int = 3
 
-    image_dir: str = "agym/static/images/breakout"
+    image_dir: str = "../static/envs/breakout/images"
 
     # level_type: BreakoutLevelType = BreakoutLevelType.DEFAULT
     level_type: BreakoutLevelType = BreakoutLevelType.PERFORMANCE
@@ -35,15 +36,9 @@ class BreakoutSettings(BaseSettings):
 
 
 class Settings(BaseSettings):
-    window_screen_width: int = 700
-    window_screen_height: int = 800
-
-    env_width: int = 600
-    env_height: int = 600
-
-    mb_width: int = 150
-    mb_height: int = 60
-    menu_height: int = 400
+    window_screen_size: Size = Size(width=700, height=800)
+    env_screen_size: Size = Size(width=600, height=600)
+    subenv_screen_size: Size = Size(width=200, height=200)
 
     cirle_color: Color = (200, 50, 50)
     bg_color: Color = (130, 130, 130)

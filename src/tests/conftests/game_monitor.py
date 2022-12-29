@@ -15,8 +15,6 @@ def game_monitor_logic(
     game_model,
 ):
     return GameMonitor(
-        width=config.window_screen_width,
-        height=config.window_screen_width,
         clock=clock,
         fps_label=fps_label,
         profile_label=profile_label,

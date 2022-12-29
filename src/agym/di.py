@@ -138,15 +138,13 @@ class EnvContainer:
             BreakoutLevelType, IBreakoutLevelBuilder
         ] = {
             BreakoutLevelType.PERFORMANCE: PerformanceLevelBuilder(
-                env_width=config.env_width,
-                env_height=config.env_height,
+                env_size=config.breakout.env_size,
                 num_balls=config.breakout.num_balls,
                 ball_speed=config.breakout.ball_speed,
                 ball_radius=config.breakout.ball_radius,
             ),
             BreakoutLevelType.DEFAULT: DefaultLevelBuilder(
-                env_width=config.env_width,
-                env_height=config.env_height,
+                env_size=config.breakout.env_size,
                 ball_speed=config.breakout.ball_speed,
                 ball_radius=config.breakout.ball_radius,
                 platform_speed=config.breakout.platform_speed,
@@ -176,16 +174,9 @@ class EnvContainer:
             engine=self.collision_detector_engine,
         )
 
-        # self.env = BreakoutEnv(
-        #     env_width=config.env_width,
-        #     env_height=config.env_height,
-        #     collision_detector=self.collision_detector,
-        #     level_builder=self.level_builder,
-        # )
-
         self.env = ManyBreakoutsEnv(
             n=config.breakout.num_envs,
-            env_size=Vec2(x=config.env_height, y=config.env_width),
+            env_size=config.breakout.env_size,
             collision_detector=self.collision_detector,
             level_builder=self.level_builder,
         )
@@ -204,8 +195,6 @@ class GameMonitorContainer:
         config: Settings,
     ):
         self.game_monitor = GameMonitor(
-            width=config.window_screen_width,
-            height=config.window_screen_width,
             clock=clocks.main,
             fps_label=labels.fps_label,
             profile_label=labels.profile_label,
@@ -231,24 +220,21 @@ class Renderers:
             render_kit=render_kits.kit,
         )
 
-        # self.kdtree = KDTreeRenderer(
-        #     screen_size=Size(width=config.env_width, height=config.env_height),
-        #     env=env_container.env,
-        #     render_kit=render_kits.kit,
-        # )
+        self.kdtree = KDTreeRenderer(
+            screen_size=config.subenv_screen_size,
+            render_kit=render_kits.kit,
+        )
 
         self.breakout_env = EnvRenderer(
-            screen_size=Size(width=config.env_width, height=config.env_height),
-            kdtree_renderer=self.empty,
-            # kdtree_renderer=self.kdtree
-            # if config.rendering_kdtree
-            # else self.empty,
+            screen_size=config.subenv_screen_size,
+            kdtree_renderer=self.kdtree,
             render_kit=render_kits.kit,
+            rendering_kdtree=config.rendering_kdtree,
             image_dir=config.breakout.image_dir,
         )
 
         self.env = ManyBreakoutsEnvRender(
-            screen_size=Size(width=config.env_width, height=config.env_height),
+            screen_size=config.env_screen_size,
             env=env_container.env,
             env_render=self.breakout_env,
             render_kit=render_kits.kit,
@@ -257,10 +243,7 @@ class Renderers:
         self.game_monitor = GameMonitorRenderer(
             fps_label=labels.fps_label,
             profile_label=labels.profile_label,
-            screen_size=Size(
-                width=config.window_screen_width,
-                height=config.window_screen_height,
-            ),
+            screen_size=config.window_screen_size,
             env_renderer=self.env,
             render_kit=render_kits.kit,
         )
@@ -275,10 +258,7 @@ class Windows:
         config: Settings,
     ):
         self.main = MainWindow(
-            window_size=Size(
-                width=config.window_screen_width,
-                height=config.window_screen_height,
-            ),
+            window_size=config.window_screen_size,
             render_kit=render_kits.kit,
             game_monitor=game_monitor_container.game_monitor,
             game_monitor_renderer=renderers.game_monitor,

@@ -55,12 +55,12 @@ class TestCollisionsBallWall:
         assert breakout.balls[0].velocity[0] < 0
         assert breakout.balls[0].velocity[1] < 0
 
-    def test_ball_vertical_wall_top_collision_type(
+    def test_ball_horisontal_wall_top_collision_type(
         self,
         breakout: BreakoutEnv,
-        ball_vertical_wall_top_collision_level,
+        ball_horisontal_wall_top_collision_level,
     ):
-        level, action, ticks = ball_vertical_wall_top_collision_level
+        level, action, ticks = ball_horisontal_wall_top_collision_level
         breakout.import_state(level)
 
         breakout.step(

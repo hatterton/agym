@@ -12,8 +12,7 @@ from .item_manager import ItemManager
 class DefaultLevelBuilder(ILevelBuilder):
     def __init__(
         self,
-        env_width: int,
-        env_height: int,
+        env_size: Vec2,
         ball_speed: float,
         ball_radius: float,
         platform_speed: float,
@@ -25,8 +24,7 @@ class DefaultLevelBuilder(ILevelBuilder):
     ) -> None:
         self.item_manager = ItemManager()
 
-        self.env_width = env_width
-        self.env_height = env_height
+        self._env_size = env_size
 
         self._ball_speed = ball_speed
         self._ball_radius = ball_radius
@@ -62,8 +60,8 @@ class DefaultLevelBuilder(ILevelBuilder):
         shift = 5.0
         left = shift
         top = shift
-        right = self.env_width - shift
-        bottom = self.env_width - shift
+        right = self._env_size.x - shift
+        bottom = self._env_size.y - shift
 
         width = right - left
         height = bottom - top
@@ -109,10 +107,12 @@ class DefaultLevelBuilder(ILevelBuilder):
 
         n_rows = self._block_wall_num_rows
         n_cols = math.floor(
-            (self.env_width + between_shift) / (block_width + between_shift)
+            (self._env_size.x + between_shift) / (block_width + between_shift)
         )
         side_shift = (
-            self.env_width - n_cols * block_width - (n_cols - 1) * between_shift
+            self._env_size.x
+            - n_cols * block_width
+            - (n_cols - 1) * between_shift
         ) // 2
 
         blocks = []
@@ -120,10 +120,7 @@ class DefaultLevelBuilder(ILevelBuilder):
             for j in range(n_cols):
                 top = top_shift + i * block_height * 1.5
 
-                centerx = side_shift + (self.env_width - 2 * side_shift) * (
-                    j + 1
-                ) / (n_cols + 1)
-                left = centerx - block_width / 2
+                left = side_shift + j * (block_width + between_shift)
                 block = self.item_manager.create_block(
                     top=top,
                     left=left,
@@ -136,5 +133,5 @@ class DefaultLevelBuilder(ILevelBuilder):
         return blocks
 
     def _center_platform(self, platform: Platform) -> None:
-        platform.rect.centerx = self.env_width // 2
-        platform.rect.bottom = self.env_height - 10
+        platform.rect.centerx = self._env_size.x // 2
+        platform.rect.bottom = self._env_size.y - 10

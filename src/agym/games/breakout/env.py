@@ -37,21 +37,17 @@ from .state import GameState
 class BreakoutEnv(IGameEnvironment):
     def __init__(
         self,
-        env_width: float,
-        env_height: float,
+        env_size: Vec2,
         collision_detector: ICollisionDetector,
         level_builder: IBreakoutLevelBuilder,
         checking_gameover: bool = False,
         eps: float = 1e-3,
     ):
-        self.env_width = env_width
-        self.env_height = env_height
-
         self.env_rect = Rectangle(
             left=0,
             top=0,
-            width=self.env_width,
-            height=self.env_height,
+            width=env_size.x,
+            height=env_size.y,
         )
 
         self.checking_gameover = checking_gameover

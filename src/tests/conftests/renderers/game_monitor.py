@@ -11,10 +11,7 @@ def game_monitor_renderer(
     return GameMonitorRenderer(
         fps_label=fps_label,
         profile_label=profile_label,
-        screen_size=Size(
-            width=config.window_screen_width,
-            height=config.window_screen_height,
-        ),
+        screen_size=config.window_screen_size,
         env_renderer=env_renderer,
         render_kit=render_kit,
     )

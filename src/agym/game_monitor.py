@@ -16,8 +16,6 @@ from agym.utils import profile
 class GameMonitor:
     def __init__(
         self,
-        width: int,
-        height: int,
         env: IGameEnvironment,
         model: IModel,
         clock: IClock,
@@ -37,14 +35,16 @@ class GameMonitor:
         self.log_updater = log_updater
 
         self.audio_handler = audio_handler
-        # self.run_playing_music()
+        self.run_playing_music()
 
         self.tps = tps
 
         self.env.reset()
 
     def run_playing_music(self) -> None:
-        bsound = Sound("agym/static/sounds/death_note_shinigami_kai.mp3")
+        bsound = Sound(
+            "../static/envs/breakout/sounds/death_note_shinigami_kai.mp3"
+        )
         bsound.set_volume(0.2)
         bsound.play(loops=-1)
 
