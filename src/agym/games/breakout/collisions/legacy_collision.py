@@ -253,17 +253,23 @@ def collide_thick_segment_rect(segment, rect, thick) -> Optional[Point]:
 def collide_circle_rect(circle, rect, radius) -> Optional[Point]:
     coll_point = None
     if rect.left < circle[0] < rect.right:
-        if math.fabs(circle[1] - rect.top) < radius:
+        if rect.top < circle[1] < rect.bottom:
+            coll_point = [circle[0], circle[1]]
+
+        elif math.fabs(circle[1] - rect.top) < radius:
             coll_point = [circle[0], rect.top]
+
         elif math.fabs(circle[1] - rect.bottom) < radius:
             coll_point = [circle[0], rect.bottom]
+
     elif rect.top < circle[1] < rect.bottom:
         if math.fabs(circle[0] - rect.left) < radius:
             coll_point = [rect.left, circle[1]]
+
         elif math.fabs(circle[0] - rect.right) < radius:
             coll_point = [rect.right, circle[1]]
-    else:
 
+    else:
         for side_1 in [rect.left, rect.right]:
             for side_2 in [rect.top, rect.bottom]:
                 if is_point_in_circle((side_1, side_2), circle, radius):

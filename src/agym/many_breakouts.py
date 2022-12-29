@@ -27,8 +27,7 @@ class ManyBreakoutsEnv(IGameEnvironment):
 
         self.envs = [
             BreakoutEnv(
-                env_width=env_size.x,
-                env_height=env_size.y,
+                env_size=env_size,
                 collision_detector=collision_detector,
                 level_builder=level_builder,
                 checking_gameover=False,

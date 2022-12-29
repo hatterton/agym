@@ -13,13 +13,13 @@ from .dtos import PI, LevelTestCase
 def ball_wall_collision_levels(
     ball_vertical_wall_left_collision_level,
     ball_vertical_wall_right_collision_level,
-    ball_vertical_wall_top_collision_level,
+    ball_horisontal_wall_top_collision_level,
     ball_corner_wall_collision_level,
 ) -> List[LevelTestCase]:
     return [
         ball_vertical_wall_left_collision_level,
         ball_vertical_wall_right_collision_level,
-        ball_vertical_wall_top_collision_level,
+        ball_horisontal_wall_top_collision_level,
         ball_corner_wall_collision_level,
     ]
 
@@ -32,7 +32,7 @@ def ball_vertical_wall_left_collision_level(
         radius=10,
         speed=2.0,
     )
-    ball.rect.center = Point(x=60, y=200)
+    ball.rect.center = Point(x=60, y=env_height / 2)
     ball.thrown = True
     r2 = 2**0.5
     ball.velocity = Vec2(x=-r2 / 2, y=-r2 / 2)
@@ -61,8 +61,7 @@ def ball_vertical_wall_right_collision_level(
         radius=10,
         speed=2.0,
     )
-    ball.rect.center = Point(x=390, y=200)
-    ball.rect.right = env_width - 60
+    ball.rect.center = Point(x=env_width - 60, y=env_height / 2)
 
     ball.thrown = True
     r2 = 2**0.5
@@ -85,14 +84,14 @@ def ball_vertical_wall_right_collision_level(
 
 
 @pytest.fixture
-def ball_vertical_wall_top_collision_level(
+def ball_horisontal_wall_top_collision_level(
     item_manager: ItemManager, env_width
 ) -> LevelTestCase:
     ball = item_manager.create_ball(
         radius=10,
         speed=2.0,
     )
-    ball.rect.center = Point(x=100, y=60)
+    ball.rect.center = Point(x=env_width / 2, y=60)
     ball.thrown = True
     r2 = 2**0.5
     ball.velocity = Vec2(x=r2 / 2, y=-r2 / 2)
@@ -121,7 +120,7 @@ def ball_corner_wall_collision_level(
         radius=10,
         speed=2.0,
     )
-    ball.rect.center = Point(x=400, y=50)
+    ball.rect.center = Point(x=env_width - 60, y=60)
     ball.thrown = True
     r2 = 2**0.5
     ball.velocity = Vec2(x=r2 / 2, y=-r2 / 2)

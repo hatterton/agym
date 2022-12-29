@@ -22,8 +22,8 @@ class KDTreeRenderer(IRenderer):
     def __init__(
         self,
         screen_size: Size,
-        env: BreakoutEnv,
         render_kit: IRenderKit,
+        env: Optional[BreakoutEnv] = None,
     ):
         self._env = env
 
@@ -38,18 +38,45 @@ class KDTreeRenderer(IRenderer):
 
         self._kdtree_font = self._render_kit.create_font("Hack", 12)
 
-    def _convert_rectangle_to_rect(self, rect: Rectangle) -> Rect:
+    @property
+    def env(self) -> BreakoutEnv:
+        if self._env is None:
+            raise ValueError("Env to render is not set")
+
+        return self._env
+
+    @env.setter
+    def env(self, value: BreakoutEnv) -> None:
+        self._env = value
+
+    def _map_rectangle_to_rect(self, rect: Rectangle) -> Rect:
         return Rect.from_sides(
-            left=int(rect.left),
-            top=int(rect.top),
-            right=int(rect.right),
-            bottom=int(rect.bottom),
+            left=round(
+                self._screen_size.width
+                * (rect.left - self.env.rect.left)
+                / self.env.rect.width
+            ),
+            top=round(
+                self._screen_size.height
+                * (rect.top - self.env.rect.top)
+                / self.env.rect.height
+            ),
+            right=round(
+                self._screen_size.width
+                * (rect.right - self.env.rect.left)
+                / self.env.rect.width
+            ),
+            bottom=round(
+                self._screen_size.height
+                * (rect.bottom - self.env.rect.top)
+                / self.env.rect.height
+            ),
         )
 
     def render(self) -> IScreen:
         screen = self._render_kit.create_screen(self._screen_size)
 
-        state = self._env.state
+        state = self.env.state
         tree = KDTreeBuilder(state.get_items()).build(1e-4)
 
         self._render_node_on(
@@ -67,7 +94,7 @@ class KDTreeRenderer(IRenderer):
         parent: Optional[SplitTreeNode] = None,
     ) -> None:
         if segment_rect is None:
-            segment_rect = self._convert_rectangle_to_rect(node.bounding_box)
+            segment_rect = self._map_rectangle_to_rect(node.bounding_box)
 
         if isinstance(node, SplitTreeNode):
             self._render_subnodes_on(
@@ -110,7 +137,7 @@ class KDTreeRenderer(IRenderer):
         node: TreeNode,
         color: Color,
     ) -> None:
-        node_rect = self._convert_rectangle_to_rect(node.bounding_box)
+        node_rect = self._map_rectangle_to_rect(node.bounding_box)
 
         self._render_kit.draw_rect(
             screen=screen,

@@ -9,7 +9,7 @@ from agym.games.protocols import IGameEvent
 class AudioHandler:
     def __init__(self) -> None:
         self.ball_brick_sound = Sound(
-            "agym/static/sounds/trimmed_ball_brick.wav"
+            "../static/envs/breakout/sounds/trimmed_ball_brick_mono.wav"
         )
 
     def handle_events(self, events: List[IGameEvent]) -> None:

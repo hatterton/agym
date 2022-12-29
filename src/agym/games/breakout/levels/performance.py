@@ -13,16 +13,14 @@ from .item_manager import ItemManager
 class PerformanceLevelBuilder(ILevelBuilder):
     def __init__(
         self,
-        env_width: int,
-        env_height: int,
+        env_size: Vec2,
         num_balls: int,
         ball_radius: float,
         ball_speed: float,
     ) -> None:
         self._item_manager = ItemManager()
 
-        self._env_width = env_width
-        self._env_height = env_height
+        self._env_size = env_size
 
         self._num_balls = num_balls
         self._ball_radius = ball_radius
@@ -38,8 +36,8 @@ class PerformanceLevelBuilder(ILevelBuilder):
         shift = 5.0
         left = shift
         top = shift
-        right = self._env_width - shift
-        bottom = self._env_width - shift
+        right = self._env_size.x - shift
+        bottom = self._env_size.x - shift
 
         width = right - left
         height = bottom - top
@@ -112,8 +110,8 @@ class PerformanceLevelBuilder(ILevelBuilder):
                 thrown=True,
             )
 
-            ball.rect.centerx = (col + 1) * self._env_width / (n + 1)
-            ball.rect.centery = (row + 1) * self._env_height / (n + 1)
+            ball.rect.centerx = (col + 1) * self._env_size.x / (n + 1)
+            ball.rect.centery = (row + 1) * self._env_size.y / (n + 1)
 
             velocity = random.choice(velocities).copy()
             ball.velocity = Vec2.from_list(velocity)

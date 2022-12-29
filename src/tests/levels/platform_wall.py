@@ -25,8 +25,8 @@ def platform_left_wall_collision_level(
     item_manager: ItemManager, env_height
 ) -> LevelTestCase:
     platform = item_manager.create_platform(speed=5)
-    platform.rect.center = Point(x=150, y=330)
-    platform.rect.left = 70
+    platform.rect.bottom = env_height
+    platform.rect.left = 60
     platform.velocity = Vec2(x=-1, y=0)
 
     item_manager.create_wall(
@@ -50,8 +50,8 @@ def platform_right_wall_collision_level(
     item_manager: ItemManager, env_width, env_height
 ) -> LevelTestCase:
     platform = item_manager.create_platform(speed=5)
-    platform.rect.center = Point(x=150, y=330)
-    platform.rect.right = 380
+    platform.rect.bottom = env_height
+    platform.rect.right = env_width - 60
     platform.velocity = Vec2(x=1, y=0)
 
     item_manager.create_wall(

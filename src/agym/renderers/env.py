@@ -24,12 +24,14 @@ class EnvRenderer(IRenderer):
         self,
         screen_size: Size,
         image_dir: str,
-        kdtree_renderer: IRenderer,
+        kdtree_renderer: KDTreeRenderer,
+        rendering_kdtree: bool,
         render_kit: IRenderKit,
         env: Optional[BreakoutEnv] = None,
     ):
         self._env = env
         self._kdtree_renderer = kdtree_renderer
+        self._rendering_kdtree = rendering_kdtree
 
         self._render_kit = render_kit
         self._screen_size = screen_size
@@ -90,8 +92,10 @@ class EnvRenderer(IRenderer):
         for wall in state.walls:
             self._render_wall_on(screen, wall)
 
-        kdtree_screen = self._kdtree_renderer.render()
-        screen.blit(kdtree_screen, Shift(0, 0))
+        if self._rendering_kdtree:
+            self._kdtree_renderer.env = self.env
+            kdtree_screen = self._kdtree_renderer.render()
+            screen.blit(kdtree_screen, Shift(0, 0))
 
         return screen
 
@@ -129,8 +133,6 @@ class EnvRenderer(IRenderer):
             text=str(block.health),
             foreground_color=Color(20, 20, 20),
             background_color=Color(200, 100, 100, 50),
-            # foreground_color=Color(200, 200, 200),
-            # background_color=Color(20, 20, 20, 100),
         )
         health_rect = health_screen.rect
         health_rect.center = block_screen.rect.center
@@ -165,15 +167,23 @@ class EnvRenderer(IRenderer):
     def _map_rectangle_to_rect(self, rect: Rectangle) -> Rect:
         return Rect.from_sides(
             left=round(
-                self._screen_size.width * rect.left / self.env.rect.width
+                self._screen_size.width
+                * (rect.left - self.env.rect.left)
+                / self.env.rect.width
             ),
             top=round(
-                self._screen_size.height * rect.top / self.env.rect.height
+                self._screen_size.height
+                * (rect.top - self.env.rect.top)
+                / self.env.rect.height
             ),
             right=round(
-                self._screen_size.width * rect.right / self.env.rect.width
+                self._screen_size.width
+                * (rect.right - self.env.rect.left)
+                / self.env.rect.width
             ),
             bottom=round(
-                self._screen_size.height * rect.bottom / self.env.rect.height
+                self._screen_size.height
+                * (rect.bottom - self.env.rect.top)
+                / self.env.rect.height
             ),
         )

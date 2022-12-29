@@ -144,7 +144,9 @@ def ball_ball_towards_between_collision_level(
 
 
 @pytest.fixture
-def ball_ball_race_collision_level(item_manager: ItemManager) -> LevelTestCase:
+def ball_ball_race_collision_level(
+    item_manager: ItemManager, env_height: float
+) -> LevelTestCase:
     ball1 = item_manager.create_ball(
         radius=10,
         speed=2.1,
@@ -162,7 +164,8 @@ def ball_ball_race_collision_level(item_manager: ItemManager) -> LevelTestCase:
     ball2.velocity = Vec2(x=1, y=0)
 
     platform = item_manager.create_platform(speed=2.0)
-    platform.rect.center = Point(x=100, y=330)
+    platform.rect.left = 1
+    platform.rect.bottom = env_height
 
     return (
         item_manager.extract_state(),

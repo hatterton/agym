@@ -172,9 +172,8 @@ class Platform(Item):
     def fake_update(self, dt):
         fake_rect = self.rect.copy()
 
-        if self.rest_freeze_time <= dt:
-            dt -= self.rest_freeze_time
-            fake_rect.center += self.velocity * self.speed * dt
+        dt = max(0, dt - self.rest_freeze_time)
+        fake_rect.center += self.velocity * self.speed * dt
 
         return [self.rect, fake_rect]
 
