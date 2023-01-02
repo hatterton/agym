@@ -3,7 +3,7 @@ from typing import Tuple
 from pydantic import BaseSettings
 
 from agym.dtos import BreakoutCollisionEngine, BreakoutLevelType, Size
-from agym.games.breakout.geom import Vec2
+from geometry import Vec2
 
 Color = Tuple[int, int, int]
 

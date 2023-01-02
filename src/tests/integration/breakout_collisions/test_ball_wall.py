@@ -1,11 +1,11 @@
 import pytest
 
-from agym.games.breakout import (
+from envs.breakout import (
     BreakoutAction,
     BreakoutCollisionEvent,
     BreakoutEnv,
 )
-from agym.games.breakout.dtos import CollisionBallWall
+from envs.breakout import CollisionBallWall
 
 
 @pytest.mark.breakout

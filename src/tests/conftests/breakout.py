@@ -1,6 +1,6 @@
 import pytest
 
-from agym.games.breakout import (
+from envs.breakout import (
     BreakoutEnv,
     CollisionDetector,
     EmptyLevelBuilder,

@@ -1,0 +1,20 @@
+[[package]]
+name = "custom-queue"
+version = "0.1.0"
+description = ""
+category = "main"
+optional = false
+python-versions = "3.8"
+develop = true
+
+[package.source]
+type = "directory"
+url = "../custom_queue"
+
+[metadata]
+lock-version = "1.1"
+python-versions = "3.8"
+content-hash = "0452ea78f5718b96a356685313b45d120664c86d9b75bb689213cc687430ec34"
+
+[metadata.files]
+custom-queue = []

@@ -1,9 +1,9 @@
 from pygame.mixer import Sound
 
 from agym.dtos import Event
-from agym.games.protocols import IGameEnvironment
+from envs.protocols import IGameEnvironment
 from agym.protocols import IClock, IEventHandler, IModel, IUpdater
-from agym.utils import profile
+from timeprofiler import profile
 
 
 class GameMonitor(IEventHandler, IUpdater):

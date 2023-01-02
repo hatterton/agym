@@ -1,6 +1,6 @@
 from typing import Protocol
 
-from agym.games.protocols import IGameAction, IGameState
+from envs.protocols import IGameAction, IGameState
 
 from .event import IEventHandler
 

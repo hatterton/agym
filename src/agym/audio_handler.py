@@ -2,8 +2,8 @@ from typing import List, cast
 
 from pygame.mixer import Sound
 
-from agym.games.breakout.dtos import BreakoutCollisionEvent, CollisionBallBlock
-from agym.games.protocols import IGameEvent
+from envs.breakout import BreakoutCollisionEvent, CollisionBallBlock
+from envs.protocols import IGameEvent
 
 
 class AudioHandler:

@@ -2,7 +2,7 @@ from agym.dtos import Color, Shift, Size
 from agym.game_monitor import GameMonitor
 from agym.gui import TextLabel
 from agym.protocols import IRenderer, IRenderKit, IScreen
-from agym.utils import TimeProfiler, profile
+from timeprofiler import TimeProfiler, profile
 
 
 class GameMonitorRenderer(IRenderer):

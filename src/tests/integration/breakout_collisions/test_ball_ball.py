@@ -1,12 +1,12 @@
 import pytest
 
-from agym.games.breakout import (
+from envs.breakout import (
     BreakoutAction,
     BreakoutCollisionEvent,
     BreakoutEnv,
 )
-from agym.games.breakout.dtos import CollisionBallBall
-from agym.games.breakout.geom import Vec2
+from envs.breakout import CollisionBallBall
+from geometry import Vec2
 from tests.math_utils import almost_equal_float, almost_equal_vec
 
 

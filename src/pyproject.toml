@@ -4,11 +4,19 @@ version = "0.1.0"
 description = ""
 authors = ["Anton Novikov <thescir@yandex.ru>"]
 
+packages = [
+    {include = "agym"},
+]
+
 [tool.poetry.dependencies]
 python = "3.8"
 pygame = "^2.1.2"
 numpy = "^1.22.1"
 pydantic = "^1.9.0"
+envs = {path = "./envs", develop = true}
+geometry = {path = "./geometry", develop = true}
+custom_queue = {path = "./custom_queue", develop = true}
+timeprofiler = {path = "./timeprofiler", develop = true}
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
@@ -25,9 +33,18 @@ check_untyped_defs = true
 warn_unused_configs = true
 warn_unused_ignores = true
 warn_redundant_casts = true
-
 show_column_numbers = true
 show_error_context = true
+
+[[tool.mypy.overrides]]
+module = [
+    "custom_queue",
+    "timeprofiler",
+    "geometry",
+    "envs.*"
+]
+ignore_missing_imports = true
+follow_imports = "skip"
 
 [tool.isort]
 line_length = 80

@@ -1,7 +1,7 @@
 import math
 from typing import Tuple
 
-from agym.games.breakout import BreakoutAction, BreakoutState
+from envs.breakout import BreakoutAction, BreakoutState
 
 TickNum = float
 LevelTestCase = Tuple[BreakoutState, BreakoutAction, TickNum]

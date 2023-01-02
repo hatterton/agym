@@ -1,6 +1,6 @@
 import pytest
 
-from agym.games.breakout.geom import Circle, Point, is_intersected
+from geometry import Circle, Point, is_intersected
 
 
 @pytest.mark.geom

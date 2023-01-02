@@ -1,14 +1,14 @@
 import pytest
 
-from agym.games.breakout.geom import Rectangle
-from agym.games.breakout.geom.kdtree.node import (
+from geometry import Rectangle
+from geometry.kdtree.node import (
     LeafTreeNode,
     ParentRelativeType,
     SplitTreeNode,
     TreeNode,
     TreeNodeType,
 )
-from agym.games.breakout.geom.kdtree.record import Record
+from geometry.kdtree.record import Record
 
 from .tree_utils import build_record, get_depth, traveres
 

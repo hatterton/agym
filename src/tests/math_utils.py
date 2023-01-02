@@ -1,6 +1,6 @@
 from typing import List
 
-from agym.games.breakout.geom import Vec2
+from geometry import Vec2
 
 
 def almost_equal_float(a: float, b: float, eps: float = 1e-3) -> bool:

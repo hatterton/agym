@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from agym.games.protocols import IGameEvent
+from envs.protocols import IGameEvent
 
 from .key import Key
 

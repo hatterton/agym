@@ -3,10 +3,10 @@ from enum import Enum, auto
 from typing import Dict, Optional
 
 from agym.dtos import Color, Rect, Shift, Size
-from agym.games import BreakoutEnv
-from agym.games.breakout.dtos import Ball, Block, Item, Platform, Wall
-from agym.games.breakout.geom import Rectangle
+from envs.breakout import BreakoutEnv
+from envs.breakout import Ball, Block, Item, Platform, Wall
 from agym.protocols import IRenderer, IRenderKit, IScreen
+from geometry import Rectangle
 
 from .kdtree import KDTreeRenderer
 

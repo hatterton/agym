@@ -1,8 +1,8 @@
 from typing import Tuple
 
 from agym.dtos import Event, KeyboardEvent, KeyCode, KeyDownEvent, KeyUpEvent
-from agym.games.breakout.dtos import BreakoutAction, BreakoutActionType
-from agym.games.protocols import IGameState
+from envs.breakout import BreakoutAction, BreakoutActionType
+from envs.protocols import IGameState
 from agym.protocols import IModel
 
 

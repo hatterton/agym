@@ -1,6 +1,6 @@
 import pytest
 
-from agym.utils import TimeProfiler
+from timeprofiler import TimeProfiler
 
 
 @pytest.fixture
