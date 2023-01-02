@@ -1,9 +1,10 @@
 from typing import Dict, List, Mapping, Optional
 
 from agym.dtos import Color, Rect, Shift, Size
-from agym.games import BreakoutEnv
-from agym.games.breakout.collisions import KDTreeBuilder
-from agym.games.breakout.geom import (
+from envs.breakout import BreakoutEnv
+from envs.breakout import KDTreeBuilder
+from agym.protocols import IRenderer, IRenderKit, IScreen
+from geometry import (
     ClassId,
     ItemId,
     KDTree,
@@ -15,7 +16,6 @@ from agym.games.breakout.geom import (
     TreeNode,
     TreeNodeType,
 )
-from agym.protocols import IRenderer, IRenderKit, IScreen
 
 
 class KDTreeRenderer(IRenderer):

@@ -1,0 +1,12 @@
+[tool.poetry]
+name = "custom_queue"
+version = "0.1.0"
+description = ""
+authors = ["Anton Novikov <thescir@yandex.ru>"]
+
+[tool.poetry.dependencies]
+python = "3.8"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

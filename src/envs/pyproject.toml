@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "envs"
+version = "0.1.0"
+description = ""
+authors = ["Anton Novikov <thescir@yandex.ru>"]
+
+[tool.poetry.dependencies]
+python = "3.8"
+geometry = {path = "../geometry", develop = true}
+timeprofiler = {path = "../timeprofiler", develop = true}
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

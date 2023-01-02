@@ -1,4 +1,8 @@
 
+.PHONY: install
+install:
+	cd src && poetry install
+
 .PHONY: shell
 shell:
 	cd src && poetry shell

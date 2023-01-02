@@ -4,7 +4,7 @@ from threading import Thread, Timer
 from typing import Callable, Generator
 
 from agym.dtos import Event, KeyCode, KeyDownEvent
-from agym.games.breakout import BreakoutEnv
+from envs.breakout import BreakoutEnv
 from agym.main_window import MainWindow
 from agym.protocols import IEventSource
 from tests.gui.game_model import DummyModel

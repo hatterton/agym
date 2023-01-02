@@ -1,12 +1,8 @@
 from typing import Iterable, Optional
 
-from agym.games.breakout.geom import Rectangle
-from agym.games.breakout.geom.kdtree.node import (
-    LeafTreeNode,
-    SplitTreeNode,
-    TreeNode,
-)
-from agym.games.breakout.geom.kdtree.record import Record
+from geometry import Rectangle
+from geometry.kdtree.node import LeafTreeNode, SplitTreeNode, TreeNode
+from geometry.kdtree.record import Record
 
 
 def build_record(

@@ -3,8 +3,8 @@ from typing import Iterable, Optional
 
 from agym.protocols import IClock
 from agym.utils.math import lazy_sorted
-from agym.utils.queue import IQueue, SizedQueue
-from agym.utils.timemanager import profile
+from custom_queue import IQueue, SizedQueue
+from timeprofiler import profile
 
 
 class FramerateClockDecorator(IClock):

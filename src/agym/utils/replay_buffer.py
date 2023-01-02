@@ -2,8 +2,6 @@
 import random
 from itertools import chain
 
-import numpy as np
-
 
 class ReplayBuffer(object):
     def __init__(self, size):
@@ -42,13 +40,14 @@ class ReplayBuffer(object):
             next_states.append(next_state)
             dones.append(done)
 
-        return (
-            np.stack(states, axis=0),
-            np.array(actions),
-            np.array(rewards),
-            np.stack(next_states, axis=0),
-            np.array(dones),
-        )
+        return None
+        # return (
+        #     np.stack(states, axis=0),
+        #     np.array(actions),
+        #     np.array(rewards),
+        #     np.stack(next_states, axis=0),
+        #     np.array(dones),
+        # )
 
     def sample(self, batch_size):
         last_size = batch_size // 2

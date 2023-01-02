@@ -1,8 +1,8 @@
 import pytest
 
-from agym.games.breakout.geom import Circle, Point
-from agym.games.breakout.geom.kdtree import KDTree
-from agym.games.breakout.geom.kdtree.node import Record, TreeNode
+from geometry import Circle, Point
+from geometry.kdtree import KDTree
+from geometry.kdtree.node import Record, TreeNode
 
 from .tree_utils import build_record, get_depth, traveres
 

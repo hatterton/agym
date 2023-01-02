@@ -1,13 +1,13 @@
 from typing import List
 
-from agym.games import BreakoutEnv
-from agym.games.breakout import BreakoutEvent, BreakoutState
-from agym.games.breakout.geom import Rectangle, Vec2
-from agym.games.breakout.protocols import (
+from envs.breakout import BreakoutEnv
+from envs.breakout import BreakoutEvent, BreakoutState
+from envs.breakout.protocols import (
     IBreakoutLevelBuilder,
     ICollisionDetector,
 )
-from agym.games.protocols import IGameAction, IGameEnvironment
+from envs.protocols import IGameAction, IGameEnvironment
+from geometry import Rectangle, Vec2
 
 
 class ManyBreakoutsEnv(IGameEnvironment):

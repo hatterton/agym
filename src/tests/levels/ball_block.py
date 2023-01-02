@@ -3,9 +3,9 @@ from typing import List, Tuple
 
 import pytest
 
-from agym.games.breakout import ItemManager
-from agym.games.breakout.dtos import BreakoutAction, BreakoutActionType
-from agym.games.breakout.geom import Point, Vec2
+from envs.breakout import ItemManager
+from envs.breakout import BreakoutAction, BreakoutActionType
+from geometry import Point, Vec2
 
 from .dtos import PI, LevelTestCase
 

@@ -1,6 +1,6 @@
 import pytest
 
-from agym.games.breakout.geom import Circle, Point, Triangle, is_intersected
+from geometry import Circle, Point, Triangle, is_intersected
 from tests.math_utils import almost_equal_float, almost_equal_point
 
 

@@ -1,7 +1,7 @@
 from typing import List
 
 from agym.gui import TextLabel
-from agym.utils import Stat, TimeProfiler, profile
+from timeprofiler import Stat, TimeProfiler, profile
 
 
 class ProfileUpdater:

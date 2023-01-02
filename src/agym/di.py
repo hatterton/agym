@@ -12,22 +12,21 @@ from agym.dtos import (
 from agym.event_sources import PygameEventSource
 from agym.game_models import ManualBreakoutModel
 from agym.game_monitor import GameMonitor
-from agym.games.breakout import (
+from envs.breakout import (
     BreakoutEnv,
     CollisionDetector,
     KDTreeCollisionDetectionEngine,
     NaiveCollisionDetectionEngine,
 )
-from agym.games.breakout.geom import Vec2
-from agym.games.breakout.levels import (
+from envs.breakout import (
     DefaultLevelBuilder,
     PerformanceLevelBuilder,
 )
-from agym.games.breakout.protocols import (
+from envs.breakout.protocols import (
     IBreakoutLevelBuilder,
     ICollisionDetectorEngine,
 )
-from agym.games.protocols import IGameEnvironment
+from envs.protocols import IGameEnvironment
 from agym.gui import TextLabel
 from agym.gui.render_kits import PygameRenderKitEngine, RenderKit
 from agym.main_window import MainWindow
@@ -47,7 +46,8 @@ from agym.updaters import (
     LimitedUpdater,
     ProfileUpdater,
 )
-from agym.utils import TimeProfiler, register_profiler
+from timeprofiler import TimeProfiler, register_profiler
+from geometry import Vec2
 
 
 class RenderKits:

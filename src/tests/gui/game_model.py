@@ -1,6 +1,6 @@
 from agym.dtos import Event
-from agym.games.breakout.dtos import BreakoutAction, BreakoutActionType
-from agym.games.protocols import IGameAction, IGameState
+from envs.breakout import BreakoutAction, BreakoutActionType
+from envs.protocols import IGameAction, IGameState
 from agym.protocols import IEventHandler
 
 

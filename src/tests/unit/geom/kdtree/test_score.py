@@ -1,6 +1,6 @@
 import pytest
 
-from agym.games.breakout.geom.kdtree.scores import get_score
+from geometry.kdtree.scores import get_score
 
 
 @pytest.mark.kdtree

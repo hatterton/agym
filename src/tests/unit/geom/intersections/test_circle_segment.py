@@ -1,11 +1,6 @@
 import pytest
 
-from agym.games.breakout.geom import (
-    Circle,
-    Point,
-    Segment,
-    get_intersection_circle_segment,
-)
+from geometry import Circle, Point, Segment, get_intersection_circle_segment
 from tests.math_utils import almost_equal_float, almost_equal_point
 
 
