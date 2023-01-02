@@ -21,7 +21,15 @@ class TextLabel(IRenderer):
         self._background_color = background_color
         self._alpha = alpha
 
-        self.text = text
+        self._text = text
+
+    @property
+    def text(self) -> str:
+        return self._text
+
+    @text.setter
+    def text(self, value: str) -> None:
+        self._text = value
 
     def render(self) -> IScreen:
         screen = self._render_kit.render_text(

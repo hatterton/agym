@@ -1,7 +1,7 @@
 from typing import List
 
 from agym.games import BreakoutEnv
-from agym.games.breakout import BreakoutEvent, GameState
+from agym.games.breakout import BreakoutEvent, BreakoutState
 from agym.games.breakout.geom import Rectangle, Vec2
 from agym.games.breakout.protocols import (
     IBreakoutLevelBuilder,
@@ -36,8 +36,8 @@ class ManyBreakoutsEnv(IGameEnvironment):
         ]
 
     @property
-    def state(self) -> GameState:
-        return GameState()
+    def state(self) -> BreakoutState:
+        return BreakoutState()
 
     @property
     def rect(self) -> Rectangle:

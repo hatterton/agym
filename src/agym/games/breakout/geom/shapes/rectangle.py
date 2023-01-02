@@ -10,15 +10,6 @@ class Rectangle:
     width: float
     height: float
 
-    @classmethod
-    def from_rect(cls, rect) -> "Rectangle":
-        return cls(
-            left=rect.left,
-            top=rect.top,
-            width=rect.width,
-            height=rect.height,
-        )
-
     def copy(self) -> "Rectangle":
         return Rectangle(
             left=self.left,

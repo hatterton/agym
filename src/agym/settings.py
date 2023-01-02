@@ -10,12 +10,12 @@ Color = Tuple[int, int, int]
 
 class BreakoutSettings(BaseSettings):
     env_size: Vec2 = Vec2(x=400, y=400)
-    num_envs: int = 1
+    num_envs: int = 3
 
     image_dir: str = "../static/envs/breakout/images"
 
-    level_type: BreakoutLevelType = BreakoutLevelType.DEFAULT
-    # level_type: BreakoutLevelType = BreakoutLevelType.PERFORMANCE
+    # level_type: BreakoutLevelType = BreakoutLevelType.DEFAULT
+    level_type: BreakoutLevelType = BreakoutLevelType.PERFORMANCE
 
     # collision_engine: BreakoutCollisionEngine = BreakoutCollisionEngine.NAIVE
     collision_engine: BreakoutCollisionEngine = BreakoutCollisionEngine.KDTREE
@@ -30,7 +30,7 @@ class BreakoutSettings(BaseSettings):
     platform_speed: float = 10
     platform_size: Vec2 = Vec2(x=200, y=25)
 
-    num_balls: int = 4
+    num_balls: int = 5
     ball_speed: float = 15.0
     ball_radius: float = 15.0
 

@@ -122,3 +122,6 @@ class PygameRenderKitEngine(IRenderKitEngine):
             radius,
             width,
         )
+
+    def set_caption(self, caption: str) -> None:
+        pg.display.set_caption(caption)

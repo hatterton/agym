@@ -45,9 +45,9 @@ class KDTree:
         self._records = records
 
         self.root: TreeNode
-        self.build(records)
+        self._build(records)
 
-    def build(self, records: List[Record]) -> None:
+    def _build(self, records: List[Record]) -> None:
         verticals = []
         horizontals = []
         for idx, r in enumerate(records):
@@ -88,7 +88,7 @@ class KDTree:
             horizontals, key=lambda r: (r.bound, r.bound_type.value)
         )
 
-        self.root = self._build(
+        self.root = self._build_subtree(
             ids=set(range(len(records))),
             records=records,
             verticals=verticals,
@@ -97,7 +97,7 @@ class KDTree:
             parent_relative=ParentRelativeType.ROOT,
         )
 
-    def _build(
+    def _build_subtree(
         self,
         ids: Set[int],
         records: List[Record],
@@ -153,7 +153,7 @@ class KDTree:
                 break
 
         left = (
-            self._build(
+            self._build_subtree(
                 ids=left_ids,
                 records=records,
                 verticals=[b for b in verticals if b.idx in left_ids],
@@ -166,7 +166,7 @@ class KDTree:
         )
 
         middle = (
-            self._build(
+            self._build_subtree(
                 ids=middle_ids,
                 records=records,
                 verticals=[b for b in verticals if b.idx in middle_ids],
@@ -179,7 +179,7 @@ class KDTree:
         )
 
         right = (
-            self._build(
+            self._build_subtree(
                 ids=right_ids,
                 records=records,
                 verticals=[b for b in verticals if b.idx in right_ids],

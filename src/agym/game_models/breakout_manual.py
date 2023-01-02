@@ -8,46 +8,46 @@ from agym.protocols import IModel
 
 class ManualBreakoutModel(IModel):
     def __init__(self):
-        self.platform_moving_left = False
-        self.platform_moving_right = False
-        self.promise_throw = False
+        self._moving_left = False
+        self._moving_right = False
+        self._promising_throw = False
 
     def try_handle_event(self, event: Event) -> bool:
         if isinstance(event, KeyDownEvent):
             if event.key.code == KeyCode.LEFT_ARROW:
-                self.platform_moving_left = True
-                self.platform_moving_right = False
+                self._moving_left = True
+                self._moving_right = False
                 return True
 
             elif event.key.code == KeyCode.RIGHT_ARROW:
-                self.platform_moving_left = False
-                self.platform_moving_right = True
+                self._moving_left = False
+                self._moving_right = True
                 return True
 
             elif event.key.code == KeyCode.SPACE:
-                self.promise_throw = True
+                self._promising_throw = True
                 return True
 
         elif isinstance(event, KeyUpEvent):
             if event.key.code == KeyCode.LEFT_ARROW:
-                self.platform_moving_left = False
+                self._moving_left = False
                 return True
 
             elif event.key.code == KeyCode.RIGHT_ARROW:
-                self.platform_moving_right = False
+                self._moving_right = False
                 return True
 
         return False
 
     def get_action(self, state: IGameState) -> BreakoutAction:
-        if self.promise_throw:
-            self.promise_throw = False
+        if self._promising_throw:
+            self._promising_throw = False
             action_type = BreakoutActionType.THROW
 
-        elif self.platform_moving_right:
+        elif self._moving_right:
             action_type = BreakoutActionType.RIGHT
 
-        elif self.platform_moving_left:
+        elif self._moving_left:
             action_type = BreakoutActionType.LEFT
 
         else:

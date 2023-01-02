@@ -21,4 +21,4 @@ from .protocols import (
     ICollisionDetector,
     ICollisionDetectorEngine,
 )
-from .state import GameState
+from .state import BreakoutState

@@ -134,3 +134,6 @@ class RenderKit(IRenderKit):
             color=color,
             width=width,
         )
+
+    def set_caption(self, caption: str) -> None:
+        self._engine.set_caption(caption)

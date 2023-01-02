@@ -5,7 +5,7 @@ from typing import List, Optional
 from agym.games.breakout.dtos import Ball, Block, Platform, Wall
 from agym.games.breakout.geom import Rectangle, Vec2
 from agym.games.breakout.protocols import ILevelBuilder
-from agym.games.breakout.state import GameState
+from agym.games.breakout.state import BreakoutState
 
 from .item_manager import ItemManager
 
@@ -26,7 +26,7 @@ class PerformanceLevelBuilder(ILevelBuilder):
         self._ball_radius = ball_radius
         self._ball_speed = ball_speed
 
-    def build(self) -> GameState:
+    def build(self) -> BreakoutState:
         walls = self._make_walls()
         balls = self._make_balls()
 

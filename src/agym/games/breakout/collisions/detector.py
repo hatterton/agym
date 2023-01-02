@@ -8,9 +8,10 @@ from agym.games.breakout.dtos import (
     Item,
     ItemId,
     Platform,
+    Wall,
 )
 from agym.games.breakout.protocols import ICollisionDetectorEngine
-from agym.games.breakout.state import GameState
+from agym.games.breakout.state import BreakoutState
 from agym.utils import profile
 
 
@@ -20,23 +21,23 @@ class CollisionDetector:
 
     @profile("calc_colls", "env_step")
     def get_step_collisions(
-        self, state: GameState, dt: float
+        self, state: BreakoutState, dt: float
     ) -> List[Collision]:
         return list(self._generate_step_collisions(state, dt))
 
     def _generate_step_collisions(
-        self, state: GameState, dt: float
+        self, state: BreakoutState, dt: float
     ) -> Iterable[Collision]:
         return self._engine.generate_step_collisions(state, dt)
 
     @profile("calc_time", "env_step")
     def get_time_before_collision(
-        self, state: GameState, max_dt: float
+        self, state: BreakoutState, max_dt: float
     ) -> float:
         return self._get_time_before_collision(state, max_dt)
 
     def _get_time_before_collision(
-        self, state: GameState, max_dt: float
+        self, state: BreakoutState, max_dt: float
     ) -> float:
         colls = self._engine.generate_step_collisions(state, max_dt)
         if not any(colls):
@@ -62,10 +63,10 @@ class CollisionDetector:
         return min_dt
 
     def _build_collided_state(
-        self, state: GameState, colls: Iterable[Collision]
-    ) -> GameState:
+        self, state: BreakoutState, colls: Iterable[Collision]
+    ) -> BreakoutState:
         index = self._build_index(state)
-        substate = state.duplicate_empty()
+        substate = BreakoutState()
 
         collided_ids = set()
         for coll in colls:
@@ -84,9 +85,12 @@ class CollisionDetector:
             elif isinstance(item, Block):
                 substate.blocks.append(item)
 
+            elif isinstance(item, Wall):
+                substate.walls.append(item)
+
         return substate
 
-    def _build_index(self, state: GameState) -> Mapping[ItemId, Item]:
+    def _build_index(self, state: BreakoutState) -> Mapping[ItemId, Item]:
         index: Dict[ItemId, Item] = dict()
 
         for wall in state.walls:
