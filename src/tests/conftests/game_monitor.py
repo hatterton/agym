@@ -7,8 +7,6 @@ from agym.game_monitor import GameMonitor
 def game_monitor_logic(
     config,
     clock,
-    fps_label,
-    profile_label,
     log_updater,
     audio_handler,
     env,
@@ -16,8 +14,6 @@ def game_monitor_logic(
 ):
     return GameMonitor(
         clock=clock,
-        fps_label=fps_label,
-        profile_label=profile_label,
         log_updater=log_updater,
         audio_handler=audio_handler,
         env=env,

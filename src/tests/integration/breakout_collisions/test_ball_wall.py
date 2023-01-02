@@ -31,8 +31,8 @@ class TestCollisionsBallWall:
         event = events[0]
         assert isinstance(event, BreakoutCollisionEvent)
         assert isinstance(event.collision, CollisionBallWall)
-        assert breakout.balls[0].velocity[0] > 0
-        assert breakout.balls[0].velocity[1] < 0
+        assert breakout._balls[0].velocity[0] > 0
+        assert breakout._balls[0].velocity[1] < 0
 
     def test_ball_vertical_wall_right_collision_type(
         self,
@@ -52,8 +52,8 @@ class TestCollisionsBallWall:
         event = events[0]
         assert isinstance(event, BreakoutCollisionEvent)
         assert isinstance(event.collision, CollisionBallWall)
-        assert breakout.balls[0].velocity[0] < 0
-        assert breakout.balls[0].velocity[1] < 0
+        assert breakout._balls[0].velocity[0] < 0
+        assert breakout._balls[0].velocity[1] < 0
 
     def test_ball_horisontal_wall_top_collision_type(
         self,
@@ -73,5 +73,5 @@ class TestCollisionsBallWall:
         event = events[0]
         assert isinstance(event, BreakoutCollisionEvent)
         assert isinstance(event.collision, CollisionBallWall)
-        assert breakout.balls[0].velocity[0] > 0
-        assert breakout.balls[0].velocity[1] > 0
+        assert breakout._balls[0].velocity[0] > 0
+        assert breakout._balls[0].velocity[1] > 0

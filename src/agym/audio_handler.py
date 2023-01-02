@@ -8,7 +8,7 @@ from agym.games.protocols import IGameEvent
 
 class AudioHandler:
     def __init__(self) -> None:
-        self.ball_brick_sound = Sound(
+        self._ball_brick_sound = Sound(
             "../static/envs/breakout/sounds/trimmed_ball_brick_mono.wav"
         )
 
@@ -16,4 +16,4 @@ class AudioHandler:
         for event in events:
             if isinstance(event, BreakoutCollisionEvent):
                 if isinstance(event.collision, CollisionBallBlock):
-                    self.ball_brick_sound.play(maxtime=150, fade_ms=50)
+                    self._ball_brick_sound.play(maxtime=150, fade_ms=50)

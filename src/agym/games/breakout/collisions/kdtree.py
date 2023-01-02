@@ -21,7 +21,7 @@ from agym.games.breakout.geom import (
     KDTree,
     Record,
 )
-from agym.games.breakout.state import GameState
+from agym.games.breakout.state import BreakoutState
 from agym.utils import CachedCollection
 
 from .precise import calculate_ball_ball_colls
@@ -45,12 +45,12 @@ class KDTreeCollisionDetectionEngine:
         }
 
     def generate_step_collisions(
-        self, state: GameState, dt: float
+        self, state: BreakoutState, dt: float
     ) -> Iterable[Collision]:
         return CachedCollection(self._generate_step_collisions(state, dt))
 
     def _generate_step_collisions(
-        self, state: GameState, dt: float
+        self, state: BreakoutState, dt: float
     ) -> Iterable[Collision]:
         kdtree_builder = KDTreeBuilder(state.get_items())
 

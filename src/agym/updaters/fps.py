@@ -4,7 +4,7 @@ from agym.protocols import IClock
 
 class FPSUpdater:
     def __init__(self, label: TextLabel, clock: IClock):
-        self.label = label
+        self._label = label
         self._clock = clock
 
     def update(self) -> None:
@@ -25,4 +25,4 @@ class FPSUpdater:
                 fps0_001_str,
             ]
         )
-        self.label.text = text
+        self._label.text = text

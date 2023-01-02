@@ -112,6 +112,9 @@ class IRenderKitEngine(Protocol):
     ) -> None:
         pass
 
+    def set_caption(self, caption: str) -> None:
+        pass
+
 
 class IRenderKit(IRenderKitEngine, Protocol):
     def render_text(

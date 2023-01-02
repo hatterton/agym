@@ -24,5 +24,4 @@ from .kdtree import (
     TreeNode,
     TreeNodeType,
 )
-from .protocols import SupportsBoundingBox
 from .shapes import Circle, Rectangle, Shape, Triangle

@@ -202,15 +202,12 @@ class GameMonitorContainer:
     def __init__(
         self,
         clocks: Clocks,
-        labels: Labels,
         env_container: EnvContainer,
         updaters: Updaters,
         config: Settings,
     ):
         self.game_monitor = GameMonitor(
             clock=clocks.clock,
-            fps_label=labels.fps_label,
-            profile_label=labels.profile_label,
             log_updater=updaters.log_updater,
             audio_handler=env_container.audio_handler,
             env=env_container.env,
@@ -300,7 +297,6 @@ class Application:
 
         self.game_monitor_container = GameMonitorContainer(
             clocks=self.clocks,
-            labels=self.labels,
             env_container=self.env_container,
             updaters=self.updaters,
             config=config,

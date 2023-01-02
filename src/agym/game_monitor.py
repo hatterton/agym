@@ -1,46 +1,34 @@
-import enum
-import os
-from time import sleep
-
 from pygame.mixer import Sound
 
-from agym.constants import TIME_RESOLUTION
 from agym.dtos import Event
 from agym.games.protocols import IGameEnvironment
-from agym.gui import TextLabel
-from agym.protocols import IClock, IEventHandler, IModel
+from agym.protocols import IClock, IEventHandler, IModel, IUpdater
 from agym.utils import profile
 
 
-class GameMonitor(IEventHandler):
+class GameMonitor(IEventHandler, IUpdater):
     def __init__(
         self,
         env: IGameEnvironment,
         model: IModel,
         clock: IClock,
-        fps_label: TextLabel,
-        profile_label: TextLabel,
-        log_updater,
+        log_updater: IUpdater,
         audio_handler,
         tps: int,
     ):
-        self.model = model
-        self.env = env
         self._clock = clock
 
-        self.fps_label = fps_label
-        self.profile_label = profile_label
+        self._model = model
+        self._env = env
+        self._env.reset()
 
-        self.log_updater = log_updater
-
-        self.audio_handler = audio_handler
+        self._log_updater = log_updater
+        self._audio_handler = audio_handler
         # self.run_playing_music()
 
-        self.tps = tps
+        self._ticks_per_second = tps
 
-        self.env.reset()
-
-    def run_playing_music(self) -> None:
+    def _run_background_music(self) -> None:
         bsound = Sound(
             "../static/envs/breakout/sounds/death_note_shinigami_kai.mp3"
         )
@@ -50,23 +38,23 @@ class GameMonitor(IEventHandler):
     @profile("game_event")
     def try_handle_event(self, event: Event) -> bool:
         handled = False
-        handled = handled or self.model.try_handle_event(event)
+        handled = handled or self._model.try_handle_event(event)
 
         return handled
 
     @profile("game_update")
     def update(self) -> None:
-        state = self.env.state
+        state = self._env.state
 
-        action = self.model.get_action(state)
+        action = self._model.get_action(state)
 
-        dt = self._clock.do_frame_tick() * self.tps
-        is_done = self.env.step(action, dt)
+        dt = self._clock.do_frame_tick() * self._ticks_per_second
+        is_done = self._env.step(action, dt)
 
-        events = self.env.pop_events()
-        self.audio_handler.handle_events(events)
+        events = self._env.pop_events()
+        self._audio_handler.handle_events(events)
 
         if is_done:
-            self.env.reset()
+            self._env.reset()
 
-        self.log_updater.update()
+        self._log_updater.update()

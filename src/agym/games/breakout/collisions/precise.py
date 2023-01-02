@@ -1,8 +1,7 @@
 from typing import Optional
 
+from agym.games.breakout.constants import EPS
 from agym.games.breakout.dtos import Ball, CollisionBallBall
-
-EPS = 1e-4
 
 
 def calculate_ball_ball_colls(

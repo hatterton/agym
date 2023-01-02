@@ -4,7 +4,7 @@ from typing import List, Optional
 from agym.games.breakout.dtos import Ball, Block, Platform, Wall
 from agym.games.breakout.geom import Rectangle, Vec2
 from agym.games.breakout.protocols import ILevelBuilder
-from agym.games.breakout.state import GameState
+from agym.games.breakout.state import BreakoutState
 
 from .item_manager import ItemManager
 
@@ -22,7 +22,7 @@ class DefaultLevelBuilder(ILevelBuilder):
         block_wall_top_shift: float,
         block_wall_between_shift: float,
     ) -> None:
-        self.item_manager = ItemManager()
+        self._item_manager = ItemManager()
 
         self._env_size = env_size
 
@@ -37,15 +37,15 @@ class DefaultLevelBuilder(ILevelBuilder):
         self._block_wall_top_shift = block_wall_top_shift
         self._block_wall_between_shift = block_wall_between_shift
 
-    def build(self) -> GameState:
+    def build(self) -> BreakoutState:
         walls = self._make_walls()
 
-        ball = self.item_manager.create_ball(
+        ball = self._item_manager.create_ball(
             radius=self._ball_radius,
             speed=self._ball_speed,
         )
 
-        platform = self.item_manager.create_platform(
+        platform = self._item_manager.create_platform(
             speed=self._platform_speed,
             width=self._platform_size.x,
             height=self._platform_size.y,
@@ -54,7 +54,7 @@ class DefaultLevelBuilder(ILevelBuilder):
 
         blocks = self._make_target_wall()
 
-        return self.item_manager.extract_state()
+        return self._item_manager.extract_state()
 
     def _make_walls(self) -> List[Wall]:
         shift = 5.0
@@ -91,9 +91,9 @@ class DefaultLevelBuilder(ILevelBuilder):
         right_wall.right = right
 
         return [
-            self.item_manager.create_wall(left_wall),
-            self.item_manager.create_wall(top_wall),
-            self.item_manager.create_wall(right_wall),
+            self._item_manager.create_wall(left_wall),
+            self._item_manager.create_wall(top_wall),
+            self._item_manager.create_wall(right_wall),
         ]
 
     def _make_target_wall(
@@ -121,7 +121,7 @@ class DefaultLevelBuilder(ILevelBuilder):
                 top = top_shift + i * block_height * 1.5
 
                 left = side_shift + j * (block_width + between_shift)
-                block = self.item_manager.create_block(
+                block = self._item_manager.create_block(
                     top=top,
                     left=left,
                     width=block_width,

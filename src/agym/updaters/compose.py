@@ -5,8 +5,8 @@ from agym.protocols import IUpdater
 
 class ComposeUpdater:
     def __init__(self, updaters: List[IUpdater]) -> None:
-        self.updaters = updaters
+        self._updaters = updaters
 
     def update(self) -> None:
-        for updater in self.updaters:
+        for updater in self._updaters:
             updater.update()

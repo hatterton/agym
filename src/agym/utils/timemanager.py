@@ -43,23 +43,23 @@ class Stat:
 
 class TimeProfiler:
     def __init__(self, window_size: int = 10000, log_self: bool = True) -> None:
-        self.window_size = window_size
-        self.log_self: bool = log_self
+        self._window_size = window_size
+        self._log_self: bool = log_self
 
-        self.defaut_parent: Optional[str] = None
+        self._default_parent: Optional[str] = None
 
-        self.events: Queue[Event]
-        self.signups: List[Signup]
+        self._events: Queue[Event]
+        self._signups: List[Signup]
 
         self.reset()
         register_profiler(self)
 
     def set_default_parent(self, defaut_parent: Optional[str] = None) -> None:
-        for signup in self.signups:
-            if signup.parent_title == self.defaut_parent:
+        for signup in self._signups:
+            if signup.parent_title == self._default_parent:
                 signup.parent_title = defaut_parent
 
-        self.defaut_parent = defaut_parent
+        self._default_parent = defaut_parent
 
     @contextmanager
     def profiling(self, start_event: str, finish_event: str):
@@ -75,25 +75,25 @@ class TimeProfiler:
         self, start_event: str, finish_event: str
     ) -> Generator[None, None, None]:
         try:
-            if self.log_self:
+            if self._log_self:
                 self._add_event(start_event)
             yield
 
         finally:
-            if self.log_self:
+            if self._log_self:
                 self._add_event(finish_event)
 
     def reset(self) -> None:
-        self.events = Queue()
-        self.signups = []
+        self._events = Queue()
+        self._signups = []
 
-        if self.log_self:
+        if self._log_self:
             self.add_signup(
                 Signup(
                     start_event="start_add_event",
                     finish_event="finish_add_event",
                     title="add_event",
-                    parent_title=self.defaut_parent,
+                    parent_title=self._default_parent,
                 )
             )
             self.add_signup(
@@ -101,12 +101,12 @@ class TimeProfiler:
                     start_event="start_get_stats",
                     finish_event="finish_get_stats",
                     title="get_stats",
-                    parent_title=self.defaut_parent,
+                    parent_title=self._default_parent,
                 )
             )
 
     def add_signup(self, signup: Signup) -> None:
-        self.signups.append(signup)
+        self._signups.append(signup)
 
     def add_event(self, text: str) -> None:
         with self._profiling("start_add_event", "finish_add_event"):
@@ -114,10 +114,10 @@ class TimeProfiler:
 
     def _add_event(self, text: str) -> None:
         event = Event(text=text, time=self._clock())
-        self.events.push(event)
+        self._events.push(event)
 
-        if len(self.events) > self.window_size:
-            self.events.pop()
+        if len(self._events) > self._window_size:
+            self._events.pop()
 
     def get_stats(self) -> List[Stat]:
         with self._profiling("start_get_stats", "finish_get_stats"):
@@ -128,17 +128,17 @@ class TimeProfiler:
     def _get_stats(self) -> List[Stat]:
         start_event2ids = defaultdict(list)
         finish_event2ids = defaultdict(list)
-        for idx, signup in enumerate(self.signups):
+        for idx, signup in enumerate(self._signups):
             start_event2ids[signup.start_event].append(idx)
             finish_event2ids[signup.finish_event].append(idx)
 
         accumulated_durations: List[List[float]] = [
-            [] for _ in range(len(self.signups))
+            [] for _ in range(len(self._signups))
         ]
-        is_opened = [False for _ in range(len(self.signups))]
-        opening_times = [0.0 for _ in range(len(self.signups))]
+        is_opened = [False for _ in range(len(self._signups))]
+        opening_times = [0.0 for _ in range(len(self._signups))]
 
-        for event in self.events:
+        for event in self._events:
             for idx in start_event2ids[event.text]:
                 opening_times[idx] = event.time
                 is_opened[idx] = True
@@ -161,13 +161,13 @@ class TimeProfiler:
                 relative=EPS,
                 parent_title=signup.parent_title,
             )
-            for signup in self.signups
+            for signup in self._signups
         ]
 
-        if len(self.events) < 2:
+        if len(self._events) < 2:
             return stats
 
-        window_start_time, window_finish_time = self.get_current_timewindow()
+        window_start_time, window_finish_time = self._get_current_timewindow()
         window_duration = window_finish_time - window_start_time
 
         for idx, opening_time in enumerate(opening_times):
@@ -203,27 +203,27 @@ class TimeProfiler:
     def _clock(self) -> Time:
         return time.time()
 
-    def get_current_timewindow(self) -> Tuple[Time, Time]:
-        return (self.events.back.time, self.events.front.time)
+    def _get_current_timewindow(self) -> Tuple[Time, Time]:
+        return (self._events.back.time, self._events.front.time)
 
 
 class ProfilingManager:
     def __init__(self) -> None:
-        self.signups: List[Signup] = []
-        self.registered_profilers: List[TimeProfiler] = []
+        self._signups: List[Signup] = []
+        self._registered_profilers: List[TimeProfiler] = []
 
     def add_signup(self, signup: Signup) -> None:
-        self.signups.append(copy(signup))
+        self._signups.append(copy(signup))
 
     def add_event(self, text: str) -> None:
-        for profiler in self.registered_profilers:
+        for profiler in self._registered_profilers:
             profiler.add_event(text)
 
     def register(self, profiler: TimeProfiler) -> None:
-        for signup in self.signups:
+        for signup in self._signups:
             profiler.add_signup(signup)
 
-        self.registered_profilers.append(profiler)
+        self._registered_profilers.append(profiler)
 
 
 profiling_manager = ProfilingManager()

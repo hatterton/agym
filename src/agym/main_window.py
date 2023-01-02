@@ -1,5 +1,3 @@
-import pygame
-
 from agym.dtos import (
     Color,
     Event,
@@ -14,7 +12,7 @@ from agym.protocols import IEventHandler, IEventSource, IRenderKit
 from agym.renderers import GameMonitorRenderer
 
 
-class MainWindow(IEventHandler):
+class MainWindow:
     def __init__(
         self,
         window_size: Size,
@@ -23,14 +21,14 @@ class MainWindow(IEventHandler):
         event_source: IEventSource,
         game_monitor_renderer: GameMonitorRenderer,
     ):
-        pygame.display.set_caption("Arcanoid")
-
         self._render_kit = render_kit
-        self.screen = self._render_kit.create_display(window_size)
+        self._render_kit.set_caption("Agym")
+
+        self._screen = self._render_kit.create_display(window_size)
 
         self._event_source = event_source
 
-        self.game_monitor = game_monitor
+        self._game_monitor = game_monitor
         self._game_monitor_renderer = game_monitor_renderer
 
         self.active: bool
@@ -44,29 +42,29 @@ class MainWindow(IEventHandler):
     def run(self):
         self.activate()
         while self.active:
-            self.check_events()
-            self.update()
-            self.blit()
+            self._check_events()
+            self._update()
+            self._blit()
 
-    def check_events(self) -> None:
+    def _check_events(self) -> None:
         for event in self._event_source.get_events():
-            handled = self.try_handle_event(event)
+            handled = self._try_handle_event(event)
             if not handled:
                 print("Unhandled event", event)
 
-    def update(self) -> None:
-        self.game_monitor.update()
+    def _update(self) -> None:
+        self._game_monitor.update()
 
-    def blit(self) -> None:
-        self.screen.fill(Color(255, 255, 255))
+    def _blit(self) -> None:
+        self._screen.fill(Color(255, 255, 255))
 
         gm_screen = self._game_monitor_renderer.render()
 
-        self.screen.blit(gm_screen, Shift(0, 0))
+        self._screen.blit(gm_screen, Shift(0, 0))
 
         self._render_kit.flip_display()
 
-    def try_handle_event(self, event: Event) -> bool:
+    def _try_handle_event(self, event: Event) -> bool:
         handled = self._try_consume_event(event)
         handled = handled or self._try_delegate_event(event)
 
@@ -82,4 +80,4 @@ class MainWindow(IEventHandler):
         return False
 
     def _try_delegate_event(self, event: Event) -> bool:
-        return self.game_monitor.try_handle_event(event)
+        return self._game_monitor.try_handle_event(event)

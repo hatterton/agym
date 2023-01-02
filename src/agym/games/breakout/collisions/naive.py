@@ -13,7 +13,7 @@ from agym.games.breakout.dtos import (
     Platform,
     Wall,
 )
-from agym.games.breakout.state import GameState
+from agym.games.breakout.state import BreakoutState
 from agym.utils import CachedCollection
 
 from .legacy_collision import (
@@ -27,7 +27,7 @@ from .precise import calculate_ball_ball_colls
 
 class NaiveCollisionDetectionEngine:
     def generate_step_collisions(
-        self, state: GameState, dt: float
+        self, state: BreakoutState, dt: float
     ) -> Iterable[Collision]:
         return CachedCollection(
             self.calculate_colls(

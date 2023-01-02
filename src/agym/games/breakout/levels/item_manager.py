@@ -3,28 +3,28 @@ from typing import List, Optional
 
 from agym.games.breakout.dtos import Ball, Block, Platform, Wall
 from agym.games.breakout.geom import Rectangle
-from agym.games.breakout.state import GameState
+from agym.games.breakout.state import BreakoutState
 
 
 class ItemManager:
     def __init__(self) -> None:
-        self.item_counter = 0
+        self._item_counter = 0
 
-        self._state: GameState
-        self.reset()
+        self._state: BreakoutState
+        self._reset()
 
     def _tick(self) -> int:
-        res = self.item_counter
-        self.item_counter += 1
+        res = self._item_counter
+        self._item_counter += 1
 
         return res
 
-    def reset(self) -> None:
-        self._state = GameState()
+    def _reset(self) -> None:
+        self._state = BreakoutState()
 
-    def extract_state(self) -> GameState:
+    def extract_state(self) -> BreakoutState:
         res = self._state
-        self.reset()
+        self._reset()
 
         return res
 

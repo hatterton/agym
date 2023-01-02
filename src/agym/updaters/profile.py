@@ -6,20 +6,17 @@ from agym.utils import Stat, TimeProfiler, profile
 
 class ProfileUpdater:
     def __init__(self, label: TextLabel, profiler: TimeProfiler) -> None:
-        self.label = label
-        self.profiler = profiler
-
-        # self.profiler.set_default_parent("game_iter")
+        self._label = label
+        self._profiler = profiler
 
     @profile("prof_update", "game_update")
     def update(self) -> None:
-        stats = self.profiler.get_stats()
+        stats = self._profiler.get_stats()
         stats = sorted(stats, key=lambda x: x.title)
-        # stats = sorted(stats, key=lambda x: x.parent_relative if x.parent_relative else 0., reverse=True)
         stats = sorted(
             stats, key=lambda x: x.parent_title if x.parent_title else ""
         )
-        self.label.text = self._format_stats(stats)
+        self._label.text = self._format_stats(stats)
 
     def _format_stats(self, stats: List[Stat]) -> str:
         title_len = 14

@@ -33,7 +33,7 @@ class TestCollisionsBallBlock:
         event = events[0]
         assert isinstance(event, BreakoutCollisionEvent)
         assert isinstance(event.collision, CollisionBallBlock)
-        assert almost_equal_vec(breakout.balls[0].velocity, Vec2(x=0, y=-1))
+        assert almost_equal_vec(breakout._balls[0].velocity, Vec2(x=0, y=-1))
 
     def test_ball_corner_block_collision_type(
         self,
@@ -55,5 +55,5 @@ class TestCollisionsBallBlock:
         assert isinstance(event.collision, CollisionBallBlock)
         r2 = 2**0.5
         assert almost_equal_vec(
-            breakout.balls[0].velocity, Vec2(x=r2 / 2, y=r2 / 2)
+            breakout._balls[0].velocity, Vec2(x=r2 / 2, y=r2 / 2)
         )
