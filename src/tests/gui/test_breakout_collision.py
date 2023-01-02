@@ -2,6 +2,7 @@ import pytest
 
 from agym.games.breakout import BreakoutEnv, KDTreeCollisionDetectionEngine
 from agym.main_window import MainWindow
+from agym.protocols import IEventSource
 
 from .game_model import DummyModel
 from .gui_test_runner import GUITestRunner
@@ -40,10 +41,12 @@ def test_runner(
     main_window: MainWindow,
     breakout: BreakoutEnv,
     game_model: DummyModel,
+    event_source: IEventSource,
 ):
     return GUITestRunner(
         window=main_window,
         env=breakout,
+        event_source=event_source,
         model=game_model,
     )
 

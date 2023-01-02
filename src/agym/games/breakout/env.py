@@ -4,8 +4,6 @@ from itertools import product
 from typing import Any, Iterable, List, Tuple
 
 import numpy as np
-import pygame
-from pygame.event import Event as PygameEvent
 
 from agym.games.breakout.dtos import (
     Ball,

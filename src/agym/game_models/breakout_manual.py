@@ -1,40 +1,39 @@
 from typing import Tuple
 
-import pygame
-from pygame.event import Event
-
+from agym.dtos import Event, KeyboardEvent, KeyCode, KeyDownEvent, KeyUpEvent
 from agym.games.breakout.dtos import BreakoutAction, BreakoutActionType
 from agym.games.protocols import IGameState
+from agym.protocols import IModel
 
 
-class ManualBreakoutModel:
+class ManualBreakoutModel(IModel):
     def __init__(self):
         self.platform_moving_left = False
         self.platform_moving_right = False
         self.promise_throw = False
 
     def try_handle_event(self, event: Event) -> bool:
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT:
+        if isinstance(event, KeyDownEvent):
+            if event.key.code == KeyCode.LEFT_ARROW:
                 self.platform_moving_left = True
                 self.platform_moving_right = False
                 return True
 
-            elif event.key == pygame.K_RIGHT:
+            elif event.key.code == KeyCode.RIGHT_ARROW:
                 self.platform_moving_left = False
                 self.platform_moving_right = True
                 return True
 
-            elif event.key == pygame.K_SPACE:
+            elif event.key.code == KeyCode.SPACE:
                 self.promise_throw = True
                 return True
 
-        elif event.type == pygame.KEYUP:
-            if event.key == pygame.K_LEFT:
+        elif isinstance(event, KeyUpEvent):
+            if event.key.code == KeyCode.LEFT_ARROW:
                 self.platform_moving_left = False
                 return True
 
-            elif event.key == pygame.K_RIGHT:
+            elif event.key.code == KeyCode.RIGHT_ARROW:
                 self.platform_moving_right = False
                 return True
 
