@@ -2,8 +2,6 @@ import os
 from dataclasses import dataclass, field
 from typing import Iterable, Optional
 
-import pygame as pg
-
 from agym.games.breakout.constants import EPS
 from agym.games.breakout.geom import (
     Circle,

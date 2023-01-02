@@ -1,10 +1,10 @@
-from pygame.event import Event
-
+from agym.dtos import Event
 from agym.games.breakout.dtos import BreakoutAction, BreakoutActionType
 from agym.games.protocols import IGameAction, IGameState
+from agym.protocols import IEventHandler
 
 
-class DummyModel:
+class DummyModel(IEventHandler):
     def __init__(self) -> None:
         self._action = BreakoutAction(type=BreakoutActionType.NOTHING)
 

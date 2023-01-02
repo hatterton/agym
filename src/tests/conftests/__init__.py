@@ -1,6 +1,7 @@
 from .audio import *
 from .breakout import *
 from .clock import *
+from .event_source import *
 from .game_monitor import *
 from .labels import *
 from .log_updater import *

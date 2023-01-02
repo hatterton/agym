@@ -2,18 +2,17 @@ import enum
 import os
 from time import sleep
 
-import pygame
-from pygame.event import Event
 from pygame.mixer import Sound
 
 from agym.constants import TIME_RESOLUTION
+from agym.dtos import Event
 from agym.games.protocols import IGameEnvironment
 from agym.gui import TextLabel
 from agym.protocols import IClock, IEventHandler, IModel
 from agym.utils import profile
 
 
-class GameMonitor:
+class GameMonitor(IEventHandler):
     def __init__(
         self,
         env: IGameEnvironment,
@@ -35,7 +34,7 @@ class GameMonitor:
         self.log_updater = log_updater
 
         self.audio_handler = audio_handler
-        self.run_playing_music()
+        # self.run_playing_music()
 
         self.tps = tps
 

@@ -3,20 +3,19 @@ from functools import wraps
 from threading import Thread, Timer
 from typing import Callable, Generator
 
-import pygame as pg
-from pygame.event import Event
-
+from agym.dtos import Event, KeyCode, KeyDownEvent
 from agym.games.breakout import BreakoutEnv
 from agym.main_window import MainWindow
+from agym.protocols import IEventSource
 from tests.gui.game_model import DummyModel
 
 
 @contextmanager
 def patch_events(
-    try_handle_event: Callable[[Event], bool]
+    event_source: IEventSource, try_handle_event: Callable[[Event], bool]
 ) -> Generator[None, None, None]:
     try:
-        old_event_get = pg.event.get
+        old_event_get = event_source.get_events
 
         @wraps(old_event_get)
         def monkey_event_get():
@@ -25,21 +24,28 @@ def patch_events(
                 if not handled:
                     yield event
 
-        pg.event.get = monkey_event_get  # type: ignore
+        event_source.get_events = monkey_event_get  # type: ignore
         yield
 
     finally:
-        pg.event.get = old_event_get
+        event_source.get_events = old_event_get  # type: ignore
 
 
 TICKS_PER_SECOND = 20
 
 
 class GUITestRunner:
-    def __init__(self, window: MainWindow, env: BreakoutEnv, model: DummyModel):
+    def __init__(
+        self,
+        window: MainWindow,
+        event_source: IEventSource,
+        env: BreakoutEnv,
+        model: DummyModel,
+    ):
         self._window = window
         self._env = env
         self._model = model
+        self._event_source = event_source
 
         self._test_counter: int = 0
         self._active: bool = False
@@ -62,7 +68,7 @@ class GUITestRunner:
         while self._active and self.test_counter < len(test_cases):
             test_case = test_cases[self.test_counter]
 
-            with patch_events(self.try_handle_event):
+            with patch_events(self._event_source, self.try_handle_event):
                 self.run_test(test_case)
 
     def run_test(self, test_case) -> None:
@@ -94,23 +100,23 @@ class GUITestRunner:
         self._window.deactivate()
 
     def try_handle_event(self, event: Event) -> bool:
-        if event.type == pg.KEYDOWN:
-            if event.key == pg.K_ESCAPE:
+        if isinstance(event, KeyDownEvent):
+            if event.key.code == KeyCode.ESCAPE:
                 self.abort_test()
                 self.deactivate()
                 return True
 
-            elif event.key == pg.K_RIGHT:
+            elif event.key.code == KeyCode.RIGHT_ARROW:
                 self.abort_test()
                 self.test_counter += 1
                 return True
 
-            elif event.key == pg.K_LEFT:
+            elif event.key.code == KeyCode.LEFT_ARROW:
                 self.abort_test()
                 self.test_counter -= 1
                 return True
 
-            elif event.key == pg.K_r:
+            elif event.key.code == KeyCode.R:
                 self.abort_test()
                 return True
 

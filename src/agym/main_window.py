@@ -1,24 +1,34 @@
 import pygame
-from pygame.event import Event
 
-from agym.dtos import Color, Shift, Size
+from agym.dtos import (
+    Color,
+    Event,
+    KeyCode,
+    KeyDownEvent,
+    QuitEvent,
+    Shift,
+    Size,
+)
 from agym.game_monitor import GameMonitor
-from agym.protocols import IEventHandler, IRenderKit
+from agym.protocols import IEventHandler, IEventSource, IRenderKit
 from agym.renderers import GameMonitorRenderer
 
 
-class MainWindow:
+class MainWindow(IEventHandler):
     def __init__(
         self,
         window_size: Size,
         render_kit: IRenderKit,
         game_monitor: GameMonitor,
+        event_source: IEventSource,
         game_monitor_renderer: GameMonitorRenderer,
     ):
         pygame.display.set_caption("Arcanoid")
 
         self._render_kit = render_kit
         self.screen = self._render_kit.create_display(window_size)
+
+        self._event_source = event_source
 
         self.game_monitor = game_monitor
         self._game_monitor_renderer = game_monitor_renderer
@@ -39,7 +49,7 @@ class MainWindow:
             self.blit()
 
     def check_events(self) -> None:
-        for event in pygame.event.get():
+        for event in self._event_source.get_events():
             handled = self.try_handle_event(event)
             if not handled:
                 print("Unhandled event", event)
@@ -63,14 +73,10 @@ class MainWindow:
         return handled
 
     def _try_consume_event(self, event: Event) -> bool:
-        if event.type == pygame.QUIT:
-            self.active = False
-            return True
-
-        if event.type == pygame.KEYDOWN and (
-            event.key == pygame.K_q or event.key == pygame.K_ESCAPE
+        if isinstance(event, QuitEvent) or (
+            isinstance(event, KeyDownEvent) and event.key.code == KeyCode.ESCAPE
         ):
-            self.active = False
+            self.deactivate()
             return True
 
         return False

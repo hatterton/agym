@@ -9,6 +9,7 @@ from agym.dtos import (
     Shift,
     Size,
 )
+from agym.event_sources import PygameEventSource
 from agym.game_models import ManualBreakoutModel
 from agym.game_monitor import GameMonitor
 from agym.games.breakout import (
@@ -69,11 +70,23 @@ class Clocks:
             history_size=config.framerate_history_size,
         )
 
-        self.main = self.framerate_decorated
+        self.clock = self.framerate_decorated
+
+
+class EventSources:
+    def __init__(
+        self,
+        clocks: Clocks,
+    ):
+        self.pygame = PygameEventSource(
+            clock=clocks.clock,
+        )
+
+        self.event_source = self.pygame
 
 
 class TimeContainer:
-    def __init__(self, config: Settings):
+    def __init__(self):
         self.time_profiler = TimeProfiler(
             window_size=10000,
             log_self=False,
@@ -109,7 +122,7 @@ class Updaters:
     ):
         self.fps_updater = FPSUpdater(
             label=labels.fps_label,
-            clock=clocks.main,
+            clock=clocks.clock,
         )
 
         self.profile_updater = ProfileUpdater(
@@ -126,7 +139,7 @@ class Updaters:
 
         self.log_updater = LimitedUpdater(
             updater=self.compose_updater,
-            clock=clocks.main,
+            clock=clocks.clock,
             ups=config.log_framerate,
         )
 
@@ -181,7 +194,7 @@ class EnvContainer:
             level_builder=self.level_builder,
         )
 
-        self.model = ManualBreakoutModel()
+        self.model: IModel = ManualBreakoutModel()
         self.audio_handler = AudioHandler()
 
 
@@ -195,7 +208,7 @@ class GameMonitorContainer:
         config: Settings,
     ):
         self.game_monitor = GameMonitor(
-            clock=clocks.main,
+            clock=clocks.clock,
             fps_label=labels.fps_label,
             profile_label=labels.profile_label,
             log_updater=updaters.log_updater,
@@ -255,11 +268,13 @@ class Windows:
         game_monitor_container: GameMonitorContainer,
         render_kits: RenderKits,
         renderers: Renderers,
+        event_sources: EventSources,
         config: Settings,
     ):
         self.main = MainWindow(
             window_size=config.window_screen_size,
             render_kit=render_kits.kit,
+            event_source=event_sources.event_source,
             game_monitor=game_monitor_container.game_monitor,
             game_monitor_renderer=renderers.game_monitor,
         )
@@ -269,8 +284,10 @@ class Application:
     def __init__(self, config: Settings):
         self.render_kits = RenderKits()
 
-        self.time_container = TimeContainer(config=config)
+        self.time_container = TimeContainer()
         self.clocks = Clocks(config=config)
+        self.event_sources = EventSources(clocks=self.clocks)
+
         self.labels = Labels(render_kits=self.render_kits, config=config)
         self.updaters = Updaters(
             time_container=self.time_container,
@@ -301,5 +318,6 @@ class Application:
             game_monitor_container=self.game_monitor_container,
             config=config,
             render_kits=self.render_kits,
+            event_sources=self.event_sources,
             renderers=self.renderers,
         )
