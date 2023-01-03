@@ -1,5 +1,3 @@
-from pygame.mixer import Sound
-
 from agym.dtos import Event
 from agym.protocols import IClock, IEventHandler, IModel, IUpdater
 from envs.protocols import IGameEnvironment
@@ -24,16 +22,9 @@ class GameMonitor(IEventHandler, IUpdater):
 
         self._log_updater = log_updater
         self._audio_handler = audio_handler
-        # self.run_playing_music()
+        # self._audio_handler.play_background()
 
         self._ticks_per_second = tps
-
-    def _run_background_music(self) -> None:
-        bsound = Sound(
-            "../static/envs/breakout/sounds/death_note_shinigami_kai.mp3"
-        )
-        bsound.set_volume(0.2)
-        bsound.play(loops=-1)
 
     @profile("game_event")
     def try_handle_event(self, event: Event) -> bool:

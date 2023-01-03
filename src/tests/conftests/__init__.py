@@ -9,4 +9,5 @@ from .main_window import *
 from .pygame import *
 from .render_kit import *
 from .renderers import *
+from .sound_kit import *
 from .timing import *
