@@ -1,11 +1,7 @@
 from typing import List
 
-from envs.breakout import BreakoutEnv
-from envs.breakout import BreakoutEvent, BreakoutState
-from envs.breakout.protocols import (
-    IBreakoutLevelBuilder,
-    ICollisionDetector,
-)
+from envs.breakout import BreakoutEnv, BreakoutEvent, BreakoutState
+from envs.breakout.protocols import IBreakoutLevelBuilder, ICollisionDetector
 from envs.protocols import IGameAction, IGameEnvironment
 from geometry import Rectangle, Vec2
 

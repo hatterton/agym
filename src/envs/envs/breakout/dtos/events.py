@@ -1,8 +1,6 @@
-from dataclasses import dataclass, field
-from typing import Tuple
+from dataclasses import dataclass
 
 from envs.protocols import IGameEvent
-from geometry import Point
 
 from .collisions import Collision
 

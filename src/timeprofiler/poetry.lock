@@ -4,7 +4,7 @@ version = "0.1.0"
 description = ""
 category = "main"
 optional = false
-python-versions = "3.8"
+python-versions = "^3.8.0"
 develop = true
 
 [package.source]
@@ -13,8 +13,8 @@ url = "../custom_queue"
 
 [metadata]
 lock-version = "1.1"
-python-versions = "3.8"
-content-hash = "0452ea78f5718b96a356685313b45d120664c86d9b75bb689213cc687430ec34"
+python-versions = "^3.8.0"
+content-hash = "e1e52401d4a16f462ead7a1d97041f7ddb50cc3a2b620b4a64c41f2f83c664af"
 
 [metadata.files]
 custom-queue = []

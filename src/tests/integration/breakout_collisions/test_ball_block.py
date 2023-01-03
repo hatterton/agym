@@ -1,13 +1,12 @@
 import pytest
 
 from envs.breakout import (
-    BreakoutAction,
     BreakoutCollisionEvent,
     BreakoutEnv,
+    CollisionBallBlock,
 )
-from envs.breakout import CollisionBallBlock
 from geometry import Vec2
-from tests.math_utils import almost_equal_float, almost_equal_vec
+from tests.math_utils import almost_equal_vec
 
 
 @pytest.mark.breakout

@@ -1,4 +1,3 @@
-from agym.gui import TextLabel
 from agym.protocols import IClock, IUpdater
 
 

@@ -1,11 +1,6 @@
 import pytest
 
-from envs.breakout import (
-    BreakoutAction,
-    BreakoutCollisionEvent,
-    BreakoutEnv,
-)
-from envs.breakout import CollisionBallWall
+from envs.breakout import BreakoutCollisionEvent, BreakoutEnv, CollisionBallWall
 
 
 @pytest.mark.breakout

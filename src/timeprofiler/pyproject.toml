@@ -5,7 +5,7 @@ description = ""
 authors = ["Anton Novikov <thescir@yandex.ru>"]
 
 [tool.poetry.dependencies]
-python = "3.8"
+python = "^3.8.0"
 custom_queue = {path = "../custom_queue", develop = true}
 
 [build-system]

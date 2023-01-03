@@ -1,7 +1,6 @@
 import pytest
 
 from geometry import Circle, Point, Triangle, is_intersected
-from tests.math_utils import almost_equal_float, almost_equal_point
 
 
 @pytest.mark.geom

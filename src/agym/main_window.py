@@ -8,7 +8,7 @@ from agym.dtos import (
     Size,
 )
 from agym.game_monitor import GameMonitor
-from agym.protocols import IEventHandler, IEventSource, IRenderKit
+from agym.protocols import IEventSource, IRenderKit
 from agym.renderers import GameMonitorRenderer
 
 

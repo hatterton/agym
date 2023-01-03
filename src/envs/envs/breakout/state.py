@@ -3,7 +3,6 @@ from dataclasses import dataclass, field
 from typing import Iterable, List
 
 from envs.breakout.dtos import Ball, Block, Item, Platform, Wall
-from geometry import Rectangle
 
 
 @dataclass

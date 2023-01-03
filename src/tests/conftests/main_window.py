@@ -1,6 +1,5 @@
 import pytest
 
-from agym.dtos import Size
 from agym.main_window import MainWindow
 
 

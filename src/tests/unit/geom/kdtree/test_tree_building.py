@@ -1,7 +1,6 @@
 import pytest
 
 from geometry.kdtree import KDTree
-from geometry.kdtree.node import LeafTreeNode, SplitTreeNode, TreeNode
 
 from .tree_utils import build_record, get_depth, traveres
 

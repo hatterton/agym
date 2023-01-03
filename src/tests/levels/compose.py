@@ -2,6 +2,8 @@ from typing import List
 
 import pytest
 
+from envs.breakout import ItemManager
+
 from .ball_ball import *
 from .ball_block import *
 from .ball_platform import *

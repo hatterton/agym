@@ -1,5 +1,5 @@
 from heapq import heapify, heappop
-from typing import Any, Callable, Iterable, List, Optional, Protocol, TypeVar
+from typing import Callable, Iterable, List, Optional, Protocol, TypeVar
 
 
 class IComparable(Protocol):
@@ -26,7 +26,9 @@ def lazy_sorted(
     arr: Iterable[T], key: Optional[SortComparator] = None
 ) -> Iterable[T]:
     if key is None:
-        key = lambda x: x
+
+        def key(x):
+            return x
 
     heap = [KeyValueSortPair(key=key(x), value=x) for x in arr]
     heapify(heap)

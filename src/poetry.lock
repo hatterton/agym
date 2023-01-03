@@ -23,6 +23,18 @@ tests-no-zope = ["hypothesis", "pympler", "pytest (>=4.3.0)", "pytest-xdist", "c
 tests_no_zope = ["hypothesis", "pympler", "pytest (>=4.3.0)", "pytest-xdist", "cloudpickle", "mypy (>=0.971,<0.990)", "pytest-mypy-plugins"]
 
 [[package]]
+name = "autoflake"
+version = "2.0.0"
+description = "Removes unused imports and unused variables"
+category = "dev"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+pyflakes = ">=3.0.0"
+tomli = {version = ">=2.0.1", markers = "python_version < \"3.11\""}
+
+[[package]]
 name = "black"
 version = "22.12.0"
 description = "The uncompromising code formatter."
@@ -69,7 +81,7 @@ version = "0.1.0"
 description = ""
 category = "main"
 optional = false
-python-versions = "3.8"
+python-versions = "^3.8.0"
 develop = true
 
 [package.source]
@@ -82,7 +94,7 @@ version = "0.1.0"
 description = ""
 category = "main"
 optional = false
-python-versions = "3.8"
+python-versions = "^3.8.0"
 develop = true
 
 [package.dependencies]
@@ -94,12 +106,40 @@ type = "directory"
 url = "envs"
 
 [[package]]
+name = "flake8"
+version = "6.0.0"
+description = "the modular source code checker: pep8 pyflakes and co"
+category = "dev"
+optional = false
+python-versions = ">=3.8.1"
+
+[package.dependencies]
+mccabe = ">=0.7.0,<0.8.0"
+pycodestyle = ">=2.10.0,<2.11.0"
+pyflakes = ">=3.0.0,<3.1.0"
+
+[[package]]
+name = "flake8-pyproject"
+version = "1.2.2"
+description = "Flake8 plug-in loading the configuration from pyproject.toml"
+category = "dev"
+optional = false
+python-versions = ">= 3.6"
+
+[package.dependencies]
+Flake8 = ">=5"
+TOMLi = {version = "*", markers = "python_version < \"3.11\""}
+
+[package.extras]
+dev = ["pytest", "pytest-cov"]
+
+[[package]]
 name = "geometry"
 version = "0.1.0"
 description = ""
 category = "main"
 optional = false
-python-versions = "3.8"
+python-versions = "^3.8.0"
 develop = true
 
 [package.source]
@@ -127,6 +167,14 @@ colors = ["colorama (>=0.4.3,<0.5.0)"]
 requirements-deprecated-finder = ["pip-api", "pipreqs"]
 pipfile-deprecated-finder = ["pipreqs", "requirementslib"]
 plugins = ["setuptools"]
+
+[[package]]
+name = "mccabe"
+version = "0.7.0"
+description = "McCabe checker, plugin for flake8"
+category = "dev"
+optional = false
+python-versions = ">=3.6"
 
 [[package]]
 name = "mypy"
@@ -220,6 +268,14 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "pycodestyle"
+version = "2.10.0"
+description = "Python style guide checker"
+category = "dev"
+optional = false
+python-versions = ">=3.6"
+
+[[package]]
 name = "pydantic"
 version = "1.10.4"
 description = "Data validation and settings management using python type hints"
@@ -233,6 +289,14 @@ typing-extensions = ">=4.2.0"
 [package.extras]
 dotenv = ["python-dotenv (>=0.10.4)"]
 email = ["email-validator (>=1.0.3)"]
+
+[[package]]
+name = "pyflakes"
+version = "3.0.1"
+description = "passive checker of Python programs"
+category = "dev"
+optional = false
+python-versions = ">=3.6"
 
 [[package]]
 name = "pygame"
@@ -269,7 +333,7 @@ version = "0.1.0"
 description = ""
 category = "main"
 optional = false
-python-versions = "3.8"
+python-versions = "^3.8.0"
 develop = true
 
 [package.dependencies]
@@ -305,23 +369,27 @@ python-versions = ">=3.7"
 
 [metadata]
 lock-version = "1.1"
-python-versions = "3.8"
-content-hash = "1546d3fec1c6296d318b69f9e1b54ee4e28cf3d7b0fbdb6c8ede14f613c99f32"
+python-versions = "3.8.1"
+content-hash = "771cf7ab2229ad7404361f485ad614f24ce13c489a980e4164c62b1a63131345"
 
 [metadata.files]
 atomicwrites = []
 attrs = []
+autoflake = []
 black = []
 click = []
 colorama = []
 custom-queue = []
 envs = []
+flake8 = []
+flake8-pyproject = []
 geometry = []
 iniconfig = [
     {file = "iniconfig-1.1.1-py2.py3-none-any.whl", hash = "sha256:011e24c64b7f47f6ebd835bb12a743f2fbe9a26d4cecaa7f53bc4f35ee9da8b3"},
     {file = "iniconfig-1.1.1.tar.gz", hash = "sha256:bc3af051d7d14b2ee5ef9969666def0cd1a000e121eaea580d4a313df4b37f32"},
 ]
 isort = []
+mccabe = []
 mypy = []
 mypy-extensions = [
     {file = "mypy_extensions-0.4.3-py2.py3-none-any.whl", hash = "sha256:090fedd75945a69ae91ce1303b5824f428daf5a028d2f6ab8a299250a846f15d"},
@@ -340,7 +408,9 @@ py = [
     {file = "py-1.11.0.tar.gz", hash = "sha256:51c75c4126074b472f746a24399ad32f6053d1b34b68d2fa41e558e6f4a98719"},
 ]
 py-spy = []
+pycodestyle = []
 pydantic = []
+pyflakes = []
 pygame = [
     {file = "pygame-2.1.2-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:f149e182d0eeef15d8a9b4c9dad1b87dc6eba3a99bd3c44a777a3a2b053a3dca"},
     {file = "pygame-2.1.2-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:dc4444d61d48c5546df5137cdf81554887ddb6e2ef1be7f51eb77ea3b6bdd56f"},

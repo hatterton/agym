@@ -1,26 +1,26 @@
 from .collisions import (
     CollisionDetector,
+    KDTreeBuilder,
     KDTreeCollisionDetectionEngine,
     NaiveCollisionDetectionEngine,
-    KDTreeBuilder,
 )
 from .dtos import (
+    Ball,
+    Block,
     BreakoutAction,
     BreakoutActionType,
     BreakoutCollisionEvent,
     BreakoutEvent,
-    Ball,
-    Block,
-    Platform,
-    Wall,
-    Item,
-    ItemId,
     Collision,
     CollisionBallBall,
     CollisionBallBlock,
     CollisionBallPlatform,
     CollisionBallWall,
     CollisionPlatformWall,
+    Item,
+    ItemId,
+    Platform,
+    Wall,
 )
 from .env import BreakoutEnv
 from .levels import (

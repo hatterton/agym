@@ -1,6 +1,6 @@
 import pytest
 
-from agym.dtos import Color, Shift
+from agym.dtos import Color
 from agym.gui import TextLabel
 
 

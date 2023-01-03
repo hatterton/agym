@@ -1,6 +1,6 @@
 from typing import Optional
 
-from agym.dtos import Color, Size
+from agym.dtos import Color
 from agym.protocols import IFont, IRenderer, IRenderKit, IScreen
 
 

@@ -3,9 +3,8 @@ from enum import Enum, auto
 from typing import Dict, Optional
 
 from agym.dtos import Color, Rect, Shift, Size
-from envs.breakout import BreakoutEnv
-from envs.breakout import Ball, Block, Item, Platform, Wall
 from agym.protocols import IRenderer, IRenderKit, IScreen
+from envs.breakout import Ball, Block, BreakoutEnv, Platform, Wall
 from geometry import Rectangle
 
 from .kdtree import KDTreeRenderer

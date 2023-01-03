@@ -1,6 +1,4 @@
-from typing import Dict, List, Mapping, Optional
-
-from agym.dtos import Color, Rect, Shift, Size
+from agym.dtos import Color, Rect, Size
 from agym.many_breakouts import ManyBreakoutsEnv
 from agym.protocols import IRenderer, IRenderKit, IScreen
 

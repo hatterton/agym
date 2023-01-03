@@ -1,8 +1,8 @@
 import pytest
 
-from envs.breakout import BreakoutEnv, KDTreeCollisionDetectionEngine
 from agym.main_window import MainWindow
 from agym.protocols import IEventSource
+from envs.breakout import BreakoutEnv, KDTreeCollisionDetectionEngine
 
 from .game_model import DummyModel
 from .gui_test_runner import GUITestRunner

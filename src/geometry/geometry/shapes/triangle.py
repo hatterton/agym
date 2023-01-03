@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from itertools import combinations
-from statistics import mean
 from typing import Iterable, List
 
 from ..basic import Point, Segment

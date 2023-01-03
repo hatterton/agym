@@ -1,4 +1,3 @@
-import math
 from typing import Iterable, Optional
 
 from agym.protocols import IClock

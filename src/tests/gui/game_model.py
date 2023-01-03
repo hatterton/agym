@@ -1,7 +1,7 @@
 from agym.dtos import Event
-from envs.breakout import BreakoutAction, BreakoutActionType
-from envs.protocols import IGameAction, IGameState
 from agym.protocols import IEventHandler
+from envs.breakout import BreakoutAction, BreakoutActionType
+from envs.protocols import IGameState
 
 
 class DummyModel(IEventHandler):

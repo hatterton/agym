@@ -1,8 +1,7 @@
-import math
 import random
-from typing import List, Optional
+from typing import List
 
-from envs.breakout.dtos import Ball, Block, Platform, Wall
+from envs.breakout.dtos import Wall
 from envs.breakout.protocols import ILevelBuilder
 from envs.breakout.state import BreakoutState
 from geometry import Rectangle, Vec2
@@ -27,8 +26,8 @@ class PerformanceLevelBuilder(ILevelBuilder):
         self._ball_speed = ball_speed
 
     def build(self) -> BreakoutState:
-        walls = self._make_walls()
-        balls = self._make_balls()
+        self._make_walls()
+        self._make_balls()
 
         return self._item_manager.extract_state()
 
