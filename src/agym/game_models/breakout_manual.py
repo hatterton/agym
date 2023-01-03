@@ -1,9 +1,7 @@
-from typing import Tuple
-
-from agym.dtos import Event, KeyboardEvent, KeyCode, KeyDownEvent, KeyUpEvent
+from agym.dtos import Event, KeyCode, KeyDownEvent, KeyUpEvent
+from agym.protocols import IModel
 from envs.breakout import BreakoutAction, BreakoutActionType
 from envs.protocols import IGameState
-from agym.protocols import IModel
 
 
 class ManualBreakoutModel(IModel):

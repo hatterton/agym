@@ -2,7 +2,7 @@ from typing import Optional
 
 import pygame as pg
 
-from agym.dtos import Color, Rect, Shift, Size
+from agym.dtos import Color, Shift, Size
 from agym.protocols import IFont
 
 from .screen import PygameScreen

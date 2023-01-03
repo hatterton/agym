@@ -1,7 +1,7 @@
 import pytest
 
-from geometry import Circle, Line2, Point, get_intersection_line_line
-from tests.math_utils import almost_equal_float, almost_equal_point
+from geometry import Line2, Point, get_intersection_line_line
+from tests.math_utils import almost_equal_point
 
 
 @pytest.mark.geom

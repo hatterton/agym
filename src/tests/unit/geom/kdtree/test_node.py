@@ -8,7 +8,6 @@ from geometry.kdtree.node import (
     TreeNode,
     TreeNodeType,
 )
-from geometry.kdtree.record import Record
 
 from .tree_utils import build_record, get_depth, traveres
 

@@ -2,31 +2,10 @@ from typing import Mapping
 
 from agym.audio_handler import AudioHandler
 from agym.clocks import FramerateClockDecorator, PygameClock
-from agym.dtos import (
-    BreakoutCollisionEngine,
-    BreakoutLevelType,
-    Color,
-    Shift,
-    Size,
-)
+from agym.dtos import BreakoutCollisionEngine, BreakoutLevelType, Color
 from agym.event_sources import PygameEventSource
 from agym.game_models import ManualBreakoutModel
 from agym.game_monitor import GameMonitor
-from envs.breakout import (
-    BreakoutEnv,
-    CollisionDetector,
-    KDTreeCollisionDetectionEngine,
-    NaiveCollisionDetectionEngine,
-)
-from envs.breakout import (
-    DefaultLevelBuilder,
-    PerformanceLevelBuilder,
-)
-from envs.breakout.protocols import (
-    IBreakoutLevelBuilder,
-    ICollisionDetectorEngine,
-)
-from envs.protocols import IGameEnvironment
 from agym.gui import TextLabel
 from agym.gui.render_kits import PygameRenderKitEngine, RenderKit
 from agym.main_window import MainWindow
@@ -46,8 +25,18 @@ from agym.updaters import (
     LimitedUpdater,
     ProfileUpdater,
 )
-from timeprofiler import TimeProfiler, register_profiler
-from geometry import Vec2
+from envs.breakout import (
+    CollisionDetector,
+    DefaultLevelBuilder,
+    KDTreeCollisionDetectionEngine,
+    NaiveCollisionDetectionEngine,
+    PerformanceLevelBuilder,
+)
+from envs.breakout.protocols import (
+    IBreakoutLevelBuilder,
+    ICollisionDetectorEngine,
+)
+from timeprofiler import TimeProfiler
 
 
 class RenderKits:

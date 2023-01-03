@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Generic, List, TypeVar
+from typing import List
 
 T = float
 

@@ -1,4 +1,4 @@
-from typing import List, cast
+from typing import List
 
 from pygame.mixer import Sound
 

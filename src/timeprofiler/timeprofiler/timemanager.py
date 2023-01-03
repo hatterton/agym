@@ -1,11 +1,9 @@
-import sys
 import time
 from collections import defaultdict
 from contextlib import contextmanager
 from copy import copy
 from dataclasses import dataclass
 from functools import wraps
-from statistics import mean
 from typing import Generator, List, Optional, Tuple
 
 from custom_queue import Queue

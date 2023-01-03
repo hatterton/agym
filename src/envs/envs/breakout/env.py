@@ -1,7 +1,5 @@
-import enum
 import random
-from itertools import product
-from typing import Any, Iterable, List, Tuple
+from typing import Iterable, List
 
 from envs.breakout.dtos import (
     Ball,
@@ -19,13 +17,10 @@ from envs.breakout.dtos import (
     Platform,
     Wall,
 )
-from envs.breakout.protocols import (
-    IBreakoutLevelBuilder,
-    ICollisionDetector,
-)
+from envs.breakout.protocols import IBreakoutLevelBuilder, ICollisionDetector
 from envs.protocols import IGameAction, IGameEnvironment
-from timeprofiler import profile
 from geometry import Point, Rectangle, Vec2
+from timeprofiler import profile
 
 from .state import BreakoutState
 
@@ -122,8 +117,6 @@ class BreakoutEnv(IGameEnvironment):
                 self._throw_ball()
             elif action.type == BreakoutActionType.NOTHING:
                 platform.velocity.x = 0
-
-        reward = 0
 
         while dt > self._eps:
             step_dt = self._collision_detector.get_time_before_collision(

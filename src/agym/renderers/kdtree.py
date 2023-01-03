@@ -1,16 +1,10 @@
-from typing import Dict, List, Mapping, Optional
+from typing import Optional
 
 from agym.dtos import Color, Rect, Shift, Size
-from envs.breakout import BreakoutEnv
-from envs.breakout import KDTreeBuilder
 from agym.protocols import IRenderer, IRenderKit, IScreen
+from envs.breakout import BreakoutEnv, KDTreeBuilder
 from geometry import (
-    ClassId,
-    ItemId,
-    KDTree,
-    LeafTreeNode,
     ParentRelativeType,
-    Record,
     Rectangle,
     SplitTreeNode,
     TreeNode,

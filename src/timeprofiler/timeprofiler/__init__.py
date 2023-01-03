@@ -1,7 +1,7 @@
 from .timemanager import (
-    TimeProfiler,
-    profile,
     Stat,
+    TimeProfiler,
     format_stats,
+    profile,
     register_profiler,
 )

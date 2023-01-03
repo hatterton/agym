@@ -1,12 +1,11 @@
-from typing import List, Tuple
+from typing import List
 
 import pytest
 
-from envs.breakout import ItemManager
-from envs.breakout import BreakoutAction, BreakoutActionType
-from geometry import Point, Rectangle, Vec2
+from envs.breakout import BreakoutAction, BreakoutActionType, ItemManager
+from geometry import Rectangle, Vec2
 
-from .dtos import PI, LevelTestCase
+from .dtos import LevelTestCase
 
 
 @pytest.fixture

@@ -1,5 +1,4 @@
-import random
-from typing import List, Optional
+from typing import Optional
 
 from envs.breakout.dtos import Ball, Block, Platform, Wall
 from envs.breakout.state import BreakoutState

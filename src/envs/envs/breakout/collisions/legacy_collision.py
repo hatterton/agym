@@ -1,11 +1,10 @@
 import math
 from itertools import product
-from typing import Iterable, List, Optional, Tuple
+from typing import Iterable, List, Optional
 
 from envs.breakout.dtos import (
     Ball,
     Block,
-    Collision,
     CollisionBallBall,
     CollisionBallBlock,
     CollisionBallPlatform,
@@ -14,7 +13,6 @@ from envs.breakout.dtos import (
     Platform,
     Wall,
 )
-from timeprofiler import profile
 from geometry import Circle, Point, Rectangle
 
 EPS = 1e-4
@@ -60,7 +58,7 @@ def calculate_ball_platform_colls(
     b_rect, e_rect = platform.fake_update(dt)
 
     if ball.thrown:
-        is_coll, point = False, None
+        point = None
         for circle, rect in product([ball_bp, ball_ep], [b_rect, e_rect]):
             point = collide_circle_rect(circle, rect, ball_radius)
 

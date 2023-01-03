@@ -1,5 +1,5 @@
 from enum import Enum, auto
-from typing import Collection, Iterable, List, Mapping, cast
+from typing import Iterable, List, Mapping, cast
 
 from envs.breakout.dtos import (
     Ball,
@@ -15,9 +15,9 @@ from envs.breakout.dtos import (
     Wall,
 )
 from envs.breakout.state import BreakoutState
-from .cached_collection import CachedCollection
 from geometry import ClassId, IntersactionInfo, ItemId, KDTree, Record
 
+from .cached_collection import CachedCollection
 from .precise import calculate_ball_ball_colls
 
 

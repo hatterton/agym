@@ -2,9 +2,9 @@ import pytest
 
 from geometry import Circle, Point
 from geometry.kdtree import KDTree
-from geometry.kdtree.node import Record, TreeNode
+from geometry.kdtree.node import Record
 
-from .tree_utils import build_record, get_depth, traveres
+from .tree_utils import build_record
 
 
 @pytest.mark.kdtree

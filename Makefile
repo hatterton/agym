@@ -21,12 +21,14 @@ run-profiling:
 .PHONY: lint
 lint:
 	make mypy
+	make flake8
 	make black
 	make isort
 
 
 .PHONY: format
 format:
+	cd src && poetry run autoflake -r -i .
 	cd src && poetry run black .
 	cd src && poetry run isort .
 
@@ -64,6 +66,11 @@ tests-gui:
 .PHONY: mypy
 mypy:
 	cd src && poetry run mypy .
+
+
+.PHONY: flake8
+flake8:
+	cd src && poetry run flake8 .
 
 
 .PHONY: black

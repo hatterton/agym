@@ -1,7 +1,7 @@
 import math
-from typing import List, Optional
+from typing import List
 
-from envs.breakout.dtos import Ball, Block, Platform, Wall
+from envs.breakout.dtos import Block, Platform, Wall
 from envs.breakout.protocols import ILevelBuilder
 from envs.breakout.state import BreakoutState
 from geometry import Rectangle, Vec2
@@ -38,9 +38,9 @@ class DefaultLevelBuilder(ILevelBuilder):
         self._block_wall_between_shift = block_wall_between_shift
 
     def build(self) -> BreakoutState:
-        walls = self._make_walls()
+        self._make_walls()
 
-        ball = self._item_manager.create_ball(
+        self._item_manager.create_ball(
             radius=self._ball_radius,
             speed=self._ball_speed,
         )
@@ -52,7 +52,7 @@ class DefaultLevelBuilder(ILevelBuilder):
         )
         self._center_platform(platform)
 
-        blocks = self._make_target_wall()
+        self._make_target_wall()
 
         return self._item_manager.extract_state()
 

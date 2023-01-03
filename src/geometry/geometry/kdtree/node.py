@@ -2,16 +2,7 @@ from abc import ABC, abstractmethod, abstractproperty
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from functools import cached_property
-from typing import (
-    Collection,
-    Iterable,
-    Iterator,
-    List,
-    Optional,
-    Set,
-    Tuple,
-    cast,
-)
+from typing import Collection, Iterable, Iterator, List, Optional, Set, Tuple
 
 from ..intersecting import IntersectionStrict, get_intersection
 from ..shapes import Rectangle

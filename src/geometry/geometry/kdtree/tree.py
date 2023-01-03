@@ -1,21 +1,17 @@
 from dataclasses import dataclass
 from enum import Enum
-from itertools import combinations
-from typing import Collection, Iterable, List, Set, Tuple
+from typing import Collection, Iterable, List, Set
 
-from ..intersecting import IntersectionStrict, get_intersection
-from ..shapes import Rectangle
 from .node import (
     CollidablePair,
     IntersactionInfo,
-    IntersactionPair,
     LeafTreeNode,
     ParentRelativeType,
     SplitTreeNode,
     TreeNode,
     TreeNodeType,
 )
-from .record import ClassId, ItemId, Record
+from .record import Record
 from .scores import get_score
 
 

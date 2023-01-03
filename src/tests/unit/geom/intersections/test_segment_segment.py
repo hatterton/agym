@@ -1,7 +1,7 @@
 import pytest
 
 from geometry import Point, Segment, get_intersection_segment_segment
-from tests.math_utils import almost_equal_float, almost_equal_point
+from tests.math_utils import almost_equal_point
 
 
 @pytest.mark.geom

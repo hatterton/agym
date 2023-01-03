@@ -14,8 +14,8 @@ from envs.breakout.dtos import (
     Wall,
 )
 from envs.breakout.state import BreakoutState
-from .cached_collection import CachedCollection
 
+from .cached_collection import CachedCollection
 from .legacy_collision import (
     calculate_ball_block_colls,
     calculate_ball_platform_colls,

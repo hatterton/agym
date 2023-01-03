@@ -1,13 +1,11 @@
-import math
-from typing import List, Tuple
+from typing import List
 
 import pytest
 
-from envs.breakout import ItemManager
-from envs.breakout import BreakoutAction, BreakoutActionType
+from envs.breakout import BreakoutAction, BreakoutActionType, ItemManager
 from geometry import Point, Vec2
 
-from .dtos import PI, LevelTestCase
+from .dtos import LevelTestCase
 
 
 @pytest.fixture

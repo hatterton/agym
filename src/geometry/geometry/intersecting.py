@@ -1,7 +1,7 @@
 from itertools import product
-from typing import Optional, Union
+from typing import Optional
 
-from .basic import Line2, Point, Segment, Vec2
+from .basic import Line2, Point, Segment
 from .shapes import Circle, Rectangle, Shape, Triangle
 
 EPS = 1e-4
