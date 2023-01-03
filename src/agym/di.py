@@ -1,6 +1,7 @@
 from typing import Mapping
 
 from agym.audio_handler import AudioHandler
+from agym.audio_kit import PygameSoundKitEngine, SoundKit
 from agym.clocks import FramerateClockDecorator, PygameClock
 from agym.dtos import BreakoutCollisionEngine, BreakoutLevelType, Color
 from agym.event_sources import PygameEventSource
@@ -41,9 +42,16 @@ from timeprofiler import TimeProfiler
 
 class RenderKits:
     def __init__(self):
-        self.pygame_render_kit_engine = PygameRenderKitEngine()
+        self.pygame_engine = PygameRenderKitEngine()
 
-        self.kit = RenderKit(engine=self.pygame_render_kit_engine)
+        self.kit = RenderKit(engine=self.pygame_engine)
+
+
+class SoundKits:
+    def __init__(self):
+        self.pygame_engine = PygameSoundKitEngine()
+
+        self.kit = SoundKit(engine=self.pygame_engine)
 
 
 class Clocks:
@@ -134,7 +142,7 @@ class Updaters:
 
 
 class EnvContainer:
-    def __init__(self, config: Settings):
+    def __init__(self, sound_kits: SoundKits, config: Settings):
 
         level_type2level_builder: Mapping[
             BreakoutLevelType, IBreakoutLevelBuilder
@@ -184,7 +192,7 @@ class EnvContainer:
         )
 
         self.model: IModel = ManualBreakoutModel()
-        self.audio_handler = AudioHandler()
+        self.audio_handler = AudioHandler(sound_kit=sound_kits.kit)
 
 
 class GameMonitorContainer:
@@ -269,6 +277,7 @@ class Windows:
 class Application:
     def __init__(self, config: Settings):
         self.render_kits = RenderKits()
+        self.sound_kits = SoundKits()
 
         self.time_container = TimeContainer()
         self.clocks = Clocks(config=config)
@@ -282,7 +291,9 @@ class Application:
             config=config,
         )
 
-        self.env_container = EnvContainer(config=config)
+        self.env_container = EnvContainer(
+            sound_kits=self.sound_kits, config=config
+        )
 
         self.game_monitor_container = GameMonitorContainer(
             clocks=self.clocks,
