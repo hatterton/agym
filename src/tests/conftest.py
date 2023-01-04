@@ -10,8 +10,8 @@ from .levels import *
 def config():
     config = Settings()
 
-    # config.breakout.env_size.x = 400
-    # config.breakout.env_size.y = 400
+    config.breakout.env_size.x = 400
+    config.breakout.env_size.y = 400
 
     return config
 

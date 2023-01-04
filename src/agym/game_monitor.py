@@ -1,5 +1,5 @@
 from agym.dtos import Event
-from agym.protocols import IClock, IEventHandler, IModel, IUpdater
+from agym.protocols import IClock, IEnvironmentModel, IEventHandler, IUpdater
 from envs.protocols import IGameEnvironment
 from timeprofiler import profile
 
@@ -8,7 +8,7 @@ class GameMonitor(IEventHandler, IUpdater):
     def __init__(
         self,
         env: IGameEnvironment,
-        model: IModel,
+        model: IEnvironmentModel,
         clock: IClock,
         log_updater: IUpdater,
         audio_handler,

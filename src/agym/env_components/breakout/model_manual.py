@@ -1,10 +1,10 @@
 from agym.dtos import Event, KeyCode, KeyDownEvent, KeyUpEvent
-from agym.protocols import IModel
+from agym.protocols import IEnvironmentModel
 from envs.breakout import BreakoutAction, BreakoutActionType
 from envs.protocols import IGameState
 
 
-class ManualBreakoutModel(IModel):
+class ManualBreakoutModel(IEnvironmentModel):
     def __init__(self):
         self._moving_left = False
         self._moving_right = False

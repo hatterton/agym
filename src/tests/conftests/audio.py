@@ -1,8 +1,8 @@
 import pytest
 
-from agym.audio_handler import AudioHandler
+from agym.env_components.breakout import BreakoutAudioHandler
 
 
 @pytest.fixture
-def audio_handler(sound_kit):
-    return AudioHandler(sound_kit=sound_kit)
+def audio_handler(audio_kit):
+    return BreakoutAudioHandler(audio_kit=audio_kit)

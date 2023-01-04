@@ -1,11 +1,11 @@
 import pytest
 
-from agym.gui.render_kits import PygameRenderKitEngine, RenderKit
+from agym.io_frameworks import RenderKit
 
 
 @pytest.fixture
-def render_kit_engine():
-    return PygameRenderKitEngine()
+def render_kit_engine(io_framework_factory):
+    return io_framework_factory.create_render_kit_engine()
 
 
 @pytest.fixture

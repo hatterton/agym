@@ -5,6 +5,6 @@ from envs.protocols import IGameAction, IGameState
 from .event import IEventHandler
 
 
-class IModel(IEventHandler, Protocol):
+class IEnvironmentModel(IEventHandler, Protocol):
     def get_action(self, state: IGameState) -> IGameAction:
         pass

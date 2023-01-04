@@ -1,6 +1,6 @@
 from typing import List
 
-from agym.gui import TextLabel
+from agym.renderers import TextLabel
 from timeprofiler import Stat, TimeProfiler, profile
 
 

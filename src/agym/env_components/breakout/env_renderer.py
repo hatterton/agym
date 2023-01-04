@@ -7,7 +7,7 @@ from agym.protocols import IRenderer, IRenderKit, IScreen
 from envs.breakout import Ball, Block, BreakoutEnv, Platform, Wall
 from geometry import Rectangle
 
-from .kdtree import KDTreeRenderer
+from .kdtree_renderer import KDTreeRenderer
 
 
 class ItemType(Enum):
@@ -18,7 +18,7 @@ class ItemType(Enum):
     PLATFORM = auto()
 
 
-class EnvRenderer(IRenderer):
+class BreakoutRenderer(IRenderer):
     def __init__(
         self,
         screen_size: Size,

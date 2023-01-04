@@ -1,13 +1,8 @@
-import pygame
-
 from .di import Application
 from .settings import Settings
 
 
 def create_app() -> Application:
-    pygame.init()
-    pygame.font.init()
-
     settings = Settings()
 
     app = Application(settings)

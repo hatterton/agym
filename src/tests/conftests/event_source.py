@@ -1,8 +1,6 @@
 import pytest
 
-from agym.event_sources import PygameEventSource
-
 
 @pytest.fixture
-def event_source(clock):
-    return PygameEventSource(clock)
+def event_source(io_framework_factory, clock):
+    return io_framework_factory.create_event_source(clock)

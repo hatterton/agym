@@ -1,5 +1,5 @@
-from agym.gui import TextLabel
 from agym.protocols import IClock
+from agym.renderers import TextLabel
 
 
 class FPSUpdater:
