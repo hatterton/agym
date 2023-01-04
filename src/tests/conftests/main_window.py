@@ -5,7 +5,7 @@ from agym.main_window import MainWindow
 
 @pytest.fixture
 def main_window(
-    init_pygame,
+    init_io_framework,
     config,
     game_monitor_logic,
     game_monitor_renderer,

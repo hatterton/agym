@@ -1,5 +1,4 @@
 from agym.dtos import Color, Shift, Size
-from agym.gui import TextLabel
 from agym.protocols import IRenderer, IRenderKit, IScreen
 from timeprofiler import profile
 
@@ -9,8 +8,8 @@ class GameMonitorRenderer(IRenderer):
         self,
         screen_size: Size,
         env_renderer: IRenderer,
-        fps_label: TextLabel,
-        profile_label: TextLabel,
+        fps_label: IRenderer,
+        profile_label: IRenderer,
         render_kit: IRenderKit,
     ):
         self._env_renderer = env_renderer

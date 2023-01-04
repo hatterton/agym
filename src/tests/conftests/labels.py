@@ -1,11 +1,11 @@
 import pytest
 
 from agym.dtos import Color
-from agym.gui import TextLabel
+from agym.renderers import TextLabel
 
 
 @pytest.fixture
-def fps_label(init_pygame, render_kit):
+def fps_label(init_io_framework, render_kit):
     return TextLabel(
         render_kit=render_kit,
         font=render_kit.create_font("Hack", 12),
@@ -15,7 +15,7 @@ def fps_label(init_pygame, render_kit):
 
 
 @pytest.fixture
-def profile_label(init_pygame, render_kit):
+def profile_label(init_io_framework, render_kit):
     return TextLabel(
         render_kit=render_kit,
         font=render_kit.create_font("Hack", 12),

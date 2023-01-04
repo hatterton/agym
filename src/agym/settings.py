@@ -2,7 +2,13 @@ from typing import Tuple
 
 from pydantic import BaseSettings
 
-from agym.dtos import BreakoutCollisionEngine, BreakoutLevelType, Size
+from agym.dtos import (
+    BreakoutCollisionEngine,
+    BreakoutLevelType,
+    EnvironmentType,
+    IOFrameworkType,
+    Size,
+)
 from geometry import Vec2
 
 Color = Tuple[int, int, int]
@@ -39,6 +45,9 @@ class Settings(BaseSettings):
     window_screen_size: Size = Size(width=700, height=800)
     env_screen_size: Size = Size(width=600, height=600)
     subenv_screen_size: Size = Size(width=200, height=200)
+
+    io_framework_type: IOFrameworkType = IOFrameworkType.PYGAME
+    environment_type: EnvironmentType = EnvironmentType.BREAKOUT
 
     cirle_color: Color = (200, 50, 50)
     bg_color: Color = (130, 130, 130)

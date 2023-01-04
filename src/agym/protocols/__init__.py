@@ -1,6 +1,7 @@
+from .audio import IAudioKit, IAudioKitEngine, IEnvironmentAudioHandler, ISound
 from .clock import IClock
 from .event import IEventHandler, IEventSource
-from .model import IModel
+from .io_framework import IIOFrameworkFactory
+from .model import IEnvironmentModel
 from .render import IFont, IRenderer, IRenderKit, IRenderKitEngine, IScreen
-from .sound import ISound, ISoundKit, ISoundKitEngine
 from .update import IUpdater

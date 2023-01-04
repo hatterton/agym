@@ -1,4 +1,6 @@
-from typing import Protocol
+from typing import List, Protocol
+
+from envs.protocols import IGameEvent
 
 
 class ISound(Protocol):
@@ -14,10 +16,18 @@ class ISound(Protocol):
         pass
 
 
-class ISoundKitEngine(Protocol):
+class IAudioKitEngine(Protocol):
     def load_sound(self, path: str) -> ISound:
         pass
 
 
-class ISoundKit(ISoundKitEngine, Protocol):
+class IAudioKit(IAudioKitEngine, Protocol):
     pass
+
+
+class IEnvironmentAudioHandler(Protocol):
+    def play_background(self) -> None:
+        pass
+
+    def handle_events(self, events: List[IGameEvent]) -> None:
+        pass

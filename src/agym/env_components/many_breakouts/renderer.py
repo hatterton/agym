@@ -1,8 +1,8 @@
 from agym.dtos import Color, Rect, Size
-from agym.many_breakouts import ManyBreakoutsEnv
+from agym.env_components.breakout import BreakoutRenderer
 from agym.protocols import IRenderer, IRenderKit, IScreen
 
-from .env import EnvRenderer
+from .env import ManyBreakoutsEnv
 
 
 class ManyBreakoutsEnvRender(IRenderer):
@@ -10,7 +10,7 @@ class ManyBreakoutsEnvRender(IRenderer):
         self,
         screen_size: Size,
         env: ManyBreakoutsEnv,
-        env_render: EnvRenderer,
+        env_render: BreakoutRenderer,
         render_kit: IRenderKit,
     ) -> None:
         self._env = env

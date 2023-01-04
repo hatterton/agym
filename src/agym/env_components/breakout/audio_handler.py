@@ -1,17 +1,17 @@
 from typing import List
 
-from agym.protocols import ISoundKit
+from agym.protocols import IAudioKit, IEnvironmentAudioHandler
 from envs.breakout import BreakoutCollisionEvent, CollisionBallBlock
 from envs.protocols import IGameEvent
 
 
-class AudioHandler:
-    def __init__(self, sound_kit: ISoundKit) -> None:
-        self._sound_kit = sound_kit
-        self._ball_brick_sound = self._sound_kit.load_sound(
+class BreakoutAudioHandler(IEnvironmentAudioHandler):
+    def __init__(self, audio_kit: IAudioKit) -> None:
+        self._audio_kit = audio_kit
+        self._ball_brick_sound = self._audio_kit.load_sound(
             "../static/envs/breakout/sounds/trimmed_ball_brick_mono.wav"
         )
-        self._backgroung_sound = self._sound_kit.load_sound(
+        self._backgroung_sound = self._audio_kit.load_sound(
             "../static/envs/breakout/sounds/death_note_shinigami_kai.mp3"
         )
         self._backgroung_sound.volume = 0.2
